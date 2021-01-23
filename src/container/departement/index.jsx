@@ -11,6 +11,7 @@ import { Button } from '../../components/buttons/buttons';
 import { AlertError, AlertSuccess } from '../../components/alerts/alerts';
 import { Modal } from '../../components/modals/antd-modals';
 import Loading from '../../components/loadings';
+import Heading from '../../components/heading/heading';
 
 // Api Function
 import  { get_departement, update_departement, create_departement, delete_departement } from '../../api';
@@ -89,7 +90,10 @@ const Departement = () => {
 
         const getCropData = () => {
             if(typeof cropper !== 'undefined') {
-                setCropData(cropper.getCroppedCanvas().toDataURL());
+                setCropData(cropper.getCroppedCanvas({
+                    width: 480,
+                    height: 480
+                }).toDataURL());
             }
         }
 
@@ -193,7 +197,12 @@ const Departement = () => {
             result.push({
                 key: row.deid,
                 id: row.deid,
-                departement: row.name,
+                departement: (
+                    <>
+                    <img style={{ width: '40px' }} src={row.thumbnail} alt="" /> &nbsp;&nbsp;
+                    {row.name}
+                    </>
+                ),
                 description: row.description ? row.description : '-',
                 action: (
                     <div className="table-actions">
