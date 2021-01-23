@@ -4,6 +4,9 @@ import { NavLink, useRouteMatch } from 'react-router-dom';
 import FeatherIcon from 'feather-icons-react';
 import propTypes from 'prop-types';
 
+
+const { SubMenu } = Menu;
+
 const MenuItems = ({ darkMode, toggleCollapsed, topMenu }) => {
   const { path } = useRouteMatch();
 
@@ -44,11 +47,139 @@ const MenuItems = ({ darkMode, toggleCollapsed, topMenu }) => {
       overflowedIndicator={<FeatherIcon icon="more-vertical" />}
       openKeys={openKeys}
     >
-      <Menu.Item key="home">
+      <Menu.Item
+        icon={
+          !topMenu && (
+            <NavLink className="menuItem-iocn" to={`${path}`}>
+              <i aria-hidden="true" className="fa fa-home"></i>
+            </NavLink>
+          )
+        }
+        key="dashboard"
+      >
         <NavLink onClick={toggleCollapsed} to={`${path}`}>
           Dashboard
         </NavLink>
       </Menu.Item>
+
+      <Menu.Item
+        icon={
+          !topMenu && (
+            <NavLink className="menuItem-iocn" to={`${path}/appointment`}>
+              <i aria-hidden="true" className="fa fa-calendar-check-o"></i>
+            </NavLink>
+          )
+        }
+        key="appointment"
+      >
+        <NavLink onClick={toggleCollapsed} to={`${path}/appointment`}>
+          Perjanjian
+        </NavLink>
+      </Menu.Item>
+
+      <Menu.Item
+        icon={
+          !topMenu && (
+            <NavLink className="menuItem-iocn" to={`${path}/doctor`}>
+              <i aria-hidden="true" className="fa fa-user-md"></i>
+            </NavLink>
+          )
+        }
+        key="doctor"
+      >
+        <NavLink onClick={toggleCollapsed} to={`${path}/doctor`}>
+          Dokter
+        </NavLink>
+      </Menu.Item>
+
+      <Menu.Item
+        icon={
+          !topMenu && (
+            <NavLink className="menuItem-iocn" to={`${path}/schedule`}>
+              <i aria-hidden="true" className="fa fa-calendar"></i>
+            </NavLink>
+          )
+        }
+        key="schedule"
+      >
+        <NavLink onClick={toggleCollapsed} to={`${path}/schedule`}>
+          Jadwal Dokter
+        </NavLink>
+      </Menu.Item>
+
+      <Menu.Item
+        icon={
+          !topMenu && (
+            <NavLink className="menuItem-iocn" to={`${path}/patient`}>
+              <i aria-hidden="true" className="fa fa-wheelchair"></i>
+            </NavLink>
+          )
+        }
+        key="patient"
+      >
+        <NavLink onClick={toggleCollapsed} to={`${path}/patient`}>
+          Pasien
+        </NavLink>
+      </Menu.Item>
+
+      <Menu.Item
+        icon={
+          !topMenu && (
+            <NavLink className="menuItem-iocn" to={`${path}/branch`}>
+              <i aria-hidden="true" className="fa fa-hospital-o"></i>
+            </NavLink>
+          )
+        }
+        key="branch"
+      >
+        <NavLink onClick={toggleCollapsed} to={`${path}/branch`}>
+          Cabang
+        </NavLink>
+      </Menu.Item>
+
+      <Menu.Item
+        icon={
+          !topMenu && (
+            <NavLink className="menuItem-iocn" to={`${path}/departement`}>
+              <i aria-hidden="true" className="fa fa-medkit"></i>
+            </NavLink>
+          )
+        }
+        key="departement"
+      >
+        <NavLink onClick={toggleCollapsed} to={`${path}/departement`}>
+          Departemen
+        </NavLink>
+      </Menu.Item>
+
+      <Menu.Item
+        icon={
+          !topMenu && (
+            <NavLink className="menuItem-iocn" to={`${path}/specialist`}>
+              <i aria-hidden="true" className="fa fa-stethoscope"></i>
+            </NavLink>
+          )
+        }
+        key="specialist"
+      >
+        <NavLink onClick={toggleCollapsed} to={`${path}/specialist`}>
+          Spesialis
+        </NavLink>
+      </Menu.Item>
+
+      <SubMenu key="report" icon={!topMenu && <i aria-hidden="true" className="fa fa-folder-open-o"></i>} title="Laporan">
+        <Menu.Item key="inbox">
+          <NavLink onClick={toggleCollapsed} to={`${path}/report/income`}>
+            Pendapatan
+          </NavLink>
+        </Menu.Item>
+        <Menu.Item key="single">
+          <NavLink onClick={toggleCollapsed} to={`${path}/report/appointment`}>
+            Perjanjian
+          </NavLink>
+        </Menu.Item>
+      </SubMenu>
+
     </Menu>
   );
 };

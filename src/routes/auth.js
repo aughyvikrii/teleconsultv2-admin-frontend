@@ -1,9 +1,10 @@
 import React, { lazy, Suspense } from 'react';
 import { Spin } from 'antd';
 import { Switch, Route, Redirect } from 'react-router-dom';
-import AuthLayout from '../container/profile/authentication/Index';
+import AuthLayout from '../container/auth';
 
-const Login = lazy(() => import('../container/profile/authentication/overview/SignIn'));
+// const Login = lazy(() => import('../container/profile/authentication/overview/SignIn'));
+const Login = lazy(() => import('../container/auth/login'));
 
 const NotFound = () => {
   return <Redirect to="/" />;

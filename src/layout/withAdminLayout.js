@@ -269,15 +269,15 @@ const ThemeLayout = WrappedComponent => {
                   <Footer className="admin-footer" style={footerStyle}>
                     <Row>
                       <Col md={12} xs={24}>
-                        <span className="admin-footer__copyright">2020 © AazzTech</span>
+                        <span className="admin-footer__copyright">2021 © Telekonsultasi V2</span>
                       </Col>
-                      <Col md={12} xs={24}>
+                      {/* <Col md={12} xs={24}>
                         <div className="admin-footer__links">
                           <NavLink to="#">About</NavLink>
                           <NavLink to="#">Team</NavLink>
                           <NavLink to="#">Contact</NavLink>
                         </div>
-                      </Col>
+                      </Col> */}
                     </Row>
                   </Footer>
                 </Content>
