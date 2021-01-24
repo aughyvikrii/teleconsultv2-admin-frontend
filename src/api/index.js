@@ -214,4 +214,101 @@ export const delete_departement = async (id) => {
 }
 // END: API DEPARTEMENT
 
+// START: API branch
+export const get_branch = async (filters) => {
+    await Axios.post(api(`branch/list`), filters)
+    .then(response => {
+        if(!response.data?.status) {
+            result = null;
+            error = getMessage(response);
+        } else {
+            result = response.data;
+            error = null;
+        }
+    })
+    .catch(err => {
+        result = null;
+        error = getMessage(response);
+    });
+
+    return [result, error];
+}
+
+export const create_branch = async (fields) => {
+    await Axios.post( api(`branch/create`), fields )
+    .then(response => {
+        if(!response.data?.status) {
+            result = null;
+            error = getMessage(response);
+        } else {
+            result = response.data;
+            error = null;
+        }
+    })
+    .catch(response => {
+        result = null;
+        error = getMessage(response);
+    });
+
+    return [result, error];
+}
+
+export const update_branch = async (id, fields) => {
+    await Axios.put( api(`branch/update/${id}`), fields )
+    .then(response => {
+        if(!response.data?.status) {
+            result = null;
+            error = getMessage(response);
+        } else {
+            result = response.data;
+            error = null;
+        }
+    })
+    .catch(response => {
+        result = null;
+        error = getMessage(response);
+    });
+
+    return [result, error];
+}
+
+export const delete_branch = async (id) => {
+    await Axios.delete( api(`branch/delete/${id}`) )
+    .then(response => {
+        if(!response.data?.status) {
+            result = null;
+            error = getMessage(response);
+        } else {
+            result = response.data;
+            error = null;
+        }
+    })
+    .catch(response => {
+        result = null;
+        error = getMessage(response);
+    });
+
+    return [result, error];
+}
+
+export const detail_branch = async (id) => {
+    await Axios.get( api(`branch/detail/${id}`) )
+    .then(response => {
+        if(!response.data?.status) {
+            result = null;
+            error = getMessage(response);
+        } else {
+            result = response.data;
+            error = null;
+        }
+    })
+    .catch(response => {
+        result = null;
+        error = getMessage(response);
+    });
+
+    return [result, error];
+}
+// END: API branch
+
 export default api;

@@ -11,7 +11,6 @@ import { Button } from '../../components/buttons/buttons';
 import { AlertError, AlertSuccess } from '../../components/alerts/alerts';
 import { Modal } from '../../components/modals/antd-modals';
 import Loading from '../../components/loadings';
-import Heading from '../../components/heading/heading';
 
 // Api Function
 import  { get_departement, update_departement, create_departement, delete_departement } from '../../api';
@@ -66,9 +65,8 @@ const Departement = () => {
     // END: Table event & config
 
     // Start: Cropper
-        const defaultSrc = "https://raw.githubusercontent.com/roadmanfong/react-cropper/master/example/img/child.jpg";
-        const [image, setImage] = useState(defaultSrc);
-        const [cropData, setCropData] = useState("#");
+        const [image, setImage] = useState();
+        const [cropData, setCropData] = useState("");
         const [cropper, setCropper] = useState('');
 
         const imageChange = (e) => {
@@ -138,12 +136,13 @@ const Departement = () => {
                     action: 'add',
                     id:0
                 });
+                setImage('');
+                setCropData('');
             }
         }
 
         const showModal = (reset=false) => {
             if(reset) {
-                console.log('reset');
                 setModalForm({
                     ...modalForm,
                     action: 'add',
@@ -163,12 +162,19 @@ const Departement = () => {
         }
         
         const modalEdit = (data) =>  {
+            setImage('');
+            setCropData('');
             setModalForm({
                 action: 'update',
-                id: data.sid
+                id: data.deid
             });
-
-            form.setFieldsValue(data);
+            setImage(data.thumbnail);
+            form.setFieldsValue({
+                name: data.name,
+                description: data.description,
+                file: ''
+            });
+            setCropData(data.thumbnail);
             showModal();
         }
         
@@ -178,8 +184,7 @@ const Departement = () => {
         setTableLoading(true);
 
         const [result, error] = await get_departement(filter);
-
-        console.log(result, error);
+        
         if(!result) {
             setAlert(
                 AlertError(error)
@@ -262,6 +267,8 @@ const Departement = () => {
                     result.message
                 )
             );
+            setImage('');
+            setCropData('');
             getData();
         }
     }
@@ -312,6 +319,7 @@ const Departement = () => {
                 onCancel={closeModal}
                 maskClosable={false}
                 disableButton={ modalLoading ? true : false }
+                getContainer={false}
             >
                 {modalAlert}
                 {   modalLoading ? <Loading status={status} /> : (
@@ -323,38 +331,45 @@ const Departement = () => {
                         >
 
                             <Form.Item>
-                                <input type="file" onChange={imageChange} /> <br/>
+                                <input type="file" accept="image/*" onChange={imageChange} /> <br/>
 
                                 <center>
                                     <img style={{ width: "50%", display: ( cropData.length > 2 ? '' : 'none' ) }} src={cropData} alt="cropped" />
                                 </center>
-                                <Cropper
-                                    style={{ height: 400, width: "100%", display: ( cropData.length < 2 ? '' : 'none' ) }}
-                                    // initialAspectRatio={1}
-                                    // preview=".img-preview"
-                                    aspectRatio={1}
-                                    src={image}
-                                    viewMode={1}
-                                    guides={true}
-                                    // minCropBoxHeight={10}
-                                    // minCropBoxWidth={10}
-                                    background={false}
-                                    responsive={true}
-                                    autoCropArea={1}
-                                    checkOrientation={false} // https://github.com/fengyuanchen/cropperjs/issues/671
-                                    onInitialized={(instance) => {
-                                        setCropper(instance);
+                                <div
+                                    style={{
+                                        display: ( image ? '' : 'none' )
                                     }}
-                                /> <br/>
-                                <button type="button" style={{ float: "right", display: ( cropData.length < 2 ? '' : 'none' ) }} onClick={getCropData}>
-                                    Potong Gambar
-                                </button>
+                                >
+                                    <Cropper
+                                        style={{ height: 400, width: "100%", display: ( cropData.length < 2 ? '' : 'none' ) }}
+                                        // initialAspectRatio={1}
+                                        // preview=".img-preview"
+                                        aspectRatio={1}
+                                        src={image}
+                                        viewMode={1}
+                                        guides={true}
+                                        // minCropBoxHeight={10}
+                                        // minCropBoxWidth={10}
+                                        background={false}
+                                        responsive={true}
+                                        autoCropArea={1}
+                                        checkOrientation={false} // https://github.com/fengyuanchen/cropperjs/issues/671
+                                        onInitialized={(instance) => {
+                                            setCropper(instance);
+                                        }}
+                                    /> <br/>
+                                    <button type="button" style={{ float: "right", display: ( cropData.length < 2 ? '' : 'none' ) }} onClick={getCropData}>
+                                        Potong Gambar
+                                    </button>
+                                </div>
                             </Form.Item>
                             <Form.Item
                                 label="crop image"
                                 name="thumbnail"
                                 style={{display:'none'}}
                             >
+                                <Input placeholder="..."/>
                             </Form.Item>
                             <Form.Item
                                 label="Nama"

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Row, Col, Input, Form, Popconfirm, message } from 'antd';
-import FeatherIcon from 'feather-icons-react';
 import { Main } from '../styled';
 
 // Component
