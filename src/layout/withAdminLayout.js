@@ -2,15 +2,15 @@
 import React, { Component } from 'react';
 import { Layout, Button, Row, Col } from 'antd';
 import FeatherIcon from 'feather-icons-react';
-import { NavLink, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { ThemeProvider } from 'styled-components';
 import { connect } from 'react-redux';
 import propTypes from 'prop-types';
 import MenueItems from './MenueItems';
 import TopMenu from './TopMenu';
-import { Div, SmallScreenAuthInfo, SmallScreenSearch, TopMenuSearch } from './style';
-import HeaderSearch from '../components/header-search/header-search';
+import { Div, SmallScreenAuthInfo } from './style';
+import GlobalLayout from './GlobalLayout';
 import AuthInfo from '../components/utilities/auth-info/info';
 
 const { darkTheme } = require('../config/theme/themeVariables');
@@ -26,7 +26,6 @@ const ThemeLayout = WrappedComponent => {
         collapsed: false,
         hide: true,
         searchHide: true,
-        activeSearch: false,
       };
       this.updateDimensions = this.updateDimensions.bind(this);
     }
@@ -47,7 +46,7 @@ const ThemeLayout = WrappedComponent => {
     }
 
     render() {
-      const { collapsed, hide, searchHide, activeSearch } = this.state;
+      const { collapsed, hide, searchHide } = this.state;
       const { ChangeLayoutMode, rtl, topMenu } = this.props;
 
       const left = !rtl ? 'left' : 'right';
@@ -70,12 +69,6 @@ const ThemeLayout = WrappedComponent => {
         this.setState({
           hide: !hide,
           searchHide: true,
-        });
-      };
-
-      const toggleSearch = () => {
-        this.setState({
-          activeSearch: !activeSearch,
         });
       };
 
@@ -148,143 +141,116 @@ const ThemeLayout = WrappedComponent => {
       };
 
       return (
-        <Div darkMode={darkMode}>
-          <Layout className="layout">
-            <Header
-              style={{
-                position: 'fixed',
-                width: '100%',
-                top: 0,
-                [!rtl ? 'left' : 'right']: 0,
-              }}
-            >
-              <Row>
-                <Col lg={!topMenu ? 4 : 3} sm={6} xs={12} className="align-center-v navbar-brand">
-                  {!topMenu || window.innerWidth <= 991 ? (
-                    <Button type="link" onClick={toggleCollapsed}>
-                      <img src={require(`../static/img/icon/${collapsed ? 'right.svg' : 'left.svg'}`)} alt="menu" />
-                    </Button>
-                  ) : null}
-                  <Link
-                    className={topMenu && window.innerWidth > 991 ? 'striking-logo top-menu' : 'striking-logo'}
-                    to="/admin"
-                  >
-                    <img
-                      src={!darkMode ? require(`../static/img/Logo_Dark.svg`) : require(`../static/img/Logo_white.png`)}
-                      alt=""
-                    />
-                  </Link>
-                </Col>
-
-                <Col lg={!topMenu ? 14 : 15} md={8} sm={0} xs={0}>
-                  {topMenu && window.innerWidth > 991 ? <TopMenu /> : <HeaderSearch rtl={rtl} darkMode={darkMode} />}
-                </Col>
-
-                <Col lg={6} md={10} sm={0} xs={0}>
-                  {topMenu && window.innerWidth > 991 ? (
-                    <TopMenuSearch>
-                      <div className="top-right-wrap d-flex">
-                        <Link
-                          className={`${activeSearch ? 'search-toggle active' : 'search-toggle'}`}
-                          onClick={() => {
-                            toggleSearch();
-                          }}
-                          to="#"
-                        >
-                          <FeatherIcon icon="search" />
-                          <FeatherIcon icon="x" />
-                        </Link>
-                        <div className={`${activeSearch ? 'topMenu-search-form show' : 'topMenu-search-form'}`}>
-                          <form action="">
-                            <span className="search-icon">
-                              <FeatherIcon icon="search" />
-                            </span>
-                            <input type="text" name="search" />
-                          </form>
-                        </div>
-                        <AuthInfo />
-                      </div>
-                    </TopMenuSearch>
-                  ) : (
-                    <AuthInfo />
-                  )}
-                </Col>
-
-                <Col md={0} sm={18} xs={12}>
-                  <>
-                    <div className="mobile-action">
-                      <Link className="btn-search" onClick={handleSearchHide} to="#">
-                        {searchHide ? <FeatherIcon icon="search" /> : <FeatherIcon icon="x" />}
-                      </Link>
-                      <Link className="btn-auth" onClick={onShowHide} to="#">
-                        <FeatherIcon icon="more-vertical" />
-                      </Link>
-                    </div>
-                  </>
-                </Col>
-              </Row>
-            </Header>
-            <div className="header-more">
-              <Row>
-                <Col md={0} sm={24} xs={24}>
-                  <div className="small-screen-headerRight">
-                    <SmallScreenSearch hide={searchHide} darkMode={darkMode}>
-                      <HeaderSearch rtl={rtl} />
-                    </SmallScreenSearch>
-                    <SmallScreenAuthInfo hide={hide} darkMode={darkMode}>
-                      <AuthInfo rtl={rtl} />
-                    </SmallScreenAuthInfo>
-                  </div>
-                </Col>
-              </Row>
-            </div>
-            <Layout>
-              {!topMenu || window.innerWidth <= 991 ? (
-                <ThemeProvider theme={darkTheme}>
-                  <Sider width={280} style={SideBarStyle} collapsed={collapsed} theme={!darkMode ? 'light' : 'dark'}>
-                    <Scrollbars
-                      className="custom-scrollbar"
-                      autoHide
-                      autoHideTimeout={500}
-                      autoHideDuration={200}
-                      renderThumbHorizontal={renderThumbHorizontal}
-                      renderThumbVertical={renderThumbVertical}
-                      renderView={renderView}
-                      renderTrackVertical={renderTrackVertical}
+        <GlobalLayout>
+          <Div darkMode={darkMode}>
+            <Layout className="layout">
+              <Header
+                style={{
+                  position: 'fixed',
+                  width: '100%',
+                  top: 0,
+                  [!rtl ? 'left' : 'right']: 0,
+                }}
+              >
+                <Row>
+                  <Col lg={!topMenu ? 4 : 3} sm={6} xs={12} className="align-center-v navbar-brand">
+                    {!topMenu || window.innerWidth <= 991 ? (
+                      <Button type="link" onClick={toggleCollapsed}>
+                        <img src={require(`../static/img/icon/${collapsed ? 'right.svg' : 'left.svg'}`)} alt="menu" />
+                      </Button>
+                    ) : null}
+                    <Link
+                      className={topMenu && window.innerWidth > 991 ? 'striking-logo top-menu' : 'striking-logo'}
+                      to="/admin"
                     >
-                      <p className="sidebar-nav-title">MAIN MENU</p>
-                      <MenueItems
-                        topMenu={topMenu}
-                        rtl={rtl}
-                        toggleCollapsed={toggleCollapsedMobile}
-                        darkMode={darkMode}
+                      <img
+                        src={!darkMode ? require(`../static/img/Logo_Dark.svg`) : require(`../static/img/Logo_white.png`)}
+                        alt=""
                       />
-                    </Scrollbars>
-                  </Sider>
-                </ThemeProvider>
-              ) : null}
-              <Layout className="atbd-main-layout">
-                <Content>
-                  <WrappedComponent {...this.props} />
-                  <Footer className="admin-footer" style={footerStyle}>
-                    <Row>
-                      <Col md={12} xs={24}>
-                        <span className="admin-footer__copyright">2021 © Telekonsultasi V2</span>
-                      </Col>
-                      {/* <Col md={12} xs={24}>
-                        <div className="admin-footer__links">
-                          <NavLink to="#">About</NavLink>
-                          <NavLink to="#">Team</NavLink>
-                          <NavLink to="#">Contact</NavLink>
-                        </div>
-                      </Col> */}
-                    </Row>
-                  </Footer>
-                </Content>
+                    </Link>
+                  </Col>
+
+                  <Col lg={!topMenu ? 14 : 15} md={8} sm={0} xs={0}>
+                    {topMenu && window.innerWidth > 991 ? <TopMenu /> : ''}
+                  </Col>
+
+                  <Col lg={6} md={10} sm={0} xs={0}>
+                  <AuthInfo />
+                  </Col>
+
+                  <Col md={0} sm={18} xs={12}>
+                    <>
+                      <div className="mobile-action">
+                        <Link className="btn-search" onClick={handleSearchHide} to="#">
+                          {searchHide ? <FeatherIcon icon="search" /> : <FeatherIcon icon="x" />}
+                        </Link>
+                        <Link className="btn-auth" onClick={onShowHide} to="#">
+                          <FeatherIcon icon="more-vertical" />
+                        </Link>
+                      </div>
+                    </>
+                  </Col>
+                </Row>
+              </Header>
+              <div className="header-more">
+                <Row>
+                  <Col md={0} sm={24} xs={24}>
+                    <div className="small-screen-headerRight">
+                      <SmallScreenAuthInfo hide={hide} darkMode={darkMode}>
+                        <AuthInfo rtl={rtl} />
+                      </SmallScreenAuthInfo>
+                    </div>
+                  </Col>
+                </Row>
+              </div>
+              <Layout>
+                {!topMenu || window.innerWidth <= 991 ? (
+                  <ThemeProvider theme={darkTheme}>
+                    <Sider width={280} style={SideBarStyle} collapsed={collapsed} theme={!darkMode ? 'light' : 'dark'}>
+                      <Scrollbars
+                        className="custom-scrollbar"
+                        autoHide
+                        autoHideTimeout={500}
+                        autoHideDuration={200}
+                        renderThumbHorizontal={renderThumbHorizontal}
+                        renderThumbVertical={renderThumbVertical}
+                        renderView={renderView}
+                        renderTrackVertical={renderTrackVertical}
+                      >
+                        <p className="sidebar-nav-title">MAIN MENU</p>
+                        <MenueItems
+                          topMenu={topMenu}
+                          rtl={rtl}
+                          toggleCollapsed={toggleCollapsedMobile}
+                          darkMode={darkMode}
+                        />
+                      </Scrollbars>
+                    </Sider>
+                  </ThemeProvider>
+                ) : null}
+                <Layout className="atbd-main-layout">
+                  <Content>
+                    <WrappedComponent {...this.props} />
+                    <Footer className="admin-footer" style={footerStyle}>
+                      <Row>
+                        <Col md={12} xs={24}>
+                          <span className="admin-footer__copyright">2021 © Telekonsultasi V2</span>
+                        </Col>
+                        {/* <Col md={12} xs={24}>
+                          <div className="admin-footer__links">
+                            <NavLink to="#">About</NavLink>
+                            <NavLink to="#">Team</NavLink>
+                            <NavLink to="#">Contact</NavLink>
+                          </div>
+                        </Col> */}
+                      </Row>
+                    </Footer>
+                  </Content>
+                </Layout>
               </Layout>
             </Layout>
-          </Layout>
-        </Div>
+          </Div>
+        </GlobalLayout>
       );
     }
   }

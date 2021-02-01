@@ -16,6 +16,7 @@ import idID from 'antd/lib/locale/id_ID';
 const { theme } = config;
 
 const ProviderConfig = () => {
+
   const { rtl, isLoggedIn, topMenu, darkMode } = useSelector(state => {
     return {
       darkMode: state.ChangeLayoutMode.data,

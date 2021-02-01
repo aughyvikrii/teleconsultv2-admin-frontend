@@ -4,7 +4,7 @@ import { ModalStyled } from './styled';
 import { Button } from '../buttons/buttons';
 
 const Modal = props => {
-  const { onCancel, className, onConfirm, visible, title, type, color, footer, width, children, btnCancelText, btnConfirmText, btnCancelClass, btnConfirmClass, disableButton, maskClosable, getContainer } = props;
+  const { onCancel, className, onConfirm, visible, title, type, color, footer, width, children, btnCancelText, btnConfirmText, btnCancelClass, btnConfirmClass, disableButton, maskClosable, getContainer, noFooter, ...another } = props;
 
   return (
     <ModalStyled
@@ -19,10 +19,12 @@ const Modal = props => {
       width={width}
       className={className}
       getContainer={getContainer}
+      {...another}
       footer={
         footer || footer === null
           ? footer
-          : [
+          : !noFooter ? (
+            [
               <Button type={btnCancelClass} key="back" onClick={onCancel} disabled={disableButton}>
                 {btnCancelText}
               </Button>,
@@ -30,6 +32,7 @@ const Modal = props => {
                 {btnConfirmText}
               </Button>,
             ]
+          ) : null
       }
     >
       {children}
@@ -46,10 +49,12 @@ Modal.defaultProps = {
   btnCancelClass: 'danger',
   disableButton: false,
   maskClosable: true,
-  getContainer: true
+  getContainer: true,
+  noFooter: false
 };
 
 Modal.propTypes = {
+  noFooter: PropTypes.bool,
   onCancel: PropTypes.func,
   onConfirm: PropTypes.func,
   visible: PropTypes.bool,

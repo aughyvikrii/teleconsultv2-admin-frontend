@@ -2,10 +2,12 @@ import React, { Suspense, lazy } from 'react';
 import { Spin } from 'antd';
 import { Switch, Route, useRouteMatch } from 'react-router-dom';
 import withAdminLayout from '../../layout/withAdminLayout';
-import Branch from './Branch';
 
 const Specialists = lazy(() => import('../../container/specialist'));
-const Departements = lazy(() => import('../../container/departement'));
+const Departments = lazy(() => import('../../container/department'));
+const Branch = lazy(() => import('./Branch'));
+const Patient = lazy(() => import('./Patient'));
+const Doctor = lazy(() => import('./Doctor'));
 
 const Admin = () => {
   const { path } = useRouteMatch();
@@ -20,9 +22,11 @@ const Admin = () => {
         }
       >
         {/* <Route path={path} component={Dashboard} /> */}
-        <Route path={`${path}/specialist`} component={Specialists} />
-        <Route path={`${path}/departement`} component={Departements} />
+        <Route exact path={`${path}/specialist`} component={Specialists} />
+        <Route path={`${path}/department`} component={Departments} />
         <Route path={`${path}/branch`} component={Branch} />
+        <Route path={`${path}/patient`} component={Patient} />
+        <Route path={`${path}/doctor`} component={Doctor} />
       </Suspense>
     </Switch>
   );

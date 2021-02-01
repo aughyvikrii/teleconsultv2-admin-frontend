@@ -1,12 +1,13 @@
 import Cookies from 'js-cookie';
 import actions from './actions';
 
-const { LOGIN_BEGIN, LOGIN_SUCCESS, LOGIN_ERR, LOGOUT_BEGIN, LOGOUT_SUCCESS, LOGOUT_ERR } = actions;
+const { LOGIN_BEGIN, LOGIN_SUCCESS, LOGIN_ERR, LOGOUT_BEGIN, LOGOUT_SUCCESS, LOGOUT_ERR, LOGIN_MODAL_VISIBLE } = actions;
 
 const initState = {
   login: Cookies.get('token'),
   loading: false,
   error: null,
+  loginModal: false,
 };
 
 /**
@@ -16,6 +17,11 @@ const initState = {
 const AuthReducer = (state = initState, action) => {
   const { type, data, err } = action;
   switch (type) {
+    case LOGIN_MODAL_VISIBLE:
+      return {
+        ...state,
+        loginModal: data
+      };
     case LOGIN_BEGIN:
       return {
         ...state,

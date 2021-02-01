@@ -140,14 +140,14 @@ const MenuItems = ({ darkMode, toggleCollapsed, topMenu }) => {
       <Menu.Item
         icon={
           !topMenu && (
-            <NavLink className="menuItem-iocn" to={`${path}/departement`}>
+            <NavLink className="menuItem-iocn" to={`${path}/department`}>
               <i aria-hidden="true" className="fa fa-medkit"></i>
             </NavLink>
           )
         }
-        key="departement"
+        key="department"
       >
-        <NavLink onClick={toggleCollapsed} to={`${path}/departement`}>
+        <NavLink onClick={toggleCollapsed} to={`${path}/department`}>
           Departemen
         </NavLink>
       </Menu.Item>

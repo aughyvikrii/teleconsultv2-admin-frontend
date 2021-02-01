@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
 import { Table, Row, Col, Input, Form, Popconfirm, message } from 'antd';
-import { Main } from '../styled';
+import { Main, TableWrapper } from '../styled';
 
 // Component
 import { PageHeader } from '../../components/page-headers/page-headers';
@@ -13,10 +13,10 @@ import { Modal } from '../../components/modals/antd-modals';
 import Loading from '../../components/loadings';
 
 // Api Function
-import  { get_departement, update_departement, create_departement, delete_departement } from '../../api';
+import  { get_department, update_department, create_department, delete_department } from '../../api';
 const { Search, TextArea } = Input;
 
-const Departement = () => {
+const Department = () => {
 
     const [alert, setAlert] = useState('');
     const [form] = Form.useForm();
@@ -35,8 +35,8 @@ const Departement = () => {
             },
             {
                 title: 'Departemen',
-                dataIndex: 'departement',
-                key: 'departement',
+                dataIndex: 'department',
+                key: 'department',
             },
             {
                 title: 'Keterangan',
@@ -53,6 +53,7 @@ const Departement = () => {
 
         useEffect(() => {
             getData();
+            // eslint-disable-next-line
         }, [filter]);
 
         const onTableChange = (e) => {
@@ -99,6 +100,7 @@ const Departement = () => {
             form.setFieldsValue({
                 thumbnail: cropData
             });
+            // eslint-disable-next-line
         }, [cropData]);
     // End: Cropper
 
@@ -183,7 +185,7 @@ const Departement = () => {
     const getData = async () => {
         setTableLoading(true);
 
-        const [result, error] = await get_departement(filter);
+        const [result, error] = await get_department(filter);
         
         if(!result) {
             setAlert(
@@ -199,10 +201,10 @@ const Departement = () => {
     const processData = (data) => {
         let result = [];
         data.data.map(row => {
-            result.push({
+            return result.push({
                 key: row.deid,
                 id: row.deid,
-                departement: (
+                department: (
                     <>
                     <img style={{ width: '40px' }} src={row.thumbnail} alt="" /> &nbsp;&nbsp;
                     {row.name}
@@ -236,7 +238,7 @@ const Departement = () => {
 
     const deleteData = async (data) => {
         const hide = message.loading('Proses menghapus data..', 0);
-        const [result, error] = await delete_departement(data.deid);
+        const [result, error] = await delete_department(data.deid);
 
         if(!result) {
             hide();
@@ -250,7 +252,7 @@ const Departement = () => {
 
     const createData = async (values) => {
         setModalLoading(true);
-        const [result, error] = await create_departement(values);
+        const [result, error] = await create_department(values);
         setModalLoading(false);
         if(!result) {
             setModalAlert(
@@ -275,7 +277,7 @@ const Departement = () => {
 
     const updateData = async (values) => {
         setModalLoading(true);
-        const [result, error] = await update_departement(modalForm.id, values);
+        const [result, error] = await update_department(modalForm.id, values);
         setModalLoading(false);
         if(!result) {
             setModalAlert(
@@ -322,7 +324,7 @@ const Departement = () => {
                 getContainer={false}
             >
                 {modalAlert}
-                {   modalLoading ? <Loading status={status} /> : (
+                {   modalLoading ? <Loading /> : (
                         <Form
                             form={form}
                             name="modal"
@@ -414,20 +416,22 @@ const Departement = () => {
                 {alert}
                     <Cards headless={true} >
                         <Search placeholder="input search text" onSearch={(value) => setFilter({...filter, query: value })}/> <br/> <br/>
-                        <Table
-                            loading={tableLoading}
-                            bordered={false}
-                            columns={columns}
-                            dataSource={source}
-                            pagination={{
-                                defaultPageSize: filter.data_per_page,
-                                total: dataCount,
-                                showTotal: (total, range) => `${range[0]}-${range[1]} dari ${total} data`,
-                                showQuickJumper: true,
-                                showSizeChanger: true
-                            }}
-                            onChange={onTableChange}
-                        />
+                        <TableWrapper>
+                            <Table
+                                loading={tableLoading}
+                                bordered={false}
+                                columns={columns}
+                                dataSource={source}
+                                pagination={{
+                                    defaultPageSize: filter.data_per_page,
+                                    total: dataCount,
+                                    showTotal: (total, range) => `${range[0]}-${range[1]} dari ${total} data`,
+                                    showQuickJumper: true,
+                                    showSizeChanger: true
+                                }}
+                                onChange={onTableChange}
+                            />
+                        </TableWrapper>
                     </Cards>
                 </Col>
             </Row>
@@ -436,4 +440,4 @@ const Departement = () => {
     );
 };
 
-export default Departement;
+export default Department;

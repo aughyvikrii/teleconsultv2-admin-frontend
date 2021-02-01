@@ -11,7 +11,7 @@ import { Cards } from '../../components/cards/frame/cards-frame';
 import Heading from '../../components/heading/heading';
 import { Button } from '../../components/buttons/buttons';
 import Loading from '../../components/loadings';
-import { AlertError, AlertSuccess } from '../../components/alerts/alerts';
+import { AlertError } from '../../components/alerts/alerts';
 
 // API
 import { update_branch, detail_branch } from '../../api';
@@ -23,12 +23,12 @@ const Detail = () => {
     const [loading, setLoading] = useState(true);
     const [loadingStatus, setLoadingStatus] = useState();
     const [loadingMessage, setLoadingMessage] = useState();
-    const [branch, setBranch] = useState(false);
     const [data, setData] = useState({});
     const [form] = Form.useForm();
 
     useEffect( () => {
         getData();
+        // eslint-disable-next-line
     }, []);
 
     const getData = async () => {
@@ -86,6 +86,7 @@ const Detail = () => {
         form.setFieldsValue({
             thumbnail: cropData
         });
+        // eslint-disable-next-line
     }, [cropData]);
 // End: Cropper
 
@@ -126,7 +127,7 @@ const Detail = () => {
                         <i aria-hidden="true" className="fa fa-arrow-circle-left"></i>
                             Kembali
                         </Button>
-                    </div>,
+                    </div>
                     ]}
             />
             <Main>
@@ -141,19 +142,13 @@ const Detail = () => {
                                 </div>
                             :
                             <BasicFormWrapper>
+                                <Heading>
+                                    Umum
+                                </Heading>
                                 <Form
-                                    className=""
-                                    style={{ width: '100%' }}
-                                    layout="vertical"
                                     form={form}
-                                    name="Detail_new"
                                     onFinish={onSubmit}
-                                    size={'small'}
                                 >
-                                    <Heading>
-                                        Umum
-                                    </Heading>
-
                                     <Row gutter={25}>
                                         <Col lg={24} xs={24}>
                                             <Form.Item label="Gambar/Logo Cabang">
@@ -225,6 +220,7 @@ const Detail = () => {
                                         </Col>
                                     </Row>
                                     <br/>
+                                    
                                     <Row gutter={25}>
                                         <Col lg={12} xs={24}>
                                             <Form.Item name="company" label="Perusahaan"

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { Form, Input, Button, Checkbox, Row, Col, Card } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
@@ -12,9 +12,8 @@ const Login = () => {
     
     let alert = '';
     const dispatch = useDispatch();
-    const { isLogin, isLoading, isError } = useSelector(state => {
+    const { isLoading, isError } = useSelector(state => {
         return {
-            isLogin: state.auth.login,
             isLoading: state.auth.loading,
             isError: state.auth.error
         }
@@ -87,7 +86,6 @@ const Login = () => {
                             <Button type="primary" htmlType="submit" className="login-form-button" block={true}>
                             Log in
                             </Button>
-                            Or <a href="">register now!</a>
                         </Form.Item>
                     </Form>
                 </Card>

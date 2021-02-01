@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Row, Col, Input, Form, Popconfirm, message } from 'antd';
-import { Main } from '../styled';
+import { Main, TableWrapper } from '../styled';
 
 // Component
 import { PageHeader } from '../../components/page-headers/page-headers';
@@ -50,6 +50,7 @@ const Specialists = () => {
 
         useEffect(() => {
             getData();
+            // eslint-disable-next-line
         }, [filter]);
 
         const onTableChange = (e) => {
@@ -100,7 +101,6 @@ const Specialists = () => {
 
         const showModal = (reset=false) => {
             if(reset) {
-                console.log('reset');
                 setModalForm({
                     ...modalForm,
                     action: 'add',
@@ -137,7 +137,6 @@ const Specialists = () => {
 
         const [result, error] = await get_specialist(filter);
 
-        console.log(result, error);
         if(!result) {
             setAlert(
                 AlertError(error)
@@ -152,7 +151,7 @@ const Specialists = () => {
     const processData = (data) => {
         let result = [];
         data.data.map(row => {
-            result.push({
+            return result.push({
                 key: row.sid,
                 id: row.sid,
                 title: row.title,
@@ -267,7 +266,7 @@ const Specialists = () => {
                 disableButton={ modalLoading ? true : false }
             >
                 {modalAlert}
-                {   modalLoading ? <Loading status={status} /> : (
+                {   modalLoading ? <Loading /> : (
                         <Form
                             form={form}
                             name="modal"
@@ -320,20 +319,22 @@ const Specialists = () => {
                 {alert}
                     <Cards headless={true} >
                         <Search placeholder="input search text" onSearch={(value) => setFilter({...filter, query: value })}/> <br/> <br/>
-                        <Table
-                            loading={tableLoading}
-                            bordered={false}
-                            columns={columns}
-                            dataSource={source}
-                            pagination={{
-                                defaultPageSize: filter.data_per_page,
-                                total: dataCount,
-                                showTotal: (total, range) => `${range[0]}-${range[1]} dari ${total} data`,
-                                showQuickJumper: true,
-                                showSizeChanger: true
-                            }}
-                            onChange={onTableChange}
-                        />
+                        <TableWrapper>
+                            <Table
+                                loading={tableLoading}
+                                bordered={false}
+                                columns={columns}
+                                dataSource={source}
+                                pagination={{
+                                    defaultPageSize: filter.data_per_page,
+                                    total: dataCount,
+                                    showTotal: (total, range) => `${range[0]}-${range[1]} dari ${total} data`,
+                                    showQuickJumper: true,
+                                    showSizeChanger: true
+                                }}
+                                onChange={onTableChange}
+                            />
+                        </TableWrapper>
                     </Cards>
                 </Col>
             </Row>

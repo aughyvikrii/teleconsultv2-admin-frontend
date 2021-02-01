@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Row, Col, Input, Popconfirm, message } from 'antd';
-import { Main, TableWrapper } from '../styled';
+import { Main } from '../styled';
 import { useRouteMatch, useHistory } from 'react-router-dom';
 
 // Component
@@ -55,11 +55,6 @@ const List = () => {
         },
     ];
 
-    useEffect(() => {
-        getData();
-        // eslint-disable-next-line
-    }, [filter]);
-
     const onTableChange = (e) => {
         setFilter({
             ...filter,
@@ -74,6 +69,7 @@ const List = () => {
 
         const [result, error] = await get_branch(filter);
 
+        console.log(result, error);
         if(!result) {
             setAlert(
                 AlertError(error)
@@ -137,6 +133,8 @@ const List = () => {
         }
     }
 
+    useEffect(getData(), [filter]);
+
     return(
             <>
             <PageHeader
@@ -157,7 +155,6 @@ const List = () => {
                     {alert}
                         <Cards headless={true} >
                             <Search placeholder="input search text" onSearch={(value) => setFilter({...filter, query: value })}/> <br/> <br/>
-                            <TableWrapper>
                             <Table
                                 loading={tableLoading}
                                 bordered={false}
@@ -172,7 +169,6 @@ const List = () => {
                                 }}
                                 onChange={onTableChange}
                             />
-                            </TableWrapper>
                         </Cards>
                     </Col>
                 </Row>

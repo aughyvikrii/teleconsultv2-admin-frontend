@@ -1,5 +1,9 @@
 /* Utilitiy classes */
 
+.text-bold {
+  font-weight: bold;
+}
+
 .spin {
   height: 100vh;
   display: flex;
@@ -361,6 +365,10 @@ ul {
 
 .color-gray {
   color: #5a5f7d;
+}
+
+.color-white {
+  color: white !important;
 }
 
 /* Button Styles */

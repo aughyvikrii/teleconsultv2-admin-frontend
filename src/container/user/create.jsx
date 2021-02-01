@@ -56,12 +56,9 @@ const Create = () => {
         }
     }
 
-    useEffect(() => {
-        form.setFieldsValue({
-            thumbnail: cropData
-        });
-        // eslint-disable-next-line
-    }, [cropData]);
+    useEffect(form.setFieldsValue({
+        thumbnail: cropData
+    }), [cropData]);
 // End: Cropper
 
     const onSubmit = async (fields) => {

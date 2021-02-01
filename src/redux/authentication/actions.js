@@ -6,6 +6,14 @@ const actions = {
   LOGOUT_BEGIN: 'LOGOUT_BEGIN',
   LOGOUT_SUCCESS: 'LOGOUT_SUCCESS',
   LOGOUT_ERR: 'LOGOUT_ERR',
+  LOGIN_MODAL_VISIBLE: 'LOGIN_MODAL_VISIBLE',
+
+  loginModal: (data) => {
+    return {
+      type: actions.LOGIN_MODAL_VISIBLE,
+      data
+    }
+  },
 
   loginBegin: () => {
     return {

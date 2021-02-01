@@ -1,13 +1,12 @@
 import Cookies from 'js-cookie';
 import actions from './actions';
 import axios from 'axios';
-import api, { responseError, responseSuccess } from '../../api';
+import api from '../../api';
 
-const { loginBegin, loginSuccess, loginErr, logoutBegin, logoutSuccess, logoutErr } = actions;
+const { loginBegin, loginSuccess, loginErr, logoutBegin, logoutSuccess, logoutErr, loginModal } = actions;
 
 const login = (fields) => {
   return async dispatch => {
-    let message = '';
     try {
       dispatch(loginBegin());
       axios.post(api('login'), fields)
@@ -40,4 +39,4 @@ const logOut = () => {
   };
 };
 
-export { login, logOut };
+export { login, logOut, loginModal };

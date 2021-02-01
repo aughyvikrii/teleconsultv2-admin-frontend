@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Row, Col, Form, Input } from 'antd';
 import { Main, BasicFormWrapper } from '../styled';
-import { useHistory, Link } from 'react-router-dom';
+import { useHistory, useParams, Link } from 'react-router-dom';
 import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
 
@@ -14,14 +14,37 @@ import Loading from '../../components/loadings';
 import { AlertError } from '../../components/alerts/alerts';
 
 // API
-import { create_branch } from '../../api';
+import { update_branch, detail_branch } from '../../api';
 
-const Create = () => {
+const Detail = () => {
     const history = useHistory();
+    const { id } = useParams();
     const [alert, setAlert] = useState('');
-    const [loading, setLoading] = useState(false);
-    const [branch, setBranch] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [loadingStatus, setLoadingStatus] = useState();
+    const [loadingMessage, setLoadingMessage] = useState();
+    const [data, setData] = useState({});
     const [form] = Form.useForm();
+
+    const getData = async () => {
+        setLoadingMessage('Proses mengambil data...');
+        const [result, error] = await detail_branch(id);
+
+        if(error) {
+            setLoadingMessage(error);
+            setLoadingStatus('error');
+        } else {
+            setLoadingStatus('ok');
+            setLoadingMessage('Data ditemukan');
+
+            setData(result.data);
+            form.setFieldsValue(result.data);
+            setCropData(result.data.thumbnail);
+            setLoading(false);
+        }
+    }
+
+    useEffect( getData(), []);
 
     const [showSimRS,  setShowSimRS] = useState(false);
 
@@ -56,28 +79,33 @@ const Create = () => {
         }
     }
 
-    useEffect(() => {
-        form.setFieldsValue({
-            thumbnail: cropData
-        });
-        // eslint-disable-next-line
-    }, [cropData]);
+    useEffect(form.setFieldsValue({
+        thumbnail: cropData
+    }), [cropData]);
 // End: Cropper
 
     const onSubmit = async (fields) => {
         setAlert('');
         setLoading(true);
-
-        const [result, error] = await create_branch(fields);
+        setLoadingStatus('');
+        setLoadingMessage('memproses permintaan...');
+        const [result, error] = await update_branch(data.bid, fields);
         if(!result) {
+            setLoading(false);
+            setLoadingStatus('');
+            setLoadingMessage('');
             setAlert(
                 AlertError(error)
             );
-            setLoading(false);
         } else {
-            setBranch(result.data);
+            setLoadingStatus('ok');
+            setLoadingMessage(
+                <>
+                Proses berhasil! Anda akan dialihkan atau <Link onClick={getData}>klik disini</Link>...
+                </>
+            );
             setTimeout(() => {
-                history.push(`/admin/branch/detail/${result.data.bid}`);
+                getData();
             }, 3000);
         }
     }
@@ -86,7 +114,7 @@ const Create = () => {
         <>
             <PageHeader
                 ghost
-                title="Tambah Cabang"
+                title="Update Cabang"
                 buttons={[
                     <div key="6" className="page-header-actions">
                         <Button size="small" key="4" type="primary" onClick={() => history.goBack()}>
@@ -103,14 +131,8 @@ const Create = () => {
                         <Cards headless={true} >
                             {   loading ?
                                 <div className="text-center">
-                                    <Loading status={(branch ? 'ok' : '')} /> <br/>
-                                    { branch ?
-                                        <>
-                                            Proses berhasil! Anda akan dialihkan atau <Link to={`/admin/branch/detail/${branch.bid}`}>klik disini</Link>...
-                                        </>
-                                    :
-                                        <> Memproses permintaan... </>
-                                    }
+                                    <Loading status={loadingStatus} /> <br/>
+                                    {loadingMessage}
                                 </div>
                             :
                             <BasicFormWrapper>
@@ -119,7 +141,7 @@ const Create = () => {
                                     style={{ width: '100%' }}
                                     layout="vertical"
                                     form={form}
-                                    name="create_new"
+                                    name="Detail_new"
                                     onFinish={onSubmit}
                                     size={'small'}
                                 >
@@ -289,32 +311,18 @@ const Create = () => {
                                         <Heading>
                                             Integrasi Espay
                                         </Heading>
-                                        <small className="color-error">Setelah data tersimpan, inputan  integrasi tidak akan menampilkan apapun.</small>
+                                        <small className="color-error">Untuk alasan kerahasiaan, data integrasi tidak akan dimunculkan.</small>
                                     </div> <br/>
 
                                     <Row gutter={25}>
                                         <Col lg={12} xs={24}>
-                                            <Form.Item name="espay_commcode" label="Espay Commmunity Code"
-                                                rules={[
-                                                    {
-                                                        required: true,
-                                                        message: 'Masukan data'
-                                                    }
-                                                ]}
-                                            >
+                                            <Form.Item name="espay_commcode" label="Espay Commmunity Code" >
                                                 <Input placeholder="..." />
                                             </Form.Item>
                                         </Col>
 
                                         <Col lg={12} xs={24}>
-                                            <Form.Item name="espay_api_key" label="Espay Api Key"
-                                                rules={[
-                                                    {
-                                                        required: true,
-                                                        message: 'Masukan data'
-                                                    }
-                                                ]}
-                                            >
+                                            <Form.Item name="espay_api_key" label="Espay Api Key" >
                                                 <Input placeholder="..." />
                                             </Form.Item>
                                         </Col>
@@ -323,27 +331,13 @@ const Create = () => {
 
                                     <Row gutter={25}>
                                         <Col lg={12} xs={24}>
-                                            <Form.Item name="espay_password" label="Espay Password"
-                                                rules={[
-                                                    {
-                                                        required: true,
-                                                        message: 'Masukan data'
-                                                    }
-                                                ]}
-                                            >
+                                            <Form.Item name="espay_password" label="Espay Password" >
                                                 <Input placeholder="..." />
                                             </Form.Item>
                                         </Col>
 
                                         <Col lg={12} xs={24}>
-                                            <Form.Item name="espay_signature" label="Espay Signature"
-                                                rules={[
-                                                    {
-                                                        required: true,
-                                                        message: 'Masukan data'
-                                                    }
-                                                ]}
-                                            >
+                                            <Form.Item name="espay_signature" label="Espay Signature" >
                                                 <Input placeholder="..." />
                                             </Form.Item>
                                         </Col>
@@ -352,7 +346,7 @@ const Create = () => {
 
                                     <div onClick={() => setShowSimRS(!showSimRS)} style={{ cursor: 'pointer'}}>
                                         <Heading>
-                                            Integrasi SimRS <i class={"fa fa-"+( !showSimRS ? 'plus' : 'minus' )+"-square"}></i>
+                                            Integrasi SimRS <i className={"fa fa-"+( !showSimRS ? 'plus' : 'minus' )+"-square"}></i>
                                         </Heading>
                                     </div>
 
@@ -390,7 +384,7 @@ const Create = () => {
 
                                     <Form.Item>
                                         <Button type="primary" htmlType="submit" className="login-form-button" block={true}>
-                                                Tambah Data
+                                                Update Data
                                         </Button>
                                     </Form.Item>
                                 </Form>
@@ -404,4 +398,4 @@ const Create = () => {
     );
 }
 
-export default Create;
+export default Detail;
