@@ -51,6 +51,8 @@ const ProviderConfig = () => {
   );
 };
 
+localStorage.setItem('admin_history', true);
+
 function App() {
   return (
     <Provider store={store}>
@@ -60,3 +62,32 @@ function App() {
 }
 
 export default hot(App);
+
+/**
+ * Konsep
+ * Modul Admin, Dokter, Pasien merupakan project react terpisah
+ * Backend dimanage oleh laravel
+ * laravel akan merender view sesuai module
+ * 
+ * contoh alur
+ * 
+ * pasien: index.html
+ * doctor: doctor.html
+ * admin: admin.html
+ * 
+ * Ketika awal akses, laravel akan merender index.html, sesudah login user akan redirect sesuai path yang diberika laravel
+ * contoh respon setelah login
+ * {
+ *  token: "1234",
+ *  user: {},
+ *  redirect: "/admin", // "/doctor", // "/dashboard"
+ * }
+ * 
+ * ketika redirect ke /url yang membutuhkan autentikasi, laravel akan cek session login / token dari cookies token
+ * jika user mengakses halaman /admin dan session login adalah admin, maka laravel akan merender admin.html,
+ * jika token tidak valid maka laravel akan render index.html
+ * 
+ * begitupun dokter, jika token valid untuk mengakses modul dokter maka akan dirender doctor.html dan jika tidak render index.html
+ * 
+ * Login hanya berada di index.html
+ */

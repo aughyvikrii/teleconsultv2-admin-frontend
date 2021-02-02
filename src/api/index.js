@@ -18,7 +18,7 @@ Axios.interceptors.response.use( (response) => {
     if(error.response.status === 401) {
         store.dispatch(loginModal(true));
     }
-    return Promise.reject(error);
+    return error;
 });
 
 const api = (name) => {
@@ -90,7 +90,7 @@ export const createFormError = (errors) => {
     return result;
 }
 
-export const _get = async (url, data) => {
+export const _get = async (url, data=null) => {
     await Axios.get(  url, data)
     .then(response => {
         if(!response.data?.status) {
@@ -180,6 +180,22 @@ export const _login = async (data) => {
 
  export const create_doctor = async (fields) => {
      return await _post(api(`doctor/create`), fields);
+ }
+
+ export const detail_doctor = async (id) => {
+    return await _get(api(`doctor/detail/${id}`));
+ }
+
+ export const get_doctor_schedule = async (id, filters={}) => {
+     return await _post( api(`doctor/${id}/schedules`), filters );
+ }
+
+ export const create_doctor_schedule = async (id, fields) => {
+     return await _post( api(`doctor/${id}/schedule/add`), fields);
+ }
+
+ export const update_doctor_schedule = async (id, fields) => {
+     return await _put( api(`schedule/${id}`), fields);
  }
 
 // START: API SPESIALIS

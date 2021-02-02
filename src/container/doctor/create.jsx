@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Col, Form, Input, Select, Radio, TimePicker, InputNumber, DatePicker } from 'antd';
+import { Row, Col, Form, Input, Select, TimePicker, InputNumber, DatePicker } from 'antd';
 import moment from 'moment';
-import { Main, BasicFormWrapper } from '../styled';
-import { useHistory, Link } from 'react-router-dom';
 import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
+import { Main, BasicFormWrapper } from '../styled';
+import { useHistory } from 'react-router-dom';
 
 // Component
 import { PageHeader } from '../../components/page-headers/page-headers';
@@ -13,9 +13,10 @@ import Heading from '../../components/heading/heading';
 import { Button } from '../../components/buttons/buttons';
 import Loading from '../../components/loadings';
 import { AlertError, AlertSuccess } from '../../components/alerts/alerts';
+import { SelectBranch, SelectDepartment, RadioWeekDay, RadioGender } from '../../components/form';
 
 // API
-import { createFormError, create_doctor, get_specialist, get_branch, get_department } from '../../api';
+import { createFormError, create_doctor, get_specialist } from '../../api';
 
 const Detail = () => {
     const history = useHistory();
@@ -24,8 +25,6 @@ const Detail = () => {
     const [loadingStatus, setLoadingStatus] = useState();
     const [loadingMessage, setLoadingMessage] = useState();
     const [specialists, setSpecialists] = useState([]);
-    const [branches, setBranches] = useState([]);
-    const [departments, setDepartments] = useState([]);
     const [formValue, setFormValue] = useState({});
     const [form] = Form.useForm();
     
@@ -33,8 +32,6 @@ const Detail = () => {
     useEffect(() => {
         const getData = async () => {
             _get_specialist();
-            _get_branch();
-            _get_department();
         }
         getData();
 
@@ -65,24 +62,6 @@ const Detail = () => {
             console.log('Spesialis: ',error );
         } else {
             setSpecialists(result.data);
-        }
-    }
-
-    const _get_branch = async () => {
-        const [result, error] = await get_branch({all_data: true});
-        if(error) {
-            console.log('Branch: ',error );
-        } else {
-            setBranches(result.data);
-        }
-    }
-
-    const _get_department = async () => {
-        const [result, error] = await get_department({all_data: true});
-        if(error) {
-            console.log('Department: ',error );
-        } else {
-            setDepartments(result.data);
         }
     }
 
@@ -350,36 +329,19 @@ const Detail = () => {
                                     }
                                 ]}
                             >
-                                <Radio.Group>
-                                    <Radio.Button value="male">Laki-laki</Radio.Button>
-                                    <Radio.Button value="female">Perempuan</Radio.Button>
-                                </Radio.Group>
+                                <RadioGender/>
                             </Form.Item>
                         </Col>
                     </Row> <br/>
 
                     <Row gutter={25}>
                         <Col lg={12} xs={24}>
-                            <Form.Item name="birth_place" label="Tempat Lahir"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: 'Masukan tempat lahir'
-                                    }
-                                ]}
-                            >
+                            <Form.Item name="birth_place" label="Tempat Lahir" rules={[{ required: true, message: 'Masukan tempat lahir' } ]} >
                                 <Input placeholder="..." />
                             </Form.Item>
                         </Col>
                         <Col lg={12} xs={24}>
-                            <Form.Item name="birth_date" label="Tanggal Lahir"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: 'Masukan tanggal lahir'
-                                    }
-                                ]}
-                            >
+                            <Form.Item name="birth_date" label="Tanggal Lahir" rules={[ { required: true, message: 'Masukan tanggal lahir' } ]} >
                                 <DatePicker />
                             </Form.Item>
                         </Col>
@@ -391,78 +353,27 @@ const Detail = () => {
 
                     <Row gutter={25}>
                         <Col xs={24} lg={12}>
-                            <Form.Item name="branch" label="Cabang"
-                                rules={[
-                                    { required: true, message: 'Pilih cabang praktek' }
-                                ]}
-                            >
-                                <Select
-                                    showSearch
-                                    placeholder="Pilih spesialis"
-                                    optionFilterProp="children"
-                                    filterOption={(input, option) =>
-                                        option.children.join('').toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                    }
-                                >
-                                    {   Object.keys(branches).map(index => {
-                                            let data = branches[index];
-                                            return <Select.Option key={data.bid} value={data.bid}>{data.name}</Select.Option>;
-                                        })
-                                    }
-                                </Select>
+                            <Form.Item name="branch" label="Cabang" rules={[ { required: true, message: 'Pilih cabang praktek' } ]} >
+                                <SelectBranch/>
                             </Form.Item>
                         </Col>
 
                         <Col xs={24} lg={12}>
-                            <Form.Item name="department" label="Departemen"
-                                rules={[
-                                    { required: true, message: 'Pilih departemen' }
-                                ]}
-                            >
-                                <Select
-                                    showSearch
-                                    placeholder="Pilih departemen"
-                                    optionFilterProp="children"
-                                    filterOption={(input, option) =>
-                                        option.children.join('').toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                    }
-                                >
-                                    {   Object.keys(departments).map(index => {
-                                            let data = departments[index];
-                                            return <Select.Option key={data.deid} value={data.deid}>{data.name}</Select.Option>;
-                                        })
-                                    }
-                                </Select>
+                            <Form.Item name="department" label="Departemen" rules={[ { required: true, message: 'Pilih departemen' } ]} >
+                                <SelectDepartment/>
                             </Form.Item>
                         </Col>
                     </Row> <br/>
 
                     <Row gutter={25}>
                         <Col lg={12} xs={24}>
-                            <Form.Item name="weekday" label="Hari"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: 'Pilih hari'
-                                    }
-                                ]}
-                            >
-                                <Radio.Group >
-                                    <Radio.Button value="1">Senin</Radio.Button>
-                                    <Radio.Button value="2">Selasa</Radio.Button>
-                                    <Radio.Button value="3">Rabu</Radio.Button>
-                                    <Radio.Button value="4">Kamis</Radio.Button>
-                                    <Radio.Button value="5">Jumat</Radio.Button>
-                                    <Radio.Button value="6">Sabtu</Radio.Button>
-                                    <Radio.Button value="0">Minggu</Radio.Button>
-                                </Radio.Group>
+                            <Form.Item name="weekday" label="Hari" rules={[ { required: true, message: 'Pilih hari' } ]} >
+                                <RadioWeekDay/>
                             </Form.Item>
                         </Col>
 
                         <Col lg={12} xs={24}>
-                            <Form.Item name="fee" label="Tarif Konsultasi"
-                                rules={[{ required: true, message: 'Masukan tarif konsultasi'}]}
-                            >
+                            <Form.Item name="fee" label="Tarif Konsultasi" rules={[{ required: true, message: 'Masukan tarif konsultasi'}]} >
                                 <InputNumber placeholder="..." min={1} />
                             </Form.Item>
                         </Col>

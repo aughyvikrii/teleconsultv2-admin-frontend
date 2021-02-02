@@ -7,6 +7,7 @@ import Alert from '../../components/alerts/alerts';
 import { login } from '../../redux/authentication/actionCreator';
 import { useDispatch, useSelector } from 'react-redux';
 import FeatherIcon from 'feather-icons-react';
+import LoginForm from './LoginForm';
 
 const Login = () => {
     
@@ -39,7 +40,7 @@ const Login = () => {
         <Row type="flex" justify="center" align="middle" style={{minHeight: "100vh"}}>
             <Col lg={8} sm={24}>
                 <Card>
-                    <Form name="login" onFinish={onFinish} layout="vertical">
+                    {/* <Form name="login" onFinish={onFinish} layout="vertical">
                         <Heading as="h3" className="text-center">
                             Login <span className="color-secondary">Telekonsultasi v2</span>
                         </Heading>
@@ -87,7 +88,8 @@ const Login = () => {
                             Log in
                             </Button>
                         </Form.Item>
-                    </Form>
+                    </Form> */}
+                    <LoginForm compact={true}/>
                 </Card>
             </Col>
         </Row>

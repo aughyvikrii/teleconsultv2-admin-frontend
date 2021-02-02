@@ -1,19 +1,25 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import PropTypes from 'prop-types';
 import Cookies from 'js-cookie';
 import { Avatar, Form, Input, Button, Row,  Col } from 'antd';
 import Heading from '../../components/heading/heading';
 import LoginIcon from '../../static/img/password.png';
 import Loading from '../../components/loadings';
 import { AlertError } from '../../components/alerts/alerts';
+import { loginModal, loginSuccess } from '../../redux/authentication/actionCreator';
 import { _login }  from '../../api';
 
-const LoginForm = () => {
+const LoginForm = (props) => {
 
     const [alert, setAlert] = useState('');
     const [loading, setLoading] = useState(false);
     const [status, setStatus] = useState('');
     const [form] = Form.useForm();
+    const dispatch = useDispatch();
     const logUser = JSON.parse(localStorage.getItem('user'));
+
+    const formSize = props.compact ? 24 : {span: 12, offset: 6};
 
     const loginAction = async (fields) => {
         setStatus('');
@@ -32,9 +38,11 @@ const LoginForm = () => {
             localStorage.setItem('user', JSON.stringify(result.user));
             setStatus('ok');
             setAlert('Login Berhasil! Anda akan dialihkan..');
-            setTimeout(() => {
-                window.location.reload()
-            }, 2000);
+            dispatch(loginSuccess(result.token));
+            dispatch(loginModal(false));
+            // setTimeout(() => {
+            //     window.location.reload()
+            // }, 2000);
         }
     }
 
@@ -54,10 +62,10 @@ const LoginForm = () => {
                 <Avatar size={{ xs: 80, sm: 80, md: 80, lg: 80, xl: 80, xxl: 100 }} src={LoginIcon} />
             </div> <br/>
             <Row  gutter={25} className="text-left">
-                <Col lg={{ span: 12, offset: 6, }} xs={24}>
+                <Col lg={formSize} xs={24}>
                     {alert}
                     <Form layout="vertical" form={form} onFinish={loginAction}>
-                        <Form.Item name="email" initialValue={logUser.email} label="Email Address"
+                        <Form.Item name="email" initialValue={logUser?.email} label="Email Address"
                             rules={[{required: true, message: 'Masukan alamat email'}]}
                         >
                             <Input placeholder="Enter Email" autoFocus />
@@ -91,5 +99,13 @@ const LoginForm = () => {
         </>
     );
 }
+
+LoginForm.defaultProps = {
+    compact: false,
+}
+
+LoginForm.propTypes = {
+    compact: PropTypes.bool,
+};
 
 export default LoginForm;

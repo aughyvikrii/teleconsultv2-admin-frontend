@@ -10,7 +10,7 @@ import Loading from '../../components/loadings';
 import { Cards } from '../../components/cards/frame/cards-frame';
 
 // API
-import { detail_person } from '../../api';
+import { detail_doctor } from '../../api';
 
 
 const UserCards = lazy(() => import('../pages/overview/UserCard'));
@@ -18,6 +18,7 @@ const UserBio = lazy(() => import('../pages/overview/UserBio'));
 
 const PersonDetail = lazy(() => import('../pages/overview/PersonDetail'));
 const PatientAppointment = lazy(() => import('../pages/overview/PatientAppointment'));
+const DoctorSchedule = lazy(() => import('../pages/overview/DoctorSchedule'));
 
 const Detail = () => {
     const { path, url } = useRouteMatch();
@@ -37,7 +38,7 @@ const Detail = () => {
     const getData = async () => {
         setLoading(true);
         setLoadingMessage('Proses mengambil data...');
-        const [result, error] = await detail_person(id);
+        const [result, error] = await detail_doctor(id);
 
         if(error) {
             setLoadingMessage(error);
@@ -54,7 +55,7 @@ const Detail = () => {
         <>
             <PageHeader
                 ghost
-                title="Detail Pasien"
+                title="Detail Dokter"
                 buttons={[
                     <div key="6" className="page-header-actions">
                         <Button size="small" key="4" type="primary" onClick={() => history.push('/admin/doctor')}>
@@ -86,7 +87,9 @@ const Detail = () => {
                                 }
                                 >
                                 <UserCards
-                                    user={{ name: person.full_name, designation: 'Pasien', img: person.profile_pic }}
+                                    user={{ name: (person?.full_name ? person.full_name : person.display_name),
+                                        designation: (person?.alt_name ? person.alt_name : 'Pasien'),
+                                        img: person.profile_pic }}
                                 />
                                 </Suspense>
                                 <Suspense
@@ -96,7 +99,7 @@ const Detail = () => {
                                     </Cards>
                                 }
                                 >
-                                <UserBio person={person} family={family} />
+                                <UserBio person={person} family={family} personType="doctor" />
                                 </Suspense>
                             </Col>
                             <Col xxl={18} lg={16} md={14} xs={24}>
@@ -118,7 +121,7 @@ const Detail = () => {
                                                     <NavLink to={`${url}/appointment`}>Daftar Perjanjian</NavLink>
                                                 </li>
                                                 <li>
-                                                    <NavLink to={`${url}/appointment`}>Jadwal</NavLink>
+                                                    <NavLink to={`${url}/schedules`}>Jadwal</NavLink>
                                                 </li>
                                             </ul>
                                         </nav>
@@ -132,8 +135,9 @@ const Detail = () => {
                                         </Cards>
                                     }
                                     >
-                                    <Route exact path={`${path}/information`} component={() => <PersonDetail person={person} />} />
+                                    <Route exact path={`${path}/information`} component={() => <PersonDetail person={person} is_doctor={true} />} />
                                     <Route path={`${path}/appointment`} component={PatientAppointment} />
+                                    <Route path={`${path}/schedules`} component={DoctorSchedule} />
                                     </Suspense>
                                 </Switch>
                             </SettingWrapper>

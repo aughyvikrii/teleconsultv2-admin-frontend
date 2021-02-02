@@ -39,4 +39,4 @@ const logOut = () => {
   };
 };
 
-export { login, logOut, loginModal };
+export { login, logOut, loginModal, loginSuccess };

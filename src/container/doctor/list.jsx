@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Table, Row, Col, Input } from 'antd';
+import React, { useEffect, useState, Suspense } from 'react';
+import { Table, Row, Col, Input, Skeleton, Avatar } from 'antd';
 import { Main, TableWrapper } from '../styled';
 import { useRouteMatch, useHistory, Link } from 'react-router-dom';
 
@@ -99,7 +99,13 @@ const List = () => {
                 name: (
                     <div className="user-info">
                     <figure>
-                        <img style={{ width: '40px' }} src={row.profile_pic} alt="" />
+                    <Suspense
+                        fallback={
+                            <Skeleton avatar active/>
+                        }
+                        >
+                            <Avatar size={{ xs: 40, sm: 40, md: 40, lg: 40, xl: 40, xxl: 40 }} src={row.profile_pic} />
+                        </Suspense>
                     </figure>
                     <figcaption>
                         <Heading className="user-name" as="h6">

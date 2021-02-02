@@ -1,13 +1,30 @@
 import React, { lazy, Suspense } from 'react';
+import { useDispatch } from 'react-redux';
 import { Spin } from 'antd';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import AuthLayout from '../container/auth';
 
-// const Login = lazy(() => import('../container/profile/authentication/overview/SignIn'));
-const Login = lazy(() => import('../container/auth/login'));
+import { loginModal } from '../redux/authentication/actionCreator';
 
-const NotFound = () => {
-  return <Redirect to="/" />;
+const Login = lazy(() => import('../container/auth/login'));
+const AdminHistory = localStorage.getItem('admin_history');
+
+const NotFound = (props) => {
+
+  const dispatch = useDispatch();
+
+  if(AdminHistory) {
+
+    dispatch(loginModal(true));
+
+    return (
+      <div>
+        Show Login
+      </div>
+    );
+  } else {
+    return <Redirect to="/" />;
+  }
 };
 
 const FrontendRoutes = () => {
