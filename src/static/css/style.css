@@ -360,7 +360,7 @@ ul {
 }
 
 .color-error {
-  color: #f5222d;
+  color: #f5222d !important;
 }
 
 .color-gray {

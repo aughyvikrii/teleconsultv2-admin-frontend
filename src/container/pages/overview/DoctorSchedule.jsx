@@ -10,6 +10,8 @@ import { SelectBranch, SelectDepartment, RadioWeekDay } from '../../../component
 import { useParams } from 'react-router-dom';
 import { BasicFormWrapper } from '../../styled';
 import Loading from '../../../components/loadings';
+import Heading from '../../../components/heading/heading';
+import { Tag } from '../../../components/tags/tags';
 
 import { AlertError } from '../../../components/alerts/alerts';
 import { createFormError, get_doctor_schedule, create_doctor_schedule, update_doctor_schedule, get_branch, get_department } from '../../../api';
@@ -112,6 +114,10 @@ const DoctorSchedule = () => {
                 </div>
             );
 
+            row.status = (
+                !row.is_active ?  <Tag color="#f50">Nonaktif</Tag> :  <Tag color="#87d068">Aktif</Tag>
+            );
+
             day[row.weekday]['name'] = row.weekday_alt;
             day[row.weekday]['data'].push(row);
 
@@ -134,28 +140,42 @@ const DoctorSchedule = () => {
 
     const PerDayTable = () => {
 
-        const columns = [
-            { title: 'ID', dataIndex: 'id', key: 'id'},
-            { title: 'Cabang', dataIndex: 'branch', key: 'branch' },
-            { title: 'Departemen', dataIndex: 'department', key: 'department' },
-            { title: 'Mulai', dataIndex: 'start_hour', key: 'start_hour' },
-            { title: 'Selesai', dataIndex: 'end_hour', key: 'end_hour' },
-            { title: 'Durasi', dataIndex: 'duration', key: 'duration' },
-            { title: 'Tarif', dataIndex: 'fee', key: 'fee' },
-            { title: 'Dibuat oleh', dataIndex: 'creator', key: 'creator' },
-            { title: '#', dataIndex: 'action', key: 'action'},
+        let columns = [
+            {
+                title: 'Senin',
+                children: [
+                    { title: 'ID', dataIndex: 'id', key: 'id'},
+                    { title: 'Cabang', dataIndex: 'branch', key: 'branch' },
+                    { title: 'Departemen', dataIndex: 'department', key: 'department' },
+                    { title: 'Mulai', dataIndex: 'start_hour', key: 'start_hour' },
+                    { title: 'Selesai', dataIndex: 'end_hour', key: 'end_hour' },
+                    { title: 'Durasi', dataIndex: 'duration', key: 'duration' },
+                    { title: 'Tarif', dataIndex: 'fee', key: 'fee' },
+                    { title: 'Status', dataIndex: 'status', key: 'status' },
+                    { title: 'Dibuat oleh', dataIndex: 'creator', key: 'creator' },
+                    { title: '#', dataIndex: 'action', key: 'action'},
+                ]
+            },
         ]
 
         return(
             <>
-                <h1 className="text-center">Data Perhari</h1>
+                <Heading className="text-center">
+                    Data Perhari
+                </Heading> <br/>
                 {   Object.keys(perDay).map(id => {
                         let source = perDay[id];
+                        let column = _.cloneDeep(columns);
+                            column[0].title = 'Hari ' + source.name;
                         return (
+                            <>
                             <Table key={id}
-                                columns={columns}
+                                columns={column}
                                 dataSource={source.data}
+                                pagination={false}
                             />
+                            <br/>
+                            </>
                         );
                     })
                 }
@@ -165,25 +185,35 @@ const DoctorSchedule = () => {
 
     const PerBranchTable = () => {
         const columns = [
-            { title: 'ID', dataIndex: 'id', key: 'id'},
-            { title: 'Departemen', dataIndex: 'department', key: 'department' },
-            { title: 'Hari', dataIndex: 'weekday_alt', key: 'weekday_alt' },
-            { title: 'Mulai', dataIndex: 'start_hour', key: 'start_hour' },
-            { title: 'Selesai', dataIndex: 'end_hour', key: 'end_hour' },
-            { title: 'Durasi', dataIndex: 'duration', key: 'duration' },
-            { title: 'Tarif', dataIndex: 'fee', key: 'fee' },
-            { title: 'Dibuat oleh', dataIndex: 'creator', key: 'creator' },
-            { title: '#', dataIndex: 'action', key: 'action'},
+            {
+                title: 'Cabang',
+                children: [
+                    { title: 'ID', dataIndex: 'id', key: 'id'},
+                    { title: 'Departemen', dataIndex: 'department', key: 'department' },
+                    { title: 'Hari', dataIndex: 'weekday_alt', key: 'weekday_alt' },
+                    { title: 'Mulai', dataIndex: 'start_hour', key: 'start_hour' },
+                    { title: 'Selesai', dataIndex: 'end_hour', key: 'end_hour' },
+                    { title: 'Durasi', dataIndex: 'duration', key: 'duration' },
+                    { title: 'Tarif', dataIndex: 'fee', key: 'fee' },
+                    { title: 'Status', dataIndex: 'status', key: 'status' },
+                    { title: 'Dibuat oleh', dataIndex: 'creator', key: 'creator' },
+                    { title: '#', dataIndex: 'action', key: 'action'},
+                ]
+            }
         ]
 
         return(
             <>
-                <h1 className="text-center">Data Perhari</h1>
+                <Heading className="text-center">
+                    Data Percabang
+                </Heading> <br/>
                 {   Object.keys(perBranch).map(id => {
                         let source = perBranch[id];
+                        let column = _.cloneDeep(columns);
+                            column[0].title = 'Cabang ' + source.name
                         return (
                             <Table key={id}
-                                columns={columns}
+                                columns={column}
                                 dataSource={source.data}
                             />
                         );
@@ -195,25 +225,35 @@ const DoctorSchedule = () => {
 
     const PerDepartment = () => {
         const columns = [
-            { title: 'ID', dataIndex: 'id', key: 'id'},
-            { title: 'Cabang', dataIndex: 'branch', key: 'branch' },
-            { title: 'Hari', dataIndex: 'weekday_alt', key: 'weekday_alt' },
-            { title: 'Mulai', dataIndex: 'start_hour', key: 'start_hour' },
-            { title: 'Selesai', dataIndex: 'end_hour', key: 'end_hour' },
-            { title: 'Durasi', dataIndex: 'duration', key: 'duration' },
-            { title: 'Tarif', dataIndex: 'fee', key: 'fee' },
-            { title: 'Dibuat oleh', dataIndex: 'creator', key: 'creator' },
-            { title: '#', dataIndex: 'action', key: 'action'},
+            {
+                title: 'Departemen',
+                children: [
+                    { title: 'ID', dataIndex: 'id', key: 'id'},
+                    { title: 'Cabang', dataIndex: 'branch', key: 'branch' },
+                    { title: 'Hari', dataIndex: 'weekday_alt', key: 'weekday_alt' },
+                    { title: 'Mulai', dataIndex: 'start_hour', key: 'start_hour' },
+                    { title: 'Selesai', dataIndex: 'end_hour', key: 'end_hour' },
+                    { title: 'Durasi', dataIndex: 'duration', key: 'duration' },
+                    { title: 'Tarif', dataIndex: 'fee', key: 'fee' },
+                    { title: 'Status', dataIndex: 'status', key: 'status' },
+                    { title: 'Dibuat oleh', dataIndex: 'creator', key: 'creator' },
+                    { title: '#', dataIndex: 'action', key: 'action'},
+                ]
+            }
         ]
 
         return(
             <>
-                <h1 className="text-center">Data Perhari</h1>
+                <Heading className="text-center">
+                    Data Perdepartemen
+                </Heading> <br/>
                 {   Object.keys(perDepartment).map(id => {
                         let source = perDepartment[id];
+                        let column = _.cloneDeep(columns);
+                            column[0].title = 'Departemen ' + source.name;
                         return (
                             <Table key={id}
-                                columns={columns}
+                                columns={column}
                                 dataSource={source.data}
                             />
                         );

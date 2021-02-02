@@ -11,7 +11,7 @@ import { Modal } from '../../components/modals/antd-modals';
 import Loading from '../../components/loadings';
 
 // Api Function
-import  { get_specialist, update_specialist, create_specialist, delete_specialist } from '../../api';
+import  { createFormError, get_specialist, update_specialist, create_specialist, delete_specialist } from '../../api';
 const { Search } = Input;
 
 const Specialists = () => {
@@ -199,16 +199,20 @@ const Specialists = () => {
         setModalLoading(true);
         const [result, error] = await create_specialist(values);
         setModalLoading(false);
-        if(!result) {
+        if(error) {
             setModalAlert(
                 AlertError(error)
             );
+            let error_fields = createFormError(result?.errors);
+            console.log(error_fields);
+            form.setFields(error_fields);
         } else {
             form.resetFields();
             setModal({
                 ...modal,
                 visible: false
             });
+            setModalAlert('');
             setAlert(
                 AlertSuccess(
                     result.message

@@ -1,28 +1,17 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { Form, Input, Button, Checkbox, Row, Col, Card } from 'antd';
-import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import Heading from '../../components/heading/heading';
+import { Row, Col, Card } from 'antd';
 import Alert from '../../components/alerts/alerts';
-import { login } from '../../redux/authentication/actionCreator';
-import { useDispatch, useSelector } from 'react-redux';
 import FeatherIcon from 'feather-icons-react';
 import LoginForm from './LoginForm';
 
 const Login = () => {
     
-    let alert = '';
-    const dispatch = useDispatch();
     const { isLoading, isError } = useSelector(state => {
         return {
             isLoading: state.auth.loading,
             isError: state.auth.error
         }
     });
-
-    const onFinish = (values) => {
-        dispatch(login(values));
-    }
 
     if(isError && !isLoading) {
         alert = <> <br/>

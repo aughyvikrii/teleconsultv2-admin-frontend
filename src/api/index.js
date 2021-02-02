@@ -198,6 +198,13 @@ export const _login = async (data) => {
      return await _put( api(`schedule/${id}`), fields);
  }
 
+ export const get_schedule = async (filters) => {
+     return await _post( api(`schedule/list`), filters);
+ }
+ 
+ export const create_specialist = async (fields) => {
+     return await _post( api(`specialist/create`), fields );
+ }
 // START: API SPESIALIS
 export const get_specialist = async (filters) => {
     await Axios.post(api(`specialist/list`), filters)
@@ -218,24 +225,6 @@ export const get_specialist = async (filters) => {
     return [result, error];
 }
 
-export const create_specialist = async (fields) => {
-    await Axios.post( api(`specialist/create`), fields )
-    .then(response => {
-        if(!response.data?.status) {
-            result = null;
-            error = getMessage(response);
-        } else {
-            result = response.data;
-            error = null;
-        }
-    })
-    .catch(response => {
-        result = null;
-        error = getMessage(response);
-    });
-
-    return [result, error];
-}
 
 export const update_specialist = async (id, fields) => {
     await Axios.put( api(`specialist/update/${id}`), fields )
