@@ -13,7 +13,7 @@ import Heading from '../../components/heading/heading';
 import { Button } from '../../components/buttons/buttons';
 import Loading from '../../components/loadings';
 import { AlertError, AlertSuccess } from '../../components/alerts/alerts';
-import { SelectBranch, SelectDepartment, RadioWeekDay, RadioGender } from '../../components/form';
+import { SelectBranch, SelectDepartment, SelectSpecialist, RadioWeekDay, RadioGender } from '../../components/form';
 
 // API
 import { createFormError, create_doctor, get_specialist } from '../../api';
@@ -289,7 +289,8 @@ const Detail = () => {
                                     }
                                 ]}
                             >
-                                <Select
+                                <SelectSpecialist/>
+                                {/* <Select
                                     showSearch
                                     placeholder="Pilih spesialis"
                                     optionFilterProp="children"
@@ -299,10 +300,10 @@ const Detail = () => {
                                 >
                                     {   Object.keys(specialists).map(index => {
                                             let data = specialists[index];
-                                            return <Select.Option key={data.sid} value={data.sid}>{data.title} ( {data.alt_name} )</Select.Option>;
+                                            return <Select.Option key={data.specialist_id} value={data.specialist_id}>{data.title} ( {data.alt_name} )</Select.Option>;
                                         })
                                     }
-                                </Select>
+                                </Select> */}
                             </Form.Item>
                         </Col>
                     </Row> <br/>

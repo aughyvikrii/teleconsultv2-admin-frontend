@@ -4,6 +4,10 @@
   font-weight: bold;
 }
 
+.ant-select-popover {
+  z-index: 9999999 !important;
+}
+
 .spin {
   height: 100vh;
   display: flex;

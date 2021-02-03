@@ -3483,6 +3483,37 @@ const SettingWrapper = Styled.div`
     }
 `;
 
+const PopoverFormWrapper = Styled.div`
+display: flex;
+flex-direction: column;
+padding: 5px 10px 10px;
+.ant-input{
+  // height: 35px !important;
+}
+`;
+
+const PopoverButtonGroup = Styled.div`
+    border-top: 1px solid #EEEFF2;
+    padding: 10px 0 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    margin: -4px -4px -15px;
+    p{
+        font-size: 13px;
+    margin: ${({ theme }) => (theme.rtl ? '0 0 0 20px' : '0 20px 0 0')};
+        font-weight: 500;
+        color: ${({ theme }) => theme['gray-color']};
+    }
+    button {
+        font-size: 12px;
+        margin: 4px;
+        height: 32px;
+        padding: 0px 13.26px;
+    }
+`;
+
 export {
   Main,
   ButtonsGroupWrapper,
@@ -3530,4 +3561,6 @@ export {
   SupportTopWrap,
   SupportContentWrap,
   SettingWrapper,
+  PopoverFormWrapper,
+  PopoverButtonGroup,
 };

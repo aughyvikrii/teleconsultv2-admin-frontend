@@ -69,6 +69,18 @@ const BasicFormWrapper = Styled.div`
                 }
             }
         }
+        .ant-picker{
+            width: 100%;
+        }
+
+        .ant-radio-button-wrapper{
+            border-radius: 4px;
+            margin-right: 5px;
+            border-left-width: 1px !important;
+        }
+        .ant-radio-button-wrapper:not(:first-child)::before{
+            background-color: unset !important;
+        }
     }
     .setting-form-actions{
         margin: 48px 0 14px;
