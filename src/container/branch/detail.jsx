@@ -95,7 +95,7 @@ const Detail = () => {
         setLoading(true);
         setLoadingStatus('');
         setLoadingMessage('memproses permintaan...');
-        const [result, error] = await update_branch(data.bid, fields);
+        const [result, error] = await update_branch(data.branch_id, fields);
         if(!result) {
             setLoading(false);
             setLoadingStatus('');
@@ -112,7 +112,7 @@ const Detail = () => {
             );
             setTimeout(() => {
                 getData();
-            }, 3000);
+            }, 2000);
         }
     }
 

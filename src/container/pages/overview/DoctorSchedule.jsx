@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
+import { PlusCircleOutlined } from '@ant-design/icons';
 import { Row, Col, Form, Radio, TimePicker, Input, Popconfirm, Message, Table } from 'antd';
 import moment from 'moment';
 import { Cards } from '../../../components/cards/frame/cards-frame';
 import { Button, BtnGroup } from '../../../components/buttons/buttons';
 import { ButtonHeading } from '../../../components/cards/style';
 import { Modal } from '../../../components/modals/antd-modals';
-import { SelectBranch, SelectDepartment, RadioWeekDay } from '../../../components/form';
+import { SelectBranch, SelectDepartment, RadioWeekDay, FormAddSchedule } from '../../../components/form';
 import { useParams } from 'react-router-dom';
-import { BasicFormWrapper } from '../../styled';
+import { BasicFormWrapper, BtnWithIcon } from '../../styled';
 import Loading from '../../../components/loadings';
 import Heading from '../../../components/heading/heading';
 import { Tag } from '../../../components/tags/tags';
@@ -53,7 +54,6 @@ const DoctorSchedule = () => {
 
     const _get_branch = async () => {
         const [result, error] = await get_branch({all_data: true});
-        console.log('branch: ', result, 'error:', error);
         if(!error) {
             setListBranch(result.data);
         }
@@ -61,7 +61,6 @@ const DoctorSchedule = () => {
 
     const _get_department = async () => {
         const [result, error] = await get_department({all_data: true});
-        console.log('department: ', result, 'error:', error);
         if(!error) {
             setListDepartment(result.data);
         }
@@ -97,7 +96,7 @@ const DoctorSchedule = () => {
             row.action = (
                 <div className="table-actions">
                     <>
-                        <Button className="btn-icon" size="default" shape="round" type="primary" title="Update" onClick={() => modalEdit(row)}>
+                        <Button className="btn-icon" size="default" shape="round" type="primary" title="Update" onClick={() => modalFunc('edit',row)}>
                             <i aria-hidden="true" className="fa fa-pencil"></i>
                         </Button> &nbsp;
                         <Popconfirm
@@ -134,9 +133,12 @@ const DoctorSchedule = () => {
         setPerDay(day);
         setPerBranch(branch);
         setPerDepartment(department);
-        console.log(day);
 
     }, [schedules]);
+
+    const modalEdit = (row) => {
+        console.log(row);
+    }
 
     const PerDayTable = () => {
 
@@ -157,7 +159,6 @@ const DoctorSchedule = () => {
                 ]
             },
         ]
-
         return(
             <>
                 <Heading className="text-center">
@@ -168,14 +169,14 @@ const DoctorSchedule = () => {
                         let column = _.cloneDeep(columns);
                             column[0].title = 'Hari ' + source.name;
                         return (
-                            <>
-                            <Table key={id}
-                                columns={column}
-                                dataSource={source.data}
-                                pagination={false}
-                            />
-                            <br/>
-                            </>
+                            <div key={id}>
+                                <Table
+                                    columns={column}
+                                    dataSource={source.data}
+                                    pagination={false}
+                                />
+                                <br/>
+                            </div>
                         );
                     })
                 }
@@ -212,10 +213,14 @@ const DoctorSchedule = () => {
                         let column = _.cloneDeep(columns);
                             column[0].title = 'Cabang ' + source.name
                         return (
-                            <Table key={id}
-                                columns={column}
-                                dataSource={source.data}
-                            />
+                            <div key={id}>
+                                <Table
+                                    columns={column}
+                                    dataSource={source.data}
+                                    pagination={false}
+                                />
+                                <br/>
+                            </div>
                         );
                     })
                 }
@@ -252,10 +257,14 @@ const DoctorSchedule = () => {
                         let column = _.cloneDeep(columns);
                             column[0].title = 'Departemen ' + source.name;
                         return (
-                            <Table key={id}
-                                columns={column}
-                                dataSource={source.data}
-                            />
+                            <div key={id}>
+                                <Table
+                                    columns={column}
+                                    dataSource={source.data}
+                                    pagination={false}
+                                />
+                                <br/>
+                            </div>
                         );
                     })
                 }
@@ -264,11 +273,20 @@ const DoctorSchedule = () => {
     }
 
     const modalFunc = (type, data={}) => {
-        setModal({ ...modal, visible: true });
+        if(type === 'edit') {
+            data['start_hour'] = moment(data['start_hour'], 'HH:mm');
+            data['end_hour'] = moment(data['end_hour'], 'HH:mm');
+            form.setFieldsValue(data);
+        }else{
+            form.resetFields();
+            data = {};
+            type = 'add';
+        }
+        setModal({ ...modal, visible: true, action: type, data: data });
     }
 
     const closeModal = () => {
-        setModal({ ...modal, visible: false });
+        setModal({ ...modal, visible: false, action: 'add', data: {} });
     }
 
     const submitForm = async (fields) => {
@@ -343,11 +361,16 @@ const DoctorSchedule = () => {
                                 </Radio.Group>
                             </ButtonHeading>
                             &nbsp;&nbsp;
-                            <BtnGroup>
-                                <Button size="small" type="danger" onClick={() => modalFunc('add')}>
-                                    Tambah Jadwal
-                                </Button>
-                            </BtnGroup>
+                            <BtnWithIcon>
+                                <BtnGroup>
+                                    <Button size="small" type="danger" onClick={() => modalFunc('add')}>
+                                        <PlusCircleOutlined/>
+                                    </Button>
+                                    <Button size="small" type="danger" onClick={() => modalFunc('add')}>
+                                        Tambah Jadwal
+                                    </Button>
+                                </BtnGroup>
+                            </BtnWithIcon>
                         </div>
                     }
                 >
@@ -373,64 +396,15 @@ const DoctorSchedule = () => {
                 </div>
                 </>
             :
-            
-            <BasicFormWrapper>
-                <Form
-                    form={form}
-                    onFinish={submitForm}
-                    layout="vertical"
-                >
-                    {alert}
-                    <Row gutter={25}>
-                        <Col lg={12} xs={24}>
-                            <Form.Item name="branch" label="Cabang" rules={[ { required: true, message: 'Pilih cabang praktek' } ]} >
-                                <SelectBranch list={listBranch}/>
-                            </Form.Item>
-                        </Col>
-                        <Col lg={12} xs={24}>
-                            <Form.Item name="department" label="Departemen" rules={[ { required: true, message: 'Pilih cabang praktek' } ]} >
-                                <SelectDepartment list={listDepartment}/>
-                            </Form.Item>
-                        </Col>
-                    </Row> <br/>
-                    <Row gutter={25}>
-                        <Col lg={24} xs={24}>
-                            <Form.Item name="weekday" label="Hari" rules={[ { required: true, message: 'Pilih hari' } ]} >
-                                <RadioWeekDay/>
-                            </Form.Item>
-                        </Col>
-                        <Col lg={12} xs={24}>
-                        </Col>
-                    </Row> <br/>
-                    <Row gutter={25}>
-                        <Col lg={12} xs={24}>
-                                <Form.Item name="fee" label="Tarif Konsultasi" rules={[{ required: true, message: 'Masukan tarif konsultasi'}]} >
-                                    <Input placeholder="..." min={1} />
-                                </Form.Item>
-                        </Col>
-                        <Col lg={12} xs={24}>
-                            <Form.Item label={<>Durasi &nbsp;<span className="color-error">(menit)</span></>} name="duration" rules={[{ required: true, message: 'Masukan durasi'}]}>
-                                <Input placeholder="..." min={1} />
-                            </Form.Item>
-                        </Col>
-                    </Row> <br/>
-
-                    <Row gutter={25}>
-                            <Col lg={12} xs={24}>
-                                <Form.Item label="Jam Mulai" name="start_hour" rules={[{ required: true, message: 'Masukan jam mulai'}]}>
-                                    <TimePicker initialValue={moment('00:00', 'HH:mm')} format={'HH:mm'} />
-                                </Form.Item>
-                            </Col>
-                            <Col lg={12} xs={24}>
-                                <Form.Item label="Jam Selesai" name="end_hour" rules={[{ required: true, message: 'Masukan jam selesai'}]}>
-                                    <TimePicker initialValue={moment('00:00', 'HH:mm')} format={'HH:mm'} />
-                                </Form.Item>
-                            </Col>
-                        </Row>
-                    
-                </Form>  
-            </BasicFormWrapper> 
-        
+            <FormAddSchedule
+                form={form}
+                onFinish={submitForm}
+                loadDoctor={false}
+                showDoctor={false}
+                dataBranch={listBranch}
+                dataDepartment={listDepartment}
+                doctor_id={id}
+            />
             }
         </Modal>
         </>

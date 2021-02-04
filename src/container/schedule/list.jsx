@@ -27,7 +27,7 @@ const List = () => {
     });
     const [source, setSource] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [filters, setFilters] = useState({paginate: true, data_per_page: 5});
+    const [filters, setFilters] = useState({paginate: true, data_per_page: 25});
     const [columns, setColumns] = useState([]);
     const [dataLoaded, setDataLoaded] = useState(false);
     const [bucketData, setBucketData] = useState({ branch:[], department: [], specialist: [] });
@@ -114,9 +114,8 @@ const List = () => {
         setLoading(true);
         const [result, error]  = await get_schedule(filters);
         if(error) {
-
+            if(error === 'Token is Invalid') return;
         } else {
-            console.log(result);
             setOriginalSource(result.data);
             setLoading(false);
         }
@@ -239,65 +238,74 @@ const List = () => {
 
     const formFilter = (
         <PopoverFormWrapper>
-                {   loadingFilter ? (<>
+                <div
+                    style={{
+                        display: loadingFilter ? '' : 'none'
+                    }}
+                >
                     <Loading/>
                     {messageFilter}
-                </>) : (<>
-                    <Form
-                    form={form}
-                    onFinish={applyFilter}
-                    layout="vertical"
-                    size="small"
+                </div>
+                <div
+                    style={{
+                        display: !loadingFilter ? '' : 'none'
+                    }}
                 >
-                    <Row gutter={25}>
-                        <Col lg={8} xs={24}>
-                            <Form.Item label="Nama Dokter" name="doctor">
-                                <Input placeholder="..."/>
-                            </Form.Item>
-                        </Col>
-                        <Col lg={8} xs={24}>
-                            <Form.Item label="Spesialis" name="specialist">
-                                <SelectSpecialist list={bucketData.specialist} mode="multiple" searchable="true" dropdownClassName="ant-select-popover" />
-                            </Form.Item>
-                        </Col>
-                        <Col lg={8} xs={24}>
-                            <Form.Item label="Hari" name="weekday">
-                                <SelectWeekday mode="multiple" searchable="true" dropdownClassName="ant-select-popover" />
-                            </Form.Item>
-                        </Col>
-                    </Row>
+                    <Form
+                        form={form}
+                        onFinish={applyFilter}
+                        layout="vertical"
+                        size="small"
+                    >
+                        <Row gutter={25}>
+                            <Col lg={8} xs={24}>
+                                <Form.Item label="Nama Dokter" name="doctor">
+                                    <Input placeholder="..."/>
+                                </Form.Item>
+                            </Col>
+                            <Col lg={8} xs={24}>
+                                <Form.Item label="Spesialis" name="specialist">
+                                    <SelectSpecialist list={bucketData.specialist} mode="multiple" searchable="true" dropdownClassName="ant-select-popover" />
+                                </Form.Item>
+                            </Col>
+                            <Col lg={8} xs={24}>
+                                <Form.Item label="Hari" name="weekday">
+                                    <SelectWeekday mode="multiple" searchable="true" dropdownClassName="ant-select-popover" />
+                                </Form.Item>
+                            </Col>
+                        </Row>
 
-                    <Row gutter={25}>
-                        <Col lg={8} xs={24}>
-                            <Form.Item label="Cabang" name="branch">
-                                <SelectBranch list={bucketData.branch} mode="multiple" searchable="true" dropdownClassName="ant-select-popover" />
-                            </Form.Item>
-                        </Col>
-                        <Col lg={8} xs={24}>
-                            <Form.Item label="Departemen" name="department">
-                                <SelectDepartment list={bucketData.department} mode="multiple" searchable="true" dropdownClassName="ant-select-popover" />
-                            </Form.Item>
-                        </Col>
-                    </Row>
-                    
-                    <Form.Item style={{display:'none'}}>
-                        <Button type="primary" htmlType="submit">
-                        Submit
+                        <Row gutter={25}>
+                            <Col lg={8} xs={24}>
+                                <Form.Item label="Cabang" name="branch">
+                                    <SelectBranch list={bucketData.branch} mode="multiple" searchable="true" dropdownClassName="ant-select-popover" />
+                                </Form.Item>
+                            </Col>
+                            <Col lg={8} xs={24}>
+                                <Form.Item label="Departemen" name="department">
+                                    <SelectDepartment list={bucketData.department} mode="multiple" searchable="true" dropdownClassName="ant-select-popover" />
+                                </Form.Item>
+                            </Col>
+                        </Row>
+                        
+                        <Form.Item style={{display:'none'}}>
+                            <Button type="primary" htmlType="submit">
+                            Submit
+                            </Button>
+                        </Form.Item>
+                    </Form>
+                    <PopoverButtonGroup>
+                        <Button size="small" type="danger" outlined onClick={() => {
+                            form.resetFields();
+                            form.submit();
+                        }}>
+                            Cancel
                         </Button>
-                    </Form.Item>
-                </Form>
-                <PopoverButtonGroup>
-                    <Button size="small" type="danger" outlined onClick={() => {
-                        form.resetFields();
-                        form.submit();
-                    }}>
-                        Cancel
-                    </Button>
-                    <Button size="small" type="primary" onClick={() => form.submit()}>
-                        Terapkan Pencarian
-                    </Button>
-                </PopoverButtonGroup>
-                </>)}
+                        <Button size="small" type="primary" onClick={() => form.submit()}>
+                            Terapkan Pencarian
+                        </Button>
+                    </PopoverButtonGroup>
+                </div>
         </PopoverFormWrapper>
     );
 
@@ -341,8 +349,21 @@ const List = () => {
             setModal({
                 ...modal,
                 message: result?.message,
-                loadingStatus: 'ok'
+                loadingStatus: 'ok',
+                loading: true
             });
+
+            modalForm.resetFields();
+            getData();
+            setTimeout(() => {
+                setModal({
+                    ...modal,
+                    message: '',
+                    loadingStatus: '',
+                    loading: false
+                })
+                modalClose();
+            }, 2000);
         }
     }
 
@@ -429,12 +450,16 @@ const List = () => {
                 forceRender='true'
                 disableButton={modal.disableButton}
             >
-                {   modal.loading ? 
-                    <div className="text-center">
-                        <Loading status={modal.loadingStatus} /> {modal.message}
-                    </div>
-                    : 
-                    <>
+                <div className="text-center" style={{
+                    display: modal.loading ? null : 'none'
+                }}>
+                    <Loading status={modal.loadingStatus} /> {modal.message}
+                </div>
+                <div
+                    style={{
+                        display: modal.loading ? 'none' : null
+                    }}
+                >
                     <FormAddSchedule
                         form={modalForm}
                         onFinish={modalConfirm}
@@ -443,8 +468,7 @@ const List = () => {
                         dataBranch={bucketData.branch}
                         dataDepartment={bucketData.department}
                     />
-                    </>
-                }
+                </div>
             </Modal>
         </>
     );

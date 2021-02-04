@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
-import { Table, Row, Col, Input, Form, Popconfirm, message } from 'antd';
+import { Table, Row, Col, Input, Form, Popconfirm, message, Skeleton, Avatar } from 'antd';
 import { Main, TableWrapper } from '../styled';
 
 // Component
@@ -11,6 +11,7 @@ import { Button } from '../../components/buttons/buttons';
 import { AlertError, AlertSuccess } from '../../components/alerts/alerts';
 import { Modal } from '../../components/modals/antd-modals';
 import Loading from '../../components/loadings';
+import Heading from '../../components/heading/heading';
 
 // Api Function
 import  { get_department, update_department, create_department, delete_department } from '../../api';
@@ -35,8 +36,8 @@ const Department = () => {
             },
             {
                 title: 'Departemen',
-                dataIndex: 'department',
-                key: 'department',
+                dataIndex: 'name',
+                key: 'name',
             },
             {
                 title: 'Keterangan',
@@ -168,7 +169,7 @@ const Department = () => {
             setCropData('');
             setModalForm({
                 action: 'update',
-                id: data.deid
+                id: data.department_id
             });
             setImage(data.thumbnail);
             form.setFieldsValue({
@@ -202,13 +203,26 @@ const Department = () => {
         let result = [];
         data.data.map(row => {
             return result.push({
-                key: row.deid,
-                id: row.deid,
-                department: (
-                    <>
-                    <img style={{ width: '40px' }} src={row.thumbnail} alt="" /> &nbsp;&nbsp;
-                    {row.name}
-                    </>
+                key: row.department_id,
+                id: row.department_id,
+                name: (
+                    <div className="user-info">
+                        <figure>
+                            <Suspense
+                                fallback={
+                                    <Skeleton avatar active/>
+                                }
+                            >
+                                <Avatar shape="square" size={{ xs: 40, sm: 40, md: 40, lg: 40, xl: 40, xxl: 40 }} src={row.thumbnail} />
+                            </Suspense>
+                        </figure>
+                        <figcaption>
+                            <Heading className="user-name" as="h6">
+                            {row.name}
+                            </Heading>
+                            <span className="user-designation">{row.alt_name}</span>
+                        </figcaption>
+                    </div>
                 ),
                 description: row.description ? row.description : '-',
                 action: (
@@ -238,7 +252,7 @@ const Department = () => {
 
     const deleteData = async (data) => {
         const hide = message.loading('Proses menghapus data..', 0);
-        const [result, error] = await delete_department(data.deid);
+        const [result, error] = await delete_department(data.department_id);
 
         if(!result) {
             hide();
@@ -285,6 +299,8 @@ const Department = () => {
             );
         } else {
             form.resetFields();
+            setCropData('');
+            setImage('');
             setModal({
                 ...modal,
                 visible: false

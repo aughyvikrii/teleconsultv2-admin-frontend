@@ -12,11 +12,8 @@ const AdminHistory = localStorage.getItem('admin_history');
 const NotFound = (props) => {
 
   const dispatch = useDispatch();
-
   if(AdminHistory) {
-
     dispatch(loginModal(true));
-
     return (
       <div>
         Show Login

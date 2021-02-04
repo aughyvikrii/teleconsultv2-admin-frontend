@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Table, Row, Col, Input, Popconfirm, message } from 'antd';
+import React, { useEffect, useState, Suspense } from 'react';
+import { Table, Row, Col, Input, Popconfirm, message, Skeleton, Avatar } from 'antd';
 import { Main, TableWrapper } from '../styled';
 import { useRouteMatch, useHistory } from 'react-router-dom';
 
@@ -9,6 +9,7 @@ import { Cards } from '../../components/cards/frame/cards-frame';
 import { Button } from '../../components/buttons/buttons';
 import { Tag } from '../../components/tags/tags';
 import { AlertError } from '../../components/alerts/alerts';
+import Heading from '../../components/heading/heading';
 
 // Api Function
 import  { get_branch, delete_branch } from '../../api';
@@ -29,8 +30,8 @@ const List = () => {
     const columns = [
         {
             title: 'ID',
-            dataIndex: 'id',
-            key: 'id',
+            dataIndex: 'branch_id',
+            key: 'branch_id',
         },
         {
             title: 'Kode',
@@ -89,9 +90,26 @@ const List = () => {
         let result = [];
         data.data.map(row => {
             return result.push({
-                key: row.bid,
-                id: row.bid,
-                code: row.code,
+                key: row.branch_id,
+                branch_id: row.branch_id,
+                code: (
+                    <div className="user-info">
+                        <figure>
+                            <Suspense
+                                fallback={
+                                    <Skeleton avatar active/>
+                                }
+                            >
+                                <Avatar shape="square" size={{ xs: 40, sm: 40, md: 40, lg: 40, xl: 40, xxl: 40 }} src={row.thumbnail} />
+                            </Suspense>
+                        </figure>
+                        <figcaption>
+                            <Heading className="user-name" as="h6">
+                            {row.code}
+                            </Heading>
+                        </figcaption>
+                    </div>
+                ),
                 name: row.name,
                 is_active: (
                     row.is_active ? 
@@ -101,7 +119,7 @@ const List = () => {
                 action: (
                     <div className="table-actions">
                         <>
-                            <Button className="btn-icon" size="default" shape="round" type="primary" title="Detail" onClick={() =>  history.push(`${path}/detail/${row.bid}`) }>
+                            <Button className="btn-icon" size="default" shape="round" type="primary" title="Detail" onClick={() =>  history.push(`${path}/detail/${row.branch_id}`) }>
                                 <i aria-hidden="true" className="fa fa-pencil"></i>
                             </Button> &nbsp;
                             <Popconfirm
@@ -125,7 +143,7 @@ const List = () => {
 
     const deleteData = async (data) => {
         const hide = message.loading('Proses menghapus data..', 0);
-        const [result, error] = await delete_branch(data.bid);
+        const [result, error] = await delete_branch(data.branch_id);
 
         if(!result) {
             hide();

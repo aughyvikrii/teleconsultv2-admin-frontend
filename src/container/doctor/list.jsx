@@ -78,7 +78,6 @@ const List = () => {
         setTableLoading(true);
 
         const [result, error] = await get_doctor(filter);
-        console.log(result, error)
         if(error) {
             setAlert(
                 AlertError(error)
@@ -94,25 +93,25 @@ const List = () => {
         let result = [];
         data.data.map(row => {
             return result.push({
-                key: row.pid,
-                id: row.pid,
+                key: row.doctor_id,
+                id: row.doctor_id,
                 name: (
                     <div className="user-info">
-                    <figure>
-                    <Suspense
-                        fallback={
-                            <Skeleton avatar active/>
-                        }
-                        >
-                            <Avatar size={{ xs: 40, sm: 40, md: 40, lg: 40, xl: 40, xxl: 40 }} src={row.profile_pic} />
-                        </Suspense>
-                    </figure>
-                    <figcaption>
-                        <Heading className="user-name" as="h6">
-                        {row.display_name}
-                        </Heading>
-                        <span className="user-designation">{row.alt_name}</span>
-                    </figcaption>
+                        <figure>
+                            <Suspense
+                                fallback={
+                                    <Skeleton avatar active/>
+                                }
+                            >
+                                <Avatar size={{ xs: 40, sm: 40, md: 40, lg: 40, xl: 40, xxl: 40 }} src={row.profile_pic} />
+                            </Suspense>
+                        </figure>
+                        <figcaption>
+                            <Heading className="user-name" as="h6">
+                            {row.display_name}
+                            </Heading>
+                            <span className="user-designation">{row.alt_name}</span>
+                        </figcaption>
                     </div>
                 ),
                 email: row.email,
@@ -120,8 +119,8 @@ const List = () => {
                 created_at: row.created_at,
                 action: (
                         <>
-                            <Link to={`${path}/detail/${row.pid}/information`}>
-                                <Button className="btn-icon" size="default" shape="round" type="primary" title="Detail" onClick={() =>  history.push(`${path}/detail/${row.pid}`) }>
+                            <Link to={`${path}/detail/${row.doctor_id}/information`}>
+                                <Button className="btn-icon" size="default" shape="round" type="primary" title="Detail" onClick={() =>  history.push(`${path}/detail/${row.doctor_id}`) }>
                                     <i aria-hidden="true" className="fa fa-folder-open-o color-white"></i>
                                 </Button>
                             </Link>

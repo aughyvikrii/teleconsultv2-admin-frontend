@@ -13,12 +13,12 @@ const GlobalLayout = ({children}) => {
 
     return(
     <>
-        {   loginModal ? 
+        { loginModal ? (
             <Modal visible={true} maskClosable={false} noFooter={true} closeIcon={<i></i>}>
                 <LoginForm/>
             </Modal>
-            : children
-        }
+        )
+        : (children) }
     </>);
 }
 

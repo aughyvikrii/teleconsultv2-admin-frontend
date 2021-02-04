@@ -40,7 +40,7 @@ export const FormAddSchedule = (props) => {
 
         if(loadDoctor) loadDoctorData();
 
-    }, []);
+    }, [dataBranch, dataDepartment]);
 
     return(<>
         <BasicFormWrapper>
@@ -63,6 +63,16 @@ export const FormAddSchedule = (props) => {
                             </Col>
                         </Row> <br/>
                         </>
+                    }
+                    {   !doctor_id ? null : (
+                            <Row gutter={25} style={{ display: 'none' }}>
+                                <Col lg={24} xs={24}>
+                                    <Form.Item  name="doctor" label="Dokter" initialValue={doctor_id}>
+                                        <Input placeholder="..."/>
+                                    </Form.Item>
+                                </Col>
+                            </Row>
+                        )
                     }
                     <Row gutter={25}>
                         <Col lg={12} xs={24}>
