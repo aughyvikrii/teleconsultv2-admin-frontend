@@ -14,7 +14,7 @@ import Loading from '../../../components/loadings';
 import Heading from '../../../components/heading/heading';
 import { Tag } from '../../../components/tags/tags';
 
-import { AlertError } from '../../../components/alerts/alerts';
+import { AlertError, AlertSuccess } from '../../../components/alerts/alerts';
 import { createFormError, get_doctor_schedule, create_doctor_schedule, update_doctor_schedule, get_branch, get_department } from '../../../api';
 
 const DoctorSchedule = () => {
@@ -273,70 +273,62 @@ const DoctorSchedule = () => {
     }
 
     const modalFunc = (type, data={}) => {
+        data = _.cloneDeep(data)
+        let schedule_id = 0;
         if(type === 'edit') {
             data['start_hour'] = moment(data['start_hour'], 'HH:mm');
             data['end_hour'] = moment(data['end_hour'], 'HH:mm');
+            data['branch'] = data['branch_id'];
+            data['department'] = data['department_id'];
+            schedule_id = data.schedule_id;
             form.setFieldsValue(data);
         }else{
             form.resetFields();
             data = {};
             type = 'add';
         }
-        setModal({ ...modal, visible: true, action: type, data: data });
+        setModal({ ...modal, visible: true, action: type, data: data, schedule_id: schedule_id });
     }
 
     const closeModal = () => {
+        setAlert('');
         setModal({ ...modal, visible: false, action: 'add', data: {} });
     }
 
     const submitForm = async (fields) => {
+        setAlert('');
+
         fields['start_hour'] = fields['start_hour'].format('HH:mm');
         fields['end_hour'] = fields['end_hour'].format('HH:mm');
 
-        if(modal.action === 'add') return createSchedule(fields);
-        else return updateSchedule(fields);
-    }
-
-    const createSchedule = async (fields) => {
         setLoading(true);
-        setAlert('');
-        const [result, error] = await create_doctor_schedule(id, fields);
+
+        let response = [];
+        if(modal.action === 'add') response = await create_doctor_schedule(id, fields);
+        else response = await update_doctor_schedule(modal.schedule_id, fields);
+
+        const [result, error] = response;
 
         if(error) {
             let error_fields = createFormError(result?.errors);
+
             setAlert(
                 AlertError(error)
             );
+
             setLoading(false);
+
             form.setFields(error_fields);
         } else {
             setLoadingStatus('ok');
-            setAlert('Berhasil menambah data');
-            form.resetFields();
-            getData();
-            setTimeout(() => {
-                setLoading(false);
-                closeModal();
-            }, 2000);
-        }
-    }
 
-    const updateSchedule  = async (fields) => {
-        setLoading(true);
-        setAlert('');
-        
-        let [result, error] = await update_doctor_schedule(modal.schedule_id, fields);
-
-        if(error) {
             setAlert(
-                AlertError(result)
+                AlertSuccess(result?.message ? result.message : 'Berhasil '+(modal.action == 'add' ? 'menambah' : 'update') + 'data')
             );
-            setLoading(false);
-        } else {
-            setLoadingStatus('ok');
-            setAlert('Berhasil update data');
+
             form.resetFields();
             getData();
+
             setTimeout(() => {
                 setLoading(false);
                 closeModal();
@@ -390,21 +382,24 @@ const DoctorSchedule = () => {
         >
             { isLoading ?
                 <>
-                <div className="text-center">
-                    <Loading status={loadingStatus} />
-                    { alert ? alert : 'Memproses permintaan...'  }
-                </div>
+                    <div className="text-center">
+                        <Loading status={loadingStatus} />
+                        { alert ? alert : 'Memproses permintaan...'  }
+                    </div>
                 </>
             :
-            <FormAddSchedule
-                form={form}
-                onFinish={submitForm}
-                loadDoctor={false}
-                showDoctor={false}
-                dataBranch={listBranch}
-                dataDepartment={listDepartment}
-                doctor_id={id}
-            />
+            <>
+                {alert}
+                <FormAddSchedule
+                    form={form}
+                    onFinish={submitForm}
+                    doctor_id={id}
+                    loadDoctor={false}
+                    showDoctor={false}
+                    dataBranch={listBranch}
+                    dataDepartment={listDepartment}
+                />
+            </>
             }
         </Modal>
         </>

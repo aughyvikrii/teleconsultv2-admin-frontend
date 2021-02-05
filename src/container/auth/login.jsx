@@ -24,12 +24,11 @@ const Login = () => {
     //         /> <br/>
     //     </>
     // } else { alert = '' }
-    console.log('masuk sini');
     return(
         <Row type="flex" justify="center" align="middle" style={{minHeight: "100vh"}}>
             <Col lg={8} sm={24}>
                 <Card>
-                    {/* <LoginForm compact={true}/> */}
+                    <LoginForm compact={true}/>
                 </Card>
             </Col>
         </Row>

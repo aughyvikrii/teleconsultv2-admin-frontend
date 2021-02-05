@@ -39,8 +39,9 @@ export const FormAddSchedule = (props) => {
         if(dataDepartment) setListDepartment(dataDepartment);
 
         if(loadDoctor) loadDoctorData();
-
     }, [dataBranch, dataDepartment]);
+    
+    useEffect(() =>  console.log(rest), []);
 
     return(<>
         <BasicFormWrapper>
@@ -120,6 +121,12 @@ export const FormAddSchedule = (props) => {
                             </Form.Item>
                         </Col>
                     </Row>
+
+                    <Form.Item style={{display: 'none'}} >
+                        <button type='submit'>
+                        Submit
+                        </button>
+                    </Form.Item>
                 </Form>  
             }
         </BasicFormWrapper> 

@@ -170,41 +170,42 @@ export const _login = async (data) => {
     return await _post(api('login'), data);
 }
 
-/**
- * Dokter API
- */
+export const user_info = async () => {
+    return await _get( api(`auth/user`) );
+}
 
- export const get_doctor = async (filters) => {
-     return await _post(api(`doctor/list`), filters);
- }
+export const get_doctor = async (filters) => {
+    return await _post(api(`doctor/list`), filters);
+}
 
- export const create_doctor = async (fields) => {
-     return await _post(api(`doctor/create`), fields);
- }
+export const create_doctor = async (fields) => {
+    return await _post(api(`doctor/create`), fields);
+}
 
- export const detail_doctor = async (id) => {
+export const detail_doctor = async (id) => {
     return await _get(api(`doctor/detail/${id}`));
- }
+}
 
- export const get_doctor_schedule = async (id, filters={}) => {
-     return await _post( api(`doctor/${id}/schedules`), filters );
- }
+export const get_doctor_schedule = async (id, filters={}) => {
+    return await _post( api(`doctor/${id}/schedules`), filters );
+}
 
- export const create_doctor_schedule = async (id, fields) => {
-     return await _post( api(`doctor/${id}/schedule/add`), fields);
- }
+export const create_doctor_schedule = async (id, fields) => {
+    return await _post( api(`doctor/${id}/schedule/add`), fields);
+}
 
- export const update_doctor_schedule = async (id, fields) => {
-     return await _put( api(`schedule/${id}`), fields);
- }
+export const update_doctor_schedule = async (id, fields) => {
+    return await _put( api(`schedule/${id}`), fields);
+}
 
- export const get_schedule = async (filters) => {
-     return await _post( api(`schedule/list`), filters);
- }
- 
- export const create_specialist = async (fields) => {
-     return await _post( api(`specialist/create`), fields );
- }
+export const get_schedule = async (filters) => {
+    return await _post( api(`schedule/list`), filters);
+}
+
+export const create_specialist = async (fields) => {
+    return await _post( api(`specialist/create`), fields );
+}
+
 // START: API SPESIALIS
 export const get_specialist = async (filters) => {
     await Axios.post(api(`specialist/list`), filters)
