@@ -65,8 +65,8 @@ const LoginForm = (props) => {
                 <Col lg={formSize} xs={24}>
                     {alert}
                     <Form layout="vertical" form={form} onFinish={loginAction}>
-                        <Form.Item name="email" initialValue={logUser?.email} label="Email Address"
-                            rules={[{required: true, message: 'Masukan alamat email'}]}
+                        <Form.Item name="contact" initialValue={logUser?.email} label="Alamat Email/Nomor Telepon"
+                            rules={[{required: true, message: 'Masukan alamat email/nomor telepon'}]}
                         >
                             <Input placeholder="Enter Email" autoFocus />
                         </Form.Item>

@@ -1,14 +1,12 @@
 /* eslint-disable no-shadow */
 import React, { Component } from 'react';
 import { Layout, Button, Row, Col } from 'antd';
-import FeatherIcon from 'feather-icons-react';
 import { Link } from 'react-router-dom';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { ThemeProvider } from 'styled-components';
 import { connect } from 'react-redux';
 import propTypes from 'prop-types';
 import MenueItems from './MenueItems';
-import TopMenu from './TopMenu';
 import { Div, SmallScreenAuthInfo } from './style';
 import GlobalLayout from './GlobalLayout';
 import AuthInfo from '../components/utilities/auth-info/info';
@@ -149,46 +147,25 @@ const ThemeLayout = WrappedComponent => {
                   position: 'fixed',
                   width: '100%',
                   top: 0,
-                  [!rtl ? 'left' : 'right']: 0,
+                  left: 0,
                 }}
               >
                 <Row>
-                  <Col lg={!topMenu ? 4 : 3} sm={6} xs={12} className="align-center-v navbar-brand">
+                  <Col lg={4} sm={6} xs={12} className="align-center-v navbar-brand">
                     {!topMenu || window.innerWidth <= 991 ? (
                       <Button type="link" onClick={toggleCollapsed}>
-                        <img src={require(`../static/img/icon/${collapsed ? 'right.svg' : 'left.svg'}`)} alt="menu" />
+                        <img src={require(`../static/img/icon/${collapsed ? 'right.svg' : 'left.svg'}`).default} alt="menu" />
                       </Button>
                     ) : null}
                     <Link
                       className={topMenu && window.innerWidth > 991 ? 'striking-logo top-menu' : 'striking-logo'}
-                      to="/admin"
+                      to="/doctor"
                     >
                       <img
-                        src={!darkMode ? require(`../static/img/Logo_Dark.svg`) : require(`../static/img/Logo_white.png`)}
+                        src={require(`../static/img/admin.png`).default}
                         alt=""
                       />
                     </Link>
-                  </Col>
-
-                  <Col lg={!topMenu ? 14 : 15} md={8} sm={0} xs={0}>
-                    {topMenu && window.innerWidth > 991 ? <TopMenu /> : ''}
-                  </Col>
-
-                  <Col lg={6} md={10} sm={0} xs={0}>
-                  <AuthInfo />
-                  </Col>
-
-                  <Col md={0} sm={18} xs={12}>
-                    <>
-                      <div className="mobile-action">
-                        <Link className="btn-search" onClick={handleSearchHide} to="#">
-                          {searchHide ? <FeatherIcon icon="search" /> : <FeatherIcon icon="x" />}
-                        </Link>
-                        <Link className="btn-auth" onClick={onShowHide} to="#">
-                          <FeatherIcon icon="more-vertical" />
-                        </Link>
-                      </div>
-                    </>
                   </Col>
                 </Row>
               </Header>
@@ -236,13 +213,6 @@ const ThemeLayout = WrappedComponent => {
                         <Col md={12} xs={24}>
                           <span className="admin-footer__copyright">2021 © Telekonsultasi V2</span>
                         </Col>
-                        {/* <Col md={12} xs={24}>
-                          <div className="admin-footer__links">
-                            <NavLink to="#">About</NavLink>
-                            <NavLink to="#">Team</NavLink>
-                            <NavLink to="#">Contact</NavLink>
-                          </div>
-                        </Col> */}
                       </Row>
                     </Footer>
                   </Content>

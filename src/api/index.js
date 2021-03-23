@@ -3,7 +3,7 @@ import Cookies from 'js-cookie';
 import store from '../redux/store';
 import { loginModal } from '../redux/authentication/actionCreator';
 
-const baseUrl = 'http://localhost:8000/api';
+const baseUrl = 'http://teleconsultv2.localhost/api';
 let result, error;
 
 Axios.interceptors.request.use(function (config) {

@@ -1,14 +1,16 @@
 import React from 'react';
+import { useHistory } from "react-router";
+import Cookies from 'js-cookie';
 import { Menu } from 'antd';
 import { NavLink, useRouteMatch } from 'react-router-dom';
 import FeatherIcon from 'feather-icons-react';
 import propTypes from 'prop-types';
 
-
 const { SubMenu } = Menu;
 
 const MenuItems = ({ darkMode, toggleCollapsed, topMenu }) => {
   const { path } = useRouteMatch();
+  const history = useHistory();
 
   const pathName = window.location.pathname;
   const pathArray = pathName.split(path);
@@ -22,6 +24,13 @@ const MenuItems = ({ darkMode, toggleCollapsed, topMenu }) => {
   const onOpenChange = keys => {
     setOpenKeys(keys[keys.length - 1] !== 'recharts' ? [keys.length && keys[keys.length - 1]] : keys);
   };
+
+  const logout = () => {
+    localStorage.clear();
+    Cookies.remove('token');
+    history.push('/');
+    window.location.reload();
+  }
 
   const onClick = item => {
     if (item.keyPath.length === 1) setOpenKeys([]);
@@ -179,6 +188,20 @@ const MenuItems = ({ darkMode, toggleCollapsed, topMenu }) => {
           </NavLink>
         </Menu.Item>
       </SubMenu>
+
+      <Menu.Item
+        icon={
+          <NavLink className="menuItem-iocn" to="#">
+            <i aria-hidden="true" className="fa fa-sign-out"></i>
+          </NavLink>
+        }
+        key="logout"
+        onClick={logout}
+      >
+        <NavLink onClick={logout} to="#">
+          Keluar
+        </NavLink>
+      </Menu.Item>
 
     </Menu>
   );

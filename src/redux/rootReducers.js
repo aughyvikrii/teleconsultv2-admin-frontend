@@ -1,11 +1,11 @@
 import { combineReducers } from 'redux';
 import authReducer from './authentication/reducers';
 import ChangeLayoutMode from './themeLayout/reducers';
-import { userReducer } from './users/reducers';
+import LoadingReducer from './loadingmodal/reducers';
 
 const rootReducers = combineReducers({
-  users: userReducer,
   auth: authReducer,
+  loadingModal: LoadingReducer,
   ChangeLayoutMode,
 });
 
