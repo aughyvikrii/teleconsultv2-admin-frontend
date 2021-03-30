@@ -28,6 +28,7 @@ const loadingSuccess = () => {
 
 const loadingStart = () => {
   return async dispatch => {
+    dispatch(loadingProps({ width: null }));
     dispatch(loadingVisible(true));
     dispatch(loadingStatus('loading'));
   }
@@ -43,6 +44,12 @@ const maskCloseAble = (canClose) => {
   }
 }
 
+const loadingClose = () => {
+  return async dispatch => {
+    dispatch(loadingVisible(false));
+  }
+}
+
 export {
   loadingVisible,
   loadingContent,
@@ -52,5 +59,6 @@ export {
   loadingError,
   loadingSuccess,
   loadingStart,
-  loadingProps
+  loadingProps,
+  loadingClose
 };

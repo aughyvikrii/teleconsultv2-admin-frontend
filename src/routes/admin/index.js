@@ -1,37 +1,28 @@
-import React, { Suspense, lazy } from 'react';
-import { Spin } from 'antd';
+import React from 'react';
 import { Switch, Route, useRouteMatch } from 'react-router-dom';
 import withAdminLayout from '../../layout/withAdminLayout';
 
-const Specialists = lazy(() => import('../../container/specialist'));
-const Departments = lazy(() => import('../../container/department'));
-const Branch = lazy(() => import('./Branch'));
-const Patient = lazy(() => import('./Patient'));
-const Doctor = lazy(() => import('./Doctor'));
-const Schedule = lazy(() => import('./Schedule'));
+
+import Specialists from '../../container/specialist';
+import Departments from '../../container/department';
+import Branch from './Branch';
+import Patient from './Patient';
+import Doctor from './Doctor';
+import Schedule from './Schedule';
 
 const Admin = () => {
   const { path } = useRouteMatch();
 
-  return (
+  return (<>
     <Switch>
-      <Suspense
-        fallback={
-          <div className="spin">
-            <Spin />
-          </div>
-        }
-      >
-        {/* <Route path={path} component={Dashboard} /> */}
-        <Route exact path={`${path}/specialist`} component={Specialists} />
-        <Route path={`${path}/department`} component={Departments} />
-        <Route path={`${path}/branch`} component={Branch} />
-        <Route path={`${path}/patient`} component={Patient} />
-        <Route path={`${path}/doctor`} component={Doctor} />
-        <Route path={`${path}/schedule`} component={Schedule} />
-      </Suspense>
+        <Route exact key="SpecialistRoute" path={`${path}/specialist`} component={Specialists} />
+        <Route key="DepartmentRoute" path={`${path}/department`} component={Departments} />
+        <Route key="BranchRoute" path={`${path}/branch`} component={Branch} />
+        <Route key="PatientRoute" path={`${path}/patient`} component={Patient} />
+        <Route key="DoctorRoute" path={`${path}/doctor`} component={Doctor} />
+        <Route key="ScheduleRoute" path={`${path}/schedule`} component={Schedule} />
     </Switch>
-  );
+  </>);
 };
 
 export default withAdminLayout(Admin);

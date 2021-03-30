@@ -6,7 +6,7 @@ const initState = {
   visible: null,
   content: null,
   status: null,
-  props: {},
+  customProps: {},
 };
 
 /**
@@ -35,8 +35,8 @@ const LoadingReducer = (state = initState, action) => {
     case LOADING_PROPS:
       return {
         ...state,
-        props: {
-          ...state.props,
+        customProps: {
+          ...state.customProps,
           ...data
         },
       };

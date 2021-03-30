@@ -12,16 +12,14 @@ const AdminHistory = localStorage.getItem('admin_history');
 const NotFound = (props) => {
 
   const dispatch = useDispatch();
-  if(AdminHistory) {
-    dispatch(loginModal(true));
-    return (
-      <div>
-        Show Login
-      </div>
-    );
-  } else {
-    return <Redirect to="/" />;
-  }
+
+  React.useEffect(() => {
+    AdminHistory ? dispatch(loginModal(true)) : '';
+  }, []);
+
+  return(
+    AdminHistory ? 'Login' : <Redirect to="/"/>
+  );
 };
 
 const FrontendRoutes = () => {

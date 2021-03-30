@@ -7,16 +7,29 @@ import { Cards } from '../../../components/cards/frame/cards-frame';
 import { useEffect } from 'react';
 import { DescriptionWrapper } from '../style';
 
-import { detail_person } from '../../../api';
+import { detail_person, detail_doctor } from '../../../api';
 
 
 const PersonDetail = (props) => {
-    let {person, person_id} = props;
+    let {
+        person = {},
+        person_id = 0,
+        loading = false
+    } = props;
+    
     const [data, setData]= useState(person ? person : {});
     const {id} = useParams();
     
     if(Object.keys(person).length === 0){
         if(!person_id) person_id = id;
+    }
+
+    const _person_data = async() => {
+        if(props?.is_doctor) {
+            return await detail_doctor(person_id);
+        } else {
+            return await detail_person(person_id);
+        }
     }
     
     useEffect( () => {
@@ -24,11 +37,18 @@ const PersonDetail = (props) => {
         
         const getData = async () => {
             if(typeof person_id !== 'undefined') {
-                const [result, error] = await detail_person(person_id);
+                const {
+                    result,
+                    error,
+                    forceStop
+                } = await _person_data();
+                
                 if(result && isSubscribed) setData(result.data.person);
             }
         }
-        getData();
+        if(Object.keys(person).length === 0 && !loading){
+            getData();
+        }
         return () => isSubscribed = false;
     }, []);
     

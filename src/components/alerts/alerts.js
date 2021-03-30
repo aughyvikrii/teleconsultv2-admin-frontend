@@ -35,11 +35,11 @@ Alert.propTypes = {
   icon: PropTypes.node,
 };
 
-export const AlertError = (message,props={}) => {
+export const AlertError = ({message, ...props}) => {
   return <Alert type='error' message={message} {...props} />
 }
 
-export const AlertSuccess = (message, props={}) => {
+export const AlertSuccess = ({message, ...props}) => {
   return <Alert type='success' message={message} {...props} />
 }
 

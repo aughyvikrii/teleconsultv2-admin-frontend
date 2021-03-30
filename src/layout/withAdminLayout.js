@@ -8,13 +8,11 @@ import { connect } from 'react-redux';
 import propTypes from 'prop-types';
 import MenueItems from './MenueItems';
 import { Div, SmallScreenAuthInfo } from './style';
-import GlobalLayout from './GlobalLayout';
 import AuthInfo from '../components/utilities/auth-info/info';
 
 const { darkTheme } = require('../config/theme/themeVariables');
 
 const { Header, Footer, Sider, Content } = Layout;
-// const { darkMode } = config;
 
 const ThemeLayout = WrappedComponent => {
   class LayoutComponent extends Component {
@@ -45,7 +43,15 @@ const ThemeLayout = WrappedComponent => {
 
     render() {
       const { collapsed, hide, searchHide } = this.state;
-      const { ChangeLayoutMode, rtl, topMenu } = this.props;
+      const {
+        ChangeLayoutMode,
+        rtl,
+        topMenu,
+        loadingVisible,
+        loadingContent,
+        loadingStatus,
+        loadingProps,
+      } = this.props;
 
       const left = !rtl ? 'left' : 'right';
       const darkMode = ChangeLayoutMode;
@@ -139,7 +145,6 @@ const ThemeLayout = WrappedComponent => {
       };
 
       return (
-        <GlobalLayout>
           <Div darkMode={darkMode}>
             <Layout className="layout">
               <Header
@@ -220,7 +225,6 @@ const ThemeLayout = WrappedComponent => {
               </Layout>
             </Layout>
           </Div>
-        </GlobalLayout>
       );
     }
   }
@@ -244,4 +248,5 @@ const ThemeLayout = WrappedComponent => {
 
   return connect(mapStateToProps)(LayoutComponent);
 };
+
 export default ThemeLayout;

@@ -27,42 +27,16 @@ const List = () => {
     const [filter, setFilter] = useState({ query: null, page: 0, data_per_page: 10,  paginate: true });
 
     const columns = [
-        {
-            title: 'ID',
-            dataIndex: 'id',
-            key: 'id',
-        },
-        {
-            title: 'Nama',
-            dataIndex: 'name',
-            key: 'name',
-        },
-        {
-            title: 'Email',
-            dataIndex: 'email',
-            key: 'email',
-        },
-        {
-            title: 'Nomor Telepon',
-            dataIndex: 'phone_number',
-            key: 'phone_number'
-        },
-        {
-            title: 'Tanggal Daftar',
-            dataIndex: 'created_at',
-            key: 'created_at'
-        },
-        {
-            title: '#',
-            dataIndex: 'action',
-            key: 'action',
-            width: '150px',
-        },
+        { title: 'ID', dataIndex: 'id', key: 'id', },
+        { title: 'Nama', dataIndex: 'name', key: 'name', },
+        { title: 'Email', dataIndex: 'email', key: 'email', },
+        { title: 'Nomor Telepon', dataIndex: 'phone_number', key: 'phone_number' },
+        { title: 'Tanggal Daftar', dataIndex: 'created_at', key: 'created_at' },
+        { title: '#', dataIndex: 'action', key: 'action', width: '150px', },
     ];
 
     useEffect(() => {
         getData();
-        // eslint-disable-next-line
     }, [filter]);
 
     const onTableChange = (e) => {
@@ -77,7 +51,14 @@ const List = () => {
     const getData = async () => {
         setTableLoading(true);
 
-        const [result, error] = await get_doctor(filter);
+        const {
+            result,
+            error,
+            forceStop
+        } = await get_doctor(filter);
+
+        if(forceStop) return;
+
         if(error) {
             setAlert(
                 AlertError(error)

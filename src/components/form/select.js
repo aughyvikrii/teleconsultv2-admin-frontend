@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Select } from 'antd';
 import { get_branch, get_department, get_specialist, get_doctor } from '../../api';
 
-const DEBUG = 1;
+const DEBUG = 0;
 const defaultFilters = {
     all_data: true
 }
@@ -102,171 +102,171 @@ export const SelectSpecialist = (props) => {
     );
 }
 
-export const SelectBranch = (props) => {
-    if(DEBUG) console.log('SelectBranch: load');
+// export const SelectBranch = (props) => {
+//     if(DEBUG) console.log('SelectBranch: load');
 
-    const {
-        list = null,
-        filters = defaultFilters,
-        placeholder = 'Pilih cabang',
-        searchable = true,
-        searchableCustom = false,
-        className = 'sDash_fullwidth',
-        showSearch = true,
-        optionFilterProp = 'children',
-        filterOption =  funcFilter,
-        optionLabelProp = 'label',
-        ...rest
-    } = props;
+//     const {
+//         list = null,
+//         filters = defaultFilters,
+//         placeholder = 'Pilih cabang',
+//         searchable = true,
+//         searchableCustom = false,
+//         className = 'sDash_fullwidth',
+//         showSearch = true,
+//         optionFilterProp = 'children',
+//         filterOption =  funcFilter,
+//         optionLabelProp = 'label',
+//         ...rest
+//     } = props;
     
-    const [data, setData] = useState([]);
-    const [success, setSuccess] = useState(false);
-    const [size, setSize] = useState('small');
-    const [defaultProps, setDefaultProps] = useState({});
+//     const [data, setData] = useState([]);
+//     const [success, setSuccess] = useState(false);
+//     const [size, setSize] = useState('small');
+//     const [defaultProps, setDefaultProps] = useState({});
 
-    useEffect( () => {
-        let tempData = {};
+//     useEffect( () => {
+//         let tempData = {};
 
-        if(props.placeholder === undefined) tempData.placeholder = 'Pilih cabang';
-        if(props.searchable || props.searchableCustom) {
-            if(props.className === undefined) tempData.className = 'sDash_fullwidth-select';
-            if(props.showSearch === undefined) tempData.showSearch = true;
-            if(props.optionFilterProp === undefined) tempData.optionFilterProp = 'children';
-            if(props.filterOption === undefined) tempData.filterOption = (input, option) => funcFilter(input, option)
-            if(props.optionLabelProp === undefined) tempData.optionLabelProp="label";
-            if(props.mode === 'multiple') {
-                if(props.searchableCustom === undefined) {
-                    tempData.onChange = e => {
-                        props.onChange(e);
-                        selectChange(e, setSize);
-                    };
-                }
-            }
-        }
+//         if(props.placeholder === undefined) tempData.placeholder = 'Pilih cabang';
+//         if(props.searchable || props.searchableCustom) {
+//             if(props.className === undefined) tempData.className = 'sDash_fullwidth-select';
+//             if(props.showSearch === undefined) tempData.showSearch = true;
+//             if(props.optionFilterProp === undefined) tempData.optionFilterProp = 'children';
+//             if(props.filterOption === undefined) tempData.filterOption = (input, option) => funcFilter(input, option)
+//             if(props.optionLabelProp === undefined) tempData.optionLabelProp="label";
+//             if(props.mode === 'multiple') {
+//                 if(props.searchableCustom === undefined) {
+//                     tempData.onChange = e => {
+//                         props.onChange(e);
+//                         selectChange(e, setSize);
+//                     };
+//                 }
+//             }
+//         }
 
-        setDefaultProps(tempData);
-    }, []);
+//         setDefaultProps(tempData);
+//     }, []);
 
-    const getData = async () => {
-        if(!success) {
-            if(DEBUG) console.log('SelectBranch: get data');
-            const [result, error] = await get_branch(filters);
-            if(error) {
-                if(DEBUG) console.log('SelectBranch: load error');
-            } else {
-                if(DEBUG) console.log('SelectBranch: load success');
-                setSuccess(true);
-                setData(result.data);
-            }
-        }
-    }
+//     const getData = async () => {
+//         if(!success) {
+//             if(DEBUG) console.log('SelectBranch: get data');
+//             const [result, error] = await get_branch(filters);
+//             if(error) {
+//                 if(DEBUG) console.log('SelectBranch: load error');
+//             } else {
+//                 if(DEBUG) console.log('SelectBranch: load success');
+//                 setSuccess(true);
+//                 setData(result.data);
+//             }
+//         }
+//     }
 
-    useEffect(() => {
-        if(!list) {
-            if(data.length===0) getData();
-            else {
-                if(DEBUG) console.log('SelectBranch: list define from state');
-            }
-        }
-        else {
-            if(DEBUG) console.log('SelectBranch: list define');
-            setData(list);
-        }
-    }, [list]);
+//     useEffect(() => {
+//         if(!list) {
+//             if(data.length===0) getData();
+//             else {
+//                 if(DEBUG) console.log('SelectBranch: list define from state');
+//             }
+//         }
+//         else {
+//             if(DEBUG) console.log('SelectBranch: list define');
+//             setData(list);
+//         }
+//     }, [list]);
 
-    return(
-        <Select {...rest} {...defaultProps} size={size}>
-            {   Object.keys(data).map(index => {
-                    let row = data[index];
-                    return <Select.Option key={row['branch_id']} value={row['branch_id']} label={row['name']}>{row['name']}</Select.Option>;
-                })
-            }
-        </Select>
-    );
-}
+//     return(
+//         <Select {...rest} {...defaultProps} size={size}>
+//             {   Object.keys(data).map(index => {
+//                     let row = data[index];
+//                     return <Select.Option key={row['branch_id']} value={row['branch_id']} label={row['name']}>{row['name']}</Select.Option>;
+//                 })
+//             }
+//         </Select>
+//     );
+// }
 
-export const SelectDepartment = (props) => {
-    if(DEBUG) console.log('SelectDepartment: load');
+// export const SelectDepartment = (props) => {
+//     if(DEBUG) console.log('SelectDepartment: load');
 
-    const {
-        list = null,
-        filters = defaultFilters,
-        placeholder = 'Pilih departemen',
-        searchable = true,
-        searchableCustom = false,
-        className = 'sDash_fullwidth',
-        showSearch = true,
-        optionFilterProp = 'children',
-        filterOption =  funcFilter,
-        optionLabelProp = 'label',
-        ...rest
-    } = props;
+//     const {
+//         list = null,
+//         filters = defaultFilters,
+//         placeholder = 'Pilih departemen',
+//         searchable = true,
+//         searchableCustom = false,
+//         className = 'sDash_fullwidth',
+//         showSearch = true,
+//         optionFilterProp = 'children',
+//         filterOption =  funcFilter,
+//         optionLabelProp = 'label',
+//         ...rest
+//     } = props;
 
-    const [data, setData] = useState([]);
-    const [success, setSuccess] = useState(false);
-    const [size, setSize] = useState('small');
-    const [defaultProps, setDefaultProps] = useState({});
+//     const [data, setData] = useState([]);
+//     const [success, setSuccess] = useState(false);
+//     const [size, setSize] = useState('small');
+//     const [defaultProps, setDefaultProps] = useState({});
 
-    useEffect( () => {
-        let tempData = {};
+//     useEffect( () => {
+//         let tempData = {};
 
-        if(props.placeholder === undefined) tempData.placeholder = 'Pilih departemen';
-        if(props.searchable || props.searchableCustom) {
-            if(props.className === undefined) tempData.className = 'sDash_fullwidth-select';
-            if(props.showSearch === undefined) tempData.showSearch = true;
-            if(props.optionFilterProp === undefined) tempData.optionFilterProp = 'children';
-            if(props.filterOption === undefined) tempData.filterOption = (input, option) => funcFilter(input, option)
-            if(props.optionLabelProp === undefined) tempData.optionLabelProp="label";
-            if(props.mode === 'multiple') {
-                if(props.searchableCustom === undefined) {
-                    tempData.onChange = e => {
-                        props.onChange(e);
-                        selectChange(e, setSize);
-                    };
-                }
-            }
-        }
+//         if(props.placeholder === undefined) tempData.placeholder = 'Pilih departemen';
+//         if(props.searchable || props.searchableCustom) {
+//             if(props.className === undefined) tempData.className = 'sDash_fullwidth-select';
+//             if(props.showSearch === undefined) tempData.showSearch = true;
+//             if(props.optionFilterProp === undefined) tempData.optionFilterProp = 'children';
+//             if(props.filterOption === undefined) tempData.filterOption = (input, option) => funcFilter(input, option)
+//             if(props.optionLabelProp === undefined) tempData.optionLabelProp="label";
+//             if(props.mode === 'multiple') {
+//                 if(props.searchableCustom === undefined) {
+//                     tempData.onChange = e => {
+//                         props.onChange(e);
+//                         selectChange(e, setSize);
+//                     };
+//                 }
+//             }
+//         }
 
-        setDefaultProps(tempData);
-    }, []);
+//         setDefaultProps(tempData);
+//     }, []);
 
-    const getData = async () => {
-        if(!success) {
-            if(DEBUG) console.log('SelectDepartment: get data');
-            const [result, error] = await get_department(filters);
-            if(error) {
-                if(DEBUG) console.log('SelectDepartment: load error');
-            } else {
-                if(DEBUG) console.log('SelectDepartment: load success');
-                setSuccess(true);
-                setData(result.data);
-            }
-        }
-    }
+//     const getData = async () => {
+//         if(!success) {
+//             if(DEBUG) console.log('SelectDepartment: get data');
+//             const [result, error] = await get_department(filters);
+//             if(error) {
+//                 if(DEBUG) console.log('SelectDepartment: load error');
+//             } else {
+//                 if(DEBUG) console.log('SelectDepartment: load success');
+//                 setSuccess(true);
+//                 setData(result.data);
+//             }
+//         }
+//     }
 
-    useEffect(() => {
-        if(!list){
-            if(data.length===0) getData();
-            else {
-                if(DEBUG) console.log('SelectDepartment: list define from state');
-            }
-        }
-        else {
-            if(DEBUG) console.log('SelectDepartment: list define');
-            setData(list);
-        }
-    }, [list]);
+//     useEffect(() => {
+//         if(!list){
+//             if(data.length===0) getData();
+//             else {
+//                 if(DEBUG) console.log('SelectDepartment: list define from state');
+//             }
+//         }
+//         else {
+//             if(DEBUG) console.log('SelectDepartment: list define');
+//             setData(list);
+//         }
+//     }, [list]);
 
-    return(
-        <Select {...rest} {...defaultProps} size={size}>
-            {   Object.keys(data).map(index => {
-                    let row = data[index];
-                    return <Select.Option key={row['department_id']} value={row['department_id']} label={row['name']}>{row['name']}</Select.Option>;
-                })
-            }
-        </Select>
-    );
-}
+//     return(
+//         <Select {...rest} {...defaultProps} size={size}>
+//             {   Object.keys(data).map(index => {
+//                     let row = data[index];
+//                     return <Select.Option key={row['department_id']} value={row['department_id']} label={row['name']}>{row['name']}</Select.Option>;
+//                 })
+//             }
+//         </Select>
+//     );
+// }
 
 export const SelectWeekday = (props) => {
 
@@ -400,4 +400,107 @@ export const SelectDoctor = (props) => {
             }
         </Select>
     );
+}
+
+export class SelectBranch extends React.Component {
+
+    state = {
+        data: []
+    }
+    
+    componentDidMount() {
+        this.getData();
+    }
+
+    getData = async() => {
+        const {
+            result, error, message
+        } = await get_branch({all_data: true})
+
+        if(error) {
+            console.log('error select branch:', message);
+        } else {
+            this.setState({
+                ...this.state, data: result.data
+            });
+        }
+    }
+
+    render() {
+
+        let {
+            data
+        } = this.state;
+
+        return(
+            <Select
+                showSearch
+                style={{ width: 200 }}
+                placeholder="Cari Cabang"
+                optionFilterProp="children"
+                filterOption={ (input, option) => funcFilter(input, option)}
+                className="sDash_fullwidth-select"
+                {...this.props}
+            >
+                {   data.map(row => {
+                        return <Select.Option key={row.branch_id} value={row.branch_id}>{row.name}</Select.Option>
+                    })
+                }
+            </Select>
+        );
+    }
+}
+
+export class SelectDepartment extends React.Component {
+
+    state = {
+        data: []
+    }
+
+    componentDidUpdate() {
+        // console.log('componentDidUpdate', this.props);
+    }
+    
+    componentDidMount() {
+        // console.log('componentDidMount', this.props);
+        this.getData();
+    }
+
+    getData = async() => {
+        const {
+            result, error, message
+        } = await get_department({all_data: true})
+
+        if(error) {
+            console.log('error select department:', message);
+        } else {
+            this.setState({
+                ...this.state, data: result.data
+            });
+        }
+    }
+
+    render() {
+
+        let {
+            data
+        } = this.state;
+
+        return(
+            <Select
+                showSearch
+                style={{ width: 200 }}
+                placeholder="Cari Poli"
+                optionFilterProp="children"
+                filterOption={ (input, option) => funcFilter(input, option)}
+                className="sDash_fullwidth-select"
+                {...this.props}
+            >
+                {   data.map(row => {
+                        return <Select.Option key={row.department_id} value={row.department_id}>{row.name}</Select.Option>
+                    })
+                }
+            </Select>
+        );
+    }
 }

@@ -16,7 +16,7 @@ import { AlertError, AlertSuccess } from '../../components/alerts/alerts';
 import { SelectBranch, SelectDepartment, SelectSpecialist, RadioWeekDay, RadioGender } from '../../components/form';
 
 // API
-import { createFormError, create_doctor, get_specialist } from '../../api';
+import { create_doctor, get_specialist } from '../../api';
 
 const Detail = () => {
     const history = useHistory();

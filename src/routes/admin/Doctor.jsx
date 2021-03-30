@@ -1,27 +1,18 @@
-import React, { Suspense, lazy } from 'react';
-import { Spin } from 'antd';
+import React from 'react';
 import { Switch, Route, useRouteMatch } from 'react-router-dom';
 
-const DoctorList = lazy(() => import('../../container/doctor/list'));
-const DoctorDetail = lazy(() => import('../../container/doctor/detail'));
-const DoctorCreate = lazy(() => import('../../container/doctor/create'));
+import List from '../../container/doctor/list';
+import Detail from '../../container/doctor/detail';
+import Create from '../../container/doctor/create';
 
 const Doctor = () => {
   const { path } = useRouteMatch();
 
   return (
     <Switch>
-      <Suspense
-        fallback={
-          <div className="spin">
-            <Spin />
-          </div>
-        }
-      >
-        <Route path={path} exact component={DoctorList} />
-        <Route path={`${path}/create`} component={DoctorCreate} />
-        <Route path={`${path}/detail/:id`} component={DoctorDetail} />
-      </Suspense>
+        <Route path={path} exact component={List} />
+        <Route path={`${path}/create`} component={Create} />
+        <Route key="DoctorRouteDetail" path={`${path}/detail/:id/:uriPage?`} component={Detail} />
     </Switch>
   );
 };

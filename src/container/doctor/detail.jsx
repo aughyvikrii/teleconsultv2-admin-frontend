@@ -1,7 +1,7 @@
 import React, { useEffect, useState, lazy, Suspense } from 'react';
-import { Row, Col, Skeleton } from 'antd';
+import { Row, Col, Skeleton, Menu } from 'antd';
 import { Main, SettingWrapper } from '../styled';
-import { NavLink, Switch, Route, useRouteMatch, useHistory, useParams } from 'react-router-dom';
+import { NavLink, useRouteMatch, Switch, Route, useHistory, useParams } from 'react-router-dom';
 
 // Component
 import { PageHeader } from '../../components/page-headers/page-headers';
@@ -12,47 +12,63 @@ import { Cards } from '../../components/cards/frame/cards-frame';
 // API
 import { detail_doctor } from '../../api';
 
+import UserCards from '../pages/overview/UserCard';
+import UserBio from '../pages/overview/UserBio';
 
-const UserCards = lazy(() => import('../pages/overview/UserCard'));
-const UserBio = lazy(() => import('../pages/overview/UserBio'));
+import PersonDetail from '../pages/overview/PersonDetail';
+import PatientAppointment from '../pages/overview/PatientAppointment';
+import DoctorSchedule from '../pages/overview/DoctorSchedule';
 
-const PersonDetail = lazy(() => import('../pages/overview/PersonDetail'));
-const PatientAppointment = lazy(() => import('../pages/overview/PatientAppointment'));
-const DoctorSchedule = lazy(() => import('../pages/overview/DoctorSchedule'));
-
-const Detail = () => {
-    const { path, url } = useRouteMatch();
+const Detail = (props) => {
     const history = useHistory();
-    const { id } = useParams();
-    const [loading, setLoading] = useState(false);
+    let { id, uriPage } = useParams();
+    const [loading, setLoading] = useState();
     const [loadingStatus, setLoadingStatus] = useState();
     const [loadingMessage, setLoadingMessage] = useState();
     const [person, setPerson] = useState({});
     const [family, setFamily] = useState([]);
+    const [page, setPage] = useState(uriPage);
 
     useEffect( () => {
+        if(!page) setPage('information');
         getData();
-        // eslint-disable-next-line
-    }, [id]);
+    }, []);
 
     const getData = async () => {
         setLoading(true);
         setLoadingMessage('Proses mengambil data...');
-        const [result, error] = await detail_doctor(id);
+        const {
+            result,
+            error,
+            forceStop
+        } = await detail_doctor(id);
 
         if(error) {
-            setLoadingMessage(error);
-            setLoadingStatus('error');
-        } else {
-            setLoadingStatus('ok');
             setLoading(false);
+            setLoadingMessage(error);
+        } else {
             setPerson(result.data.person);
             setFamily(result.data.family);
+            setLoading(false);
         }
     }
 
+    function makeid(length) {
+        var result           = '';
+        var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        var charactersLength = characters.length;
+        for ( var i = 0; i < length; i++ ) {
+           result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return result;
+     }
+
+    const onClickNav = (e) => {
+        setPage(e.key);
+    }
+
     return(
-        <>
+        <div key="DoctorDetail">
             <PageHeader
                 ghost
                 title="Detail Dokter"
@@ -67,86 +83,53 @@ const Detail = () => {
             />
             <Main>
                 <Row gutter={25}>
-                    {   loading ?
-                        <Col xs={24}>
+                    <Col xxl={6} lg={8} md={10} xs={24}>
+                        {   loading ?
                             <Cards headless>
-                                <div className="text-center">
-                                    <Loading status={loadingStatus} /> <br/>
-                                    {loadingMessage}
-                                </div>
+                                <Skeleton avatar active paragraph={{ rows: 3 }} />
                             </Cards>
-                        </Col>
-                    :
-                        <>
-                            <Col xxl={6} lg={8} md={10} xs={24}>
-                                <Suspense
-                                fallback={
-                                    <Cards headless>
-                                    <Skeleton avatar active paragraph={{ rows: 3 }} />
-                                    </Cards>
-                                }
-                                >
+                        :
+                            <>
                                 <UserCards
-                                    user={{ name: (person?.full_name ? person.full_name : person.display_name),
+                                    user={{
+                                        name: (person?.full_name ? person.full_name : person.display_name),
                                         designation: (person?.alt_name ? person.alt_name : 'Pasien'),
-                                        img: person.profile_pic }}
+                                        img: person.profile_pic
+                                    }}
                                 />
-                                </Suspense>
-                                <Suspense
-                                fallback={
-                                    <Cards headless>
-                                    <Skeleton active paragraph={{ rows: 10 }} />
-                                    </Cards>
-                                }
-                                >
                                 <UserBio person={person} family={family} personType="doctor" />
-                                </Suspense>
-                            </Col>
-                            <Col xxl={18} lg={16} md={14} xs={24}>
-                            <SettingWrapper>
-                                <Suspense
-                                    fallback={
-                                    <Cards headless>
-                                        <Skeleton active />
-                                    </Cards>
-                                    }
-                                >
-                                    <div className="coverWrapper">
-                                        <nav className="profileTab-menu">
-                                            <ul>
-                                                <li>
-                                                    <NavLink to={`${url}/information`}>Informasi</NavLink>
-                                                </li>
-                                                <li>
-                                                    <NavLink to={`${url}/appointment`}>Daftar Perjanjian</NavLink>
-                                                </li>
-                                                <li>
-                                                    <NavLink to={`${url}/schedules`}>Jadwal</NavLink>
-                                                </li>
-                                            </ul>
-                                        </nav>
-                                    </div>
-                                </Suspense>
-                                <Switch>
-                                    <Suspense
-                                    fallback={
-                                        <Cards headless>
-                                        <Skeleton active paragraph={{ rows: 10 }} />
-                                        </Cards>
-                                    }
-                                    >
-                                    <Route exact path={`${path}/information`} component={() => <PersonDetail person={person} is_doctor={true} />} />
-                                    <Route path={`${path}/appointment`} component={PatientAppointment} />
-                                    <Route path={`${path}/schedules`} component={DoctorSchedule} />
-                                    </Suspense>
-                                </Switch>
-                            </SettingWrapper>
-                        </Col>
-                        </>
-                    }
+                            </>
+                        }
+                    </Col>
+                    <Col xxl={18} lg={16} md={14} xs={24}>
+                        <SettingWrapper>
+                            <Menu onClick={onClickNav} selectedKeys={page} mode="horizontal">
+                                <Menu.Item key="information">
+                                    <NavLink to={`/admin/doctor/detail/${id}/information`}>
+                                        Informasi Pribadi
+                                    </NavLink>
+                                </Menu.Item>
+                                <Menu.Item key="appointment">
+                                    <NavLink to={`/admin/doctor/detail/${id}/appointment`}>
+                                        Daftar Perjanjian
+                                    </NavLink>
+                                </Menu.Item>
+                                <Menu.Item key="schedule">
+                                    <NavLink to={`/admin/doctor/detail/${id}/schedules`}>
+                                        Jadwal Praktek
+                                    </NavLink>
+                                </Menu.Item>
+                            </Menu> <br/>
+                            <Switch>
+                                    <Route exact key="DoctorDetailInformation" path={`/admin/doctor/detail/:id/information`} component={() => <PersonDetail person_id={id} person={person} is_doctor={true} loading={loading} />} />
+                                    <Route key="DoctorDetailAppointment" path={`/admin/doctor/detail/:id/appointment`} component={PatientAppointment} />
+                                    <Route key="DoctorDetailSchedule" path={`/admin/doctor/detail/:id/schedules`} component={DoctorSchedule} />
+                            </Switch>
+                        </SettingWrapper>
+                    </Col>
                 </Row>
             </Main>
-        </>
+        </div>
     );
 }
 

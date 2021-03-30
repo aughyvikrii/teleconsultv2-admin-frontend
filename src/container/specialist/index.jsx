@@ -11,7 +11,7 @@ import { Modal } from '../../components/modals/antd-modals';
 import Loading from '../../components/loadings';
 
 // Api Function
-import  { createFormError, get_specialist, update_specialist, create_specialist, delete_specialist } from '../../api';
+import  { get_specialist, update_specialist, create_specialist, delete_specialist } from '../../api';
 const { Search } = Input;
 
 const Specialists = () => {

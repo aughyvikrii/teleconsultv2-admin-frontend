@@ -1,27 +1,38 @@
 import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import { PlusCircleOutlined } from '@ant-design/icons';
-import { Row, Col, Form, Radio, TimePicker, Input, Popconfirm, Message, Table } from 'antd';
+import { Row, Col, Form, Radio, Popconfirm, Table, Skeleton } from 'antd';
 import moment from 'moment';
 import { Cards } from '../../../components/cards/frame/cards-frame';
 import { Button, BtnGroup } from '../../../components/buttons/buttons';
 import { ButtonHeading } from '../../../components/cards/style';
 import { Modal } from '../../../components/modals/antd-modals';
-import { SelectBranch, SelectDepartment, RadioWeekDay, FormAddSchedule } from '../../../components/form';
+import { FormAddSchedule, FormAddScheduleNew } from '../../../components/form';
 import { useParams } from 'react-router-dom';
-import { BasicFormWrapper, BtnWithIcon } from '../../styled';
-import Loading from '../../../components/loadings';
+import { BtnWithIcon } from '../../styled';
 import Heading from '../../../components/heading/heading';
 import { Tag } from '../../../components/tags/tags';
 
-import { AlertError, AlertSuccess } from '../../../components/alerts/alerts';
-import { createFormError, get_doctor_schedule, create_doctor_schedule, update_doctor_schedule, get_branch, get_department } from '../../../api';
+import { ModalAddSchedule } from '../../../components/modals';
+// import { AlertError, AlertSuccess } from '../../../components/alerts/alerts';
+import { get_doctor_schedule, create_doctor_schedule, update_doctor_schedule, get_branch, get_department } from '../../../api';
+
+
+import {
+    loadingStart,
+    loadingContent,
+    loadingClose,
+    loadingSuccess,
+    loadingError
+} from '../../../redux/loadingmodal/actionCreator';
+import { useDispatch } from 'react-redux';
 
 const DoctorSchedule = () => {
+    const dispatch = useDispatch();
 
     const [listType, setListType]  = useState('perday');
 
-    const [isLoading, setLoading] = useState('');
+    const [loading, setLoading] = useState(true);
     const [loadingStatus, setLoadingStatus] = useState('');
     const [alert, setAlert] =  useState();
 
@@ -44,7 +55,15 @@ const DoctorSchedule = () => {
     const {id} = useParams();
 
     const getData = async () => {
-        const [result, error] = await get_doctor_schedule(id);
+
+        setLoading(true);
+
+        const {
+            result, error
+        } = await get_doctor_schedule(id);
+
+        setLoading(false);
+
         if(error) {
             setSchedules([]);
         } else {
@@ -53,27 +72,30 @@ const DoctorSchedule = () => {
     }
 
     const _get_branch = async () => {
-        const [result, error] = await get_branch({all_data: true});
+        const {
+            result, error, forceStop
+        } = await get_branch({all_data: true});
         if(!error) {
             setListBranch(result.data);
         }
     }
 
     const _get_department = async () => {
-        const [result, error] = await get_department({all_data: true});
+        const {
+            result, error, forceStop
+        } = await get_department({all_data: true});
         if(!error) {
             setListDepartment(result.data);
         }
     }
 
     useEffect( () => {
-        _get_branch();
-        _get_department();
+        // _get_branch();
+        // _get_department();
     }, []);
 
     useEffect( () => {
         getData();
-        // eslint-disable-next-line
     }, [id]);
 
     useEffect( () =>{
@@ -301,8 +323,6 @@ const DoctorSchedule = () => {
         fields['start_hour'] = fields['start_hour'].format('HH:mm');
         fields['end_hour'] = fields['end_hour'].format('HH:mm');
 
-        setLoading(true);
-
         let response = [];
         if(modal.action === 'add') response = await create_doctor_schedule(id, fields);
         else response = await update_doctor_schedule(modal.schedule_id, fields);
@@ -316,7 +336,6 @@ const DoctorSchedule = () => {
                 AlertError(error)
             );
 
-            setLoading(false);
 
             form.setFields(error_fields);
         } else {
@@ -330,7 +349,6 @@ const DoctorSchedule = () => {
             getData();
 
             setTimeout(() => {
-                setLoading(false);
                 closeModal();
             }, 2000);
         }
@@ -338,70 +356,45 @@ const DoctorSchedule = () => {
 
     return(
         <>
-        <Row gutter={25}>
-            <Col lg={24} xs={24}>
-                <Cards
-                    title="Jadwal Praktek"
-                    extra
-                    isbutton={
-                        <div className="card-radio">
-                            <ButtonHeading>
-                                <Radio.Group size='small' defaultValue={listType} onChange={(e) => setListType(e.target.value)} >
-                                    <Radio.Button value="perday">Hari</Radio.Button>
-                                    <Radio.Button value="perbranch">Cabang</Radio.Button>
-                                    <Radio.Button value="perdepartment">Departemen</Radio.Button>
-                                </Radio.Group>
-                            </ButtonHeading>
-                            &nbsp;&nbsp;
-                            <BtnWithIcon>
-                                <BtnGroup>
-                                    <Button size="small" type="danger" onClick={() => modalFunc('add')}>
-                                        <PlusCircleOutlined/>
-                                    </Button>
-                                    <Button size="small" type="danger" onClick={() => modalFunc('add')}>
-                                        Tambah Jadwal
-                                    </Button>
-                                </BtnGroup>
-                            </BtnWithIcon>
-                        </div>
-                    }
-                >
-                {   listType === 'perday' ? <PerDayTable/> :
-                    listType === 'perbranch' ? <PerBranchTable/> : <PerDepartment/>
-                }
-                </Cards>
-            </Col>
-        </Row>
-        <Modal
+        <Cards
+            title="Jadwal Praktek"
+            extra
+            isbutton={
+                <div className="card-radio">
+                    <ButtonHeading>
+                        <Radio.Group size='small' defaultValue={listType} onChange={(e) => setListType(e.target.value)} >
+                            <Radio.Button value="perday">Hari</Radio.Button>
+                            <Radio.Button value="perbranch">Cabang</Radio.Button>
+                            <Radio.Button value="perdepartment">Departemen</Radio.Button>
+                        </Radio.Group>
+                    </ButtonHeading>
+                    &nbsp;&nbsp;
+                    <BtnWithIcon>
+                        <BtnGroup>
+                            <Button size="small" type="danger" onClick={() => modalFunc('add')}>
+                                <PlusCircleOutlined/>
+                            </Button>
+                            <Button size="small" type="danger" onClick={() => modalFunc('add')}>
+                                Tambah Jadwal
+                            </Button>
+                        </BtnGroup>
+                    </BtnWithIcon>
+                </div>
+            }
+        >
+        {   loading ? <Skeleton/> :
+            listType === 'perday' ? <PerDayTable/> :
+            listType === 'perbranch' ? <PerBranchTable/> : <PerDepartment/>
+        }
+        </Cards>
+        <ModalAddSchedule
             forceRender={true}
             visible={modal.visible}
             title={modal.title}
-            onCancel={closeModal}
-            onConfirm={() => form.submit()}
-            disableButton={isLoading}
-        >
-            { isLoading ?
-                <>
-                    <div className="text-center">
-                        <Loading status={loadingStatus} />
-                        { alert ? alert : 'Memproses permintaan...'  }
-                    </div>
-                </>
-            :
-            <>
-                {alert}
-                <FormAddSchedule
-                    form={form}
-                    onFinish={submitForm}
-                    doctor_id={id}
-                    loadDoctor={false}
-                    showDoctor={false}
-                    dataBranch={listBranch}
-                    dataDepartment={listDepartment}
-                />
-            </>
-            }
-        </Modal>
+            doctor_id={id}
+            callback={getData}
+            mState={[modal, setModal]}
+        />
         </>
     );
 }

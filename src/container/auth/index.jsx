@@ -7,7 +7,7 @@ import GlobalLayout from '../../layout/GlobalLayout';
 const AuthLayout = WraperContent => {
   return () => {
     return (
-      <GlobalLayout>
+      // <GlobalLayout>
         <Row>
           <Col xxl={8} xl={9} lg={12} md={8} xs={24}>
             <Aside>
@@ -36,7 +36,7 @@ const AuthLayout = WraperContent => {
             <WraperContent />
           </Col>
         </Row>
-      </GlobalLayout>
+      // </GlobalLayout>
     );
   };
 };

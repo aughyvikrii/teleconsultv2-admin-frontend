@@ -11,6 +11,9 @@ import Auth from './routes/auth';
 import './static/css/style.css';
 import config from './config/config';
 import ProtectedRoute from './components/utilities/protectedRoute';
+import { Modal } from './components/modals/antd-modals';
+import Loading from './components/loadings';
+import LoginForm from './container/auth/LoginForm';
 
 const { theme } = config;
 
@@ -21,6 +24,16 @@ const ProviderConfig = () => {
       rtl: state.ChangeLayoutMode.rtlData,
       topMenu: state.ChangeLayoutMode.topMenu,
       isLoggedIn: state.auth.login,
+    };
+  });
+
+  const { loginModal, loadingVisible, loadingContent, loadingStatus, loadingProps } = useSelector(state => {
+    return {
+        loginModal: state.auth.loginModal,
+        loadingVisible: state.loadingModal.visible,
+        loadingContent: state.loadingModal.content,
+        loadingStatus: state.loadingModal.status,
+        loadingProps: state.loadingModal.customProps,
     };
   });
 
@@ -39,12 +52,37 @@ const ProviderConfig = () => {
     <ConfigProvider direction={rtl ? 'rtl' : 'ltr'} locale={idID}>
       <ThemeProvider theme={{ ...theme, rtl, topMenu, darkMode }}>
         <Router basename={process.env.PUBLIC_URL}>
-          {!isLoggedIn ? <Route path="/" component={Auth} /> : <ProtectedRoute path="/doctor" component={Admin} />}
+          {!isLoggedIn ? <Route path="/" component={Auth} /> : <ProtectedRoute path="/admin" component={Admin} />}
           {isLoggedIn && (path === process.env.PUBLIC_URL || path === `${process.env.PUBLIC_URL}/`) && (
-            <Redirect to="/doctor" />
+            <Redirect to="/admin" />
           )}
         </Router>
       </ThemeProvider>
+      <Modal
+        key="ModalLogin"
+        visible={loginModal}
+        maskClosable={false}
+        noFooter={true}
+        closeIcon={<i></i>}
+        >
+          <LoginForm/>
+      </Modal>
+      <Modal
+            key="ModalLoading"
+            visible={loadingVisible}
+            centered={true}
+            footer={null}
+            closable={false}
+            width={null}
+            maskClosable={false}
+            zIndex={9999}
+            {...loadingProps}
+        >
+            <div className="text-center">
+                <Loading status={loadingStatus}/>
+                {loadingContent}
+            </div>
+        </Modal>
     </ConfigProvider>
   );
 };
