@@ -26,6 +26,7 @@ const PatientAppointment = () => {
 
     const getData = async () => {
         setLoading(true);
+        setAlert(null);
 
         const { result, error, message } = await get_doctor_appointment(id, filter);
 
@@ -41,6 +42,10 @@ const PatientAppointment = () => {
     React.useEffect(() => {
         getData();
     }, []);
+
+    React.useEffect(() => {
+        getData();
+    }, [filter]);
 
     React.useEffect(() => {
         let _data = data?.data ? data.data : [];
@@ -91,6 +96,14 @@ const PatientAppointment = () => {
         setSource(_source);
     }, [data]);
 
+    const tableChange = (e) => {
+        setFilter({
+            ...filter,
+            page: e.current,
+            data_per_page: e.pageSize
+        });
+    }
+
     const columns = [
         { title: 'ID', dataIndex: 'id', key: 'id', },
         { title: 'Pasien', dataIndex: 'patient', key: 'patient', },
@@ -121,6 +134,7 @@ const PatientAppointment = () => {
                             showQuickJumper: true,
                             showSizeChanger: true
                         }}
+                        onChange={tableChange}
                     />
                 </TableWrapper>
             </Card>

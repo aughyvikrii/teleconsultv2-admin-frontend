@@ -100,8 +100,8 @@ const List = () => {
                 created_at: row.created_at,
                 action: (
                         <>
-                            <Link to={`${path}/detail/${row.doctor_id}/information`}>
-                                <Button className="btn-icon" size="default" shape="round" type="primary" title="Detail" onClick={() =>  history.push(`${path}/detail/${row.doctor_id}`) }>
+                            <Link to={`${path}/${row.doctor_id}/information`}>
+                                <Button className="btn-icon" size="default" shape="round" type="primary" title="Detail" onClick={() =>  history.push(`${path}/${row.doctor_id}`) }>
                                     <i aria-hidden="true" className="fa fa-folder-open-o color-white"></i>
                                 </Button>
                             </Link>

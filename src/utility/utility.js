@@ -13,7 +13,7 @@ const ellipsis = (text, size) => {
     .join(' ')}...`;
 };
 
-export const format_rupiah = (angka, prefix) =>{
+const format_rupiah = (angka, prefix) =>{
   if(!angka) return;
   let number_string = parseFloat(angka).toString().replace(/[^,\d]/g, '');
   let split   = number_string.split(',')
@@ -31,7 +31,7 @@ export const format_rupiah = (angka, prefix) =>{
   return prefix == undefined ? rupiah : (rupiah ? 'Rp. ' + rupiah : '');
 }
 
-export const day_tanslate = (name, lang='id') => {
+const day_tanslate = (name, lang='id') => {
   if(lang == 'id') {
     switch(name) {
       case 'monday': return 'Senin';
@@ -48,7 +48,7 @@ export const day_tanslate = (name, lang='id') => {
   }
 }
 
-export const label_apstatus = (status) => {
+const label_apstatus = (status) => {
   if(status == 'waiting_consul') {
     return <Tag color="#4347D9">Menunggu Konsultasi</Tag>
   } else if ( status == 'waiting_payment' ) {
@@ -60,4 +60,42 @@ export const label_apstatus = (status) => {
   } else return status;
 }
 
-export { ellipsis };
+const maskingInputTime = (e) => {
+
+  if(e.keyCode === 8) return; /// delete
+
+  let value = e.target?.value,
+      format = null,
+      last_char = parseInt(value.substr(value.length - 1)),
+      first_char = parseInt(value.substr(0,1));
+      
+      if(last_char === NaN) {
+        return;
+      }
+
+      if(value.length === 1 && parseInt(value) > 2) {
+        format = null;
+      }
+      else if(value.length === 2) {
+        if(first_char === 2 && last_char > 3) format = first_char;
+        else format = value + ':';
+      }
+      else if (value.length === 4) {
+        if(last_char > 5) format = value.substr(0,3);
+        else format = value;
+      }
+      else if(value.length > 5) {
+        format = value.substring(0,5);
+      } else {
+        format = value;
+      }
+  e.target.value = format
+}
+
+export {
+  ellipsis,
+  format_rupiah,
+  day_tanslate,
+  label_apstatus,
+  maskingInputTime
+};

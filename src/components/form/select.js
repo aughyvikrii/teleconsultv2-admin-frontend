@@ -67,7 +67,7 @@ export const SelectSpecialist = (props) => {
     const getData = async () => {
         if(!success) {
             if(DEBUG) console.log('SelectSpecialist: get data');
-            const [result, error] = await get_specialist(filters);
+            const {result, error} = await get_specialist(filters);
             if(error) {
                 if(DEBUG) console.log('SelectSpecialist: load error');
             } else {
@@ -101,172 +101,6 @@ export const SelectSpecialist = (props) => {
         </Select>
     );
 }
-
-// export const SelectBranch = (props) => {
-//     if(DEBUG) console.log('SelectBranch: load');
-
-//     const {
-//         list = null,
-//         filters = defaultFilters,
-//         placeholder = 'Pilih cabang',
-//         searchable = true,
-//         searchableCustom = false,
-//         className = 'sDash_fullwidth',
-//         showSearch = true,
-//         optionFilterProp = 'children',
-//         filterOption =  funcFilter,
-//         optionLabelProp = 'label',
-//         ...rest
-//     } = props;
-    
-//     const [data, setData] = useState([]);
-//     const [success, setSuccess] = useState(false);
-//     const [size, setSize] = useState('small');
-//     const [defaultProps, setDefaultProps] = useState({});
-
-//     useEffect( () => {
-//         let tempData = {};
-
-//         if(props.placeholder === undefined) tempData.placeholder = 'Pilih cabang';
-//         if(props.searchable || props.searchableCustom) {
-//             if(props.className === undefined) tempData.className = 'sDash_fullwidth-select';
-//             if(props.showSearch === undefined) tempData.showSearch = true;
-//             if(props.optionFilterProp === undefined) tempData.optionFilterProp = 'children';
-//             if(props.filterOption === undefined) tempData.filterOption = (input, option) => funcFilter(input, option)
-//             if(props.optionLabelProp === undefined) tempData.optionLabelProp="label";
-//             if(props.mode === 'multiple') {
-//                 if(props.searchableCustom === undefined) {
-//                     tempData.onChange = e => {
-//                         props.onChange(e);
-//                         selectChange(e, setSize);
-//                     };
-//                 }
-//             }
-//         }
-
-//         setDefaultProps(tempData);
-//     }, []);
-
-//     const getData = async () => {
-//         if(!success) {
-//             if(DEBUG) console.log('SelectBranch: get data');
-//             const [result, error] = await get_branch(filters);
-//             if(error) {
-//                 if(DEBUG) console.log('SelectBranch: load error');
-//             } else {
-//                 if(DEBUG) console.log('SelectBranch: load success');
-//                 setSuccess(true);
-//                 setData(result.data);
-//             }
-//         }
-//     }
-
-//     useEffect(() => {
-//         if(!list) {
-//             if(data.length===0) getData();
-//             else {
-//                 if(DEBUG) console.log('SelectBranch: list define from state');
-//             }
-//         }
-//         else {
-//             if(DEBUG) console.log('SelectBranch: list define');
-//             setData(list);
-//         }
-//     }, [list]);
-
-//     return(
-//         <Select {...rest} {...defaultProps} size={size}>
-//             {   Object.keys(data).map(index => {
-//                     let row = data[index];
-//                     return <Select.Option key={row['branch_id']} value={row['branch_id']} label={row['name']}>{row['name']}</Select.Option>;
-//                 })
-//             }
-//         </Select>
-//     );
-// }
-
-// export const SelectDepartment = (props) => {
-//     if(DEBUG) console.log('SelectDepartment: load');
-
-//     const {
-//         list = null,
-//         filters = defaultFilters,
-//         placeholder = 'Pilih departemen',
-//         searchable = true,
-//         searchableCustom = false,
-//         className = 'sDash_fullwidth',
-//         showSearch = true,
-//         optionFilterProp = 'children',
-//         filterOption =  funcFilter,
-//         optionLabelProp = 'label',
-//         ...rest
-//     } = props;
-
-//     const [data, setData] = useState([]);
-//     const [success, setSuccess] = useState(false);
-//     const [size, setSize] = useState('small');
-//     const [defaultProps, setDefaultProps] = useState({});
-
-//     useEffect( () => {
-//         let tempData = {};
-
-//         if(props.placeholder === undefined) tempData.placeholder = 'Pilih departemen';
-//         if(props.searchable || props.searchableCustom) {
-//             if(props.className === undefined) tempData.className = 'sDash_fullwidth-select';
-//             if(props.showSearch === undefined) tempData.showSearch = true;
-//             if(props.optionFilterProp === undefined) tempData.optionFilterProp = 'children';
-//             if(props.filterOption === undefined) tempData.filterOption = (input, option) => funcFilter(input, option)
-//             if(props.optionLabelProp === undefined) tempData.optionLabelProp="label";
-//             if(props.mode === 'multiple') {
-//                 if(props.searchableCustom === undefined) {
-//                     tempData.onChange = e => {
-//                         props.onChange(e);
-//                         selectChange(e, setSize);
-//                     };
-//                 }
-//             }
-//         }
-
-//         setDefaultProps(tempData);
-//     }, []);
-
-//     const getData = async () => {
-//         if(!success) {
-//             if(DEBUG) console.log('SelectDepartment: get data');
-//             const [result, error] = await get_department(filters);
-//             if(error) {
-//                 if(DEBUG) console.log('SelectDepartment: load error');
-//             } else {
-//                 if(DEBUG) console.log('SelectDepartment: load success');
-//                 setSuccess(true);
-//                 setData(result.data);
-//             }
-//         }
-//     }
-
-//     useEffect(() => {
-//         if(!list){
-//             if(data.length===0) getData();
-//             else {
-//                 if(DEBUG) console.log('SelectDepartment: list define from state');
-//             }
-//         }
-//         else {
-//             if(DEBUG) console.log('SelectDepartment: list define');
-//             setData(list);
-//         }
-//     }, [list]);
-
-//     return(
-//         <Select {...rest} {...defaultProps} size={size}>
-//             {   Object.keys(data).map(index => {
-//                     let row = data[index];
-//                     return <Select.Option key={row['department_id']} value={row['department_id']} label={row['name']}>{row['name']}</Select.Option>;
-//                 })
-//             }
-//         </Select>
-//     );
-// }
 
 export const SelectWeekday = (props) => {
 
@@ -367,7 +201,7 @@ export const SelectDoctor = (props) => {
     const getData = async () => {
         if(!success) {
             if(DEBUG) console.log('SelectDoctor: get data');
-            const [result, error] = await get_doctor(filters);
+            const {result, error} = await get_doctor(filters);
             if(error) {
                 if(DEBUG) console.log('SelectDoctor: load error');
             } else {
@@ -435,7 +269,7 @@ export class SelectBranch extends React.Component {
         return(
             <Select
                 showSearch
-                style={{ width: 200 }}
+                // style={{ width: 200 }}
                 placeholder="Cari Cabang"
                 optionFilterProp="children"
                 filterOption={ (input, option) => funcFilter(input, option)}
@@ -489,7 +323,7 @@ export class SelectDepartment extends React.Component {
         return(
             <Select
                 showSearch
-                style={{ width: 200 }}
+                // style={{ width: 200 }}
                 placeholder="Cari Poli"
                 optionFilterProp="children"
                 filterOption={ (input, option) => funcFilter(input, option)}

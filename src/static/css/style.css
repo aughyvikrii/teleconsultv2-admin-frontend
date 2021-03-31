@@ -16,6 +16,14 @@
   background: rgba(255, 255, 255, 0.05);
 }
 
+div.no-required .ant-form-item-required::before {
+  display: none !important;
+}
+
+div.no-required .ant-form-item-required::after {
+  display: none !important;
+}
+
 .d-flex {
   display: flex;
 }

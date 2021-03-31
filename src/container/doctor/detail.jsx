@@ -74,9 +74,13 @@ const Detail = (props) => {
                 title="Detail Dokter"
                 buttons={[
                     <div key="6" className="page-header-actions">
-                        <Button size="small" key="4" type="primary" onClick={() => history.push('/admin/doctor')}>
-                        <i aria-hidden="true" className="fa fa-arrow-circle-left"></i>
-                            Kembali
+                        <Button size="small" key="DoctorDetailBackBtn" type="warning">
+                            <NavLink to={`/admin/doctor/${id}/update`}>
+                                <i aria-hidden="true" className="fa fa-pencil"></i> Update Informasi
+                            </NavLink>
+                        </Button>
+                        <Button size="small" key="DoctorDetailUpdateData" type="primary" onClick={() => history.push('/admin/doctor')}>
+                            <i aria-hidden="true" className="fa fa-arrow-circle-left"></i> Kembali
                         </Button>
                     </div>,
                     ]}
@@ -105,25 +109,25 @@ const Detail = (props) => {
                         <SettingWrapper>
                             <Menu onClick={onClickNav} selectedKeys={page} mode="horizontal">
                                 <Menu.Item key="information">
-                                    <NavLink to={`/admin/doctor/detail/${id}/information`}>
+                                    <NavLink to={`/admin/doctor/${id}/information`}>
                                         Informasi Pribadi
                                     </NavLink>
                                 </Menu.Item>
                                 <Menu.Item key="appointment">
-                                    <NavLink to={`/admin/doctor/detail/${id}/appointment`}>
+                                    <NavLink to={`/admin/doctor/${id}/appointment`}>
                                         Daftar Perjanjian
                                     </NavLink>
                                 </Menu.Item>
                                 <Menu.Item key="schedule">
-                                    <NavLink to={`/admin/doctor/detail/${id}/schedules`}>
+                                    <NavLink to={`/admin/doctor/${id}/schedules`}>
                                         Jadwal Praktek
                                     </NavLink>
                                 </Menu.Item>
                             </Menu> <br/>
                             <Switch>
-                                    <Route exact key="DoctorDetailInformation" path={`/admin/doctor/detail/:id/information`} component={() => <PersonDetail person_id={id} person={person} is_doctor={true} loading={loading} />} />
-                                    <Route key="DoctorDetailAppointment" path={`/admin/doctor/detail/:id/appointment`} component={PatientAppointment} />
-                                    <Route key="DoctorDetailSchedule" path={`/admin/doctor/detail/:id/schedules`} component={DoctorSchedule} />
+                                    <Route exact key="DoctorDetailInformation" path={`/admin/doctor/:id/information`} component={() => <PersonDetail person_id={id} person={person} is_doctor={true} loading={loading} />} />
+                                    <Route key="DoctorDetailAppointment" path={`/admin/doctor/:id/appointment`} component={PatientAppointment} />
+                                    <Route key="DoctorDetailSchedule" path={`/admin/doctor/:id/schedules`} component={DoctorSchedule} />
                             </Switch>
                         </SettingWrapper>
                     </Col>
