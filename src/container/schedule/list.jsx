@@ -112,7 +112,7 @@ const List = () => {
 
     const getData = async() => {
         setLoading(true);
-        const [result, error]  = await get_schedule(filters);
+        const {result, error}  = await get_schedule(filters);
         if(error) {
             if(error === 'Token is Invalid') return;
         } else {
@@ -201,17 +201,17 @@ const List = () => {
         });
 
         setMessageFilter('Mengambil data cabang...');
-        const [branch, berror] = await get_branch({all_data: true});
+        const {branch, berror} = await get_branch({all_data: true});
         setMessageFilter('Mengambil data departemen...');
-        const [department, derror] = await get_department({all_data: true});
+        const {department, derror} = await get_department({all_data: true});
         setMessageFilter('Mengambil data spesialis...');
-        const [specialist, serror] = await get_specialist({all_data: true});
+        const {specialist, serror} = await get_specialist({all_data: true});
         
         setBucketData({
             ...bucketData,
-            branch: berror ? [] : branch.data,
-            department: derror ? [] : department.data,
-            specialist: serror ? [] : specialist.data
+            branch: berror ? [] : branch?.data,
+            department: derror ? [] : department?.data,
+            specialist: serror ? [] : specialist?.data
         });
 
         setLoadingFilter(false);
@@ -336,7 +336,7 @@ const List = () => {
             response = await update_doctor_schedule(fields.schedule_id, fields);
         }
 
-        const [result, error] = response;
+        const {result, error} = response;
 
         if(error) {
             setModal({

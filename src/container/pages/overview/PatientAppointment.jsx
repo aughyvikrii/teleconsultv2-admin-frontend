@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import { useParams, useRouteMatch, Link } from 'react-router-dom';
+import { useParams, useHistory, Link } from 'react-router-dom';
 import { Skeleton, Card, Table, Input, Avatar } from 'antd';
 import { TableWrapper } from '../../styled';
 
@@ -12,6 +12,7 @@ import { Button } from '../../../components/buttons/buttons';
 import { get_doctor_appointment } from '../../../api';
 
 const PatientAppointment = () => {
+    const history = useHistory();
 
     const { id } = useParams();
     const [data, setData] = React.useState({});
@@ -39,9 +40,9 @@ const PatientAppointment = () => {
         }
     }
 
-    React.useEffect(() => {
-        getData();
-    }, []);
+    // React.useEffect(() => {
+    //     getData();
+    // }, []);
 
     React.useEffect(() => {
         getData();

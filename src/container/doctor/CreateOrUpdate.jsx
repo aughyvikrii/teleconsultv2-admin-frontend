@@ -159,7 +159,7 @@ const CreateOrUpdate = () => {
             localStorage.removeItem(storage);
             setTimeout(() => {
                 dispatch(loadingClose());
-                history.push('/admin/doctor/detail/'+result.data.pid+'/information')
+                history.push('/admin/doctor/'+result.data.pid+'/information')
             }, 2000);
         }
     }
@@ -413,7 +413,7 @@ const CreateOrUpdate = () => {
 
                                     <Form.Item>
                                         <Button type="primary" htmlType="submit" className="login-form-button" block={true}>
-                                                Tambah Data
+                                                {id ? 'Update Data' : 'Tambah Data'}
                                         </Button>
                                     </Form.Item>
                                 </Form>

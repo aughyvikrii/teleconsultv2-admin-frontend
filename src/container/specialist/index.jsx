@@ -135,7 +135,7 @@ const Specialists = () => {
     const getData = async () => {
         setTableLoading(true);
 
-        const [result, error] = await get_specialist(filter);
+        const {result, error} = await get_specialist(filter);
 
         if(!result) {
             setAlert(

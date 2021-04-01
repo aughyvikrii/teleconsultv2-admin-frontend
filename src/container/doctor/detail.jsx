@@ -19,6 +19,8 @@ import PersonDetail from '../pages/overview/PersonDetail';
 import PatientAppointment from '../pages/overview/PatientAppointment';
 import DoctorSchedule from '../pages/overview/DoctorSchedule';
 
+import { uri_segment } from '../../utility/utility';
+
 const Detail = (props) => {
     const history = useHistory();
     let { id, uriPage } = useParams();
@@ -40,7 +42,6 @@ const Detail = (props) => {
         const {
             result,
             error,
-            forceStop
         } = await detail_doctor(id);
 
         if(error) {
@@ -53,19 +54,15 @@ const Detail = (props) => {
         }
     }
 
-    function makeid(length) {
-        var result           = '';
-        var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        var charactersLength = characters.length;
-        for ( var i = 0; i < length; i++ ) {
-           result += characters.charAt(Math.floor(Math.random() * charactersLength));
-        }
-        return result;
-     }
-
     const onClickNav = (e) => {
         setPage(e.key);
     }
+
+    // useEffect(() => {
+    //     if(page === 'information') {
+    //         getData();
+    //     }
+    // }, [page])
 
     return(
         <div key="DoctorDetail">
@@ -79,7 +76,9 @@ const Detail = (props) => {
                                 <i aria-hidden="true" className="fa fa-pencil"></i> Update Informasi
                             </NavLink>
                         </Button>
-                        <Button size="small" key="DoctorDetailUpdateData" type="primary" onClick={() => history.push('/admin/doctor')}>
+                        <Button size="small" key="DoctorDetailUpdateData" type="primary" onClick={() => {
+                            uri_segment(2) === 'doctor' ? history.push('/admin/doctor') : history.goBack()
+                        }}>
                             <i aria-hidden="true" className="fa fa-arrow-circle-left"></i> Kembali
                         </Button>
                     </div>,

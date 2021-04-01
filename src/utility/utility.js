@@ -49,6 +49,7 @@ const day_tanslate = (name, lang='id') => {
 }
 
 const label_apstatus = (status) => {
+  if(!status) return;
   if(status == 'waiting_consul') {
     return <Tag color="#4347D9">Menunggu Konsultasi</Tag>
   } else if ( status == 'waiting_payment' ) {
@@ -92,10 +93,21 @@ const maskingInputTime = (e) => {
   e.target.value = format
 }
 
+const uri_segment = (index) => {
+  let loc = document.URL,
+      split = loc.split('/');
+
+      index += 2;
+
+  if(typeof split[index] == 'undefined') return false;
+  else return split[index];
+}
+
 export {
   ellipsis,
   format_rupiah,
   day_tanslate,
   label_apstatus,
-  maskingInputTime
+  maskingInputTime,
+  uri_segment
 };

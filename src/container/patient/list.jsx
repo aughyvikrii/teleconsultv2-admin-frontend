@@ -77,7 +77,7 @@ const List = () => {
     const getData = async () => {
         setTableLoading(true);
 
-        const [result, error] = await get_person(filter);
+        const {result, error} = await get_person(filter);
 
         if(!result) {
             setAlert(

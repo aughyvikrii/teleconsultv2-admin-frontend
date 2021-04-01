@@ -202,7 +202,7 @@ export const FormAddSchedule = (props) => {
 
     const loadDoctorData = async () => {
         setLoading(true);
-        const [result, error] = await get_doctor({all_data: true});
+        const {result, error} = await get_doctor({all_data: true});
         if(!error) {
             setListDoctor(result.data);
         }

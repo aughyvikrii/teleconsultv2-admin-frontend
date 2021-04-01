@@ -12,7 +12,7 @@ const renderer = ({ month, days, hours, minutes, seconds, completed, ...other })
         _date = _date.getFullYear() + '-' + _date.getMonth() + '-' + _date.getDate();
         _today = _today.getFullYear() + '-' + _today.getMonth() + '-' + _today.getDate();
 
-        if(_date === _today) message = 'Jam sudah lewat';
+        if(_date === _today || other.props?.forceInfo) message = 'Jam sudah lewat';
         return <Completionist message={message}/>;
     } else {
         // Render a countdown
@@ -40,7 +40,7 @@ const Countdown = (props) => {
     const full_date = time ? date + ' ' + time : date;
     render = render ? render : renderer;
     return(
-        <CountdownComp date={full_date} renderer={render}/>
+        <CountdownComp date={full_date} renderer={render} {...otherProps}/>
     );
 }
 

@@ -186,7 +186,7 @@ const Department = () => {
     const getData = async () => {
         setTableLoading(true);
 
-        const [result, error] = await get_department(filter);
+        const {result, error} = await get_department(filter);
         
         if(!result) {
             setAlert(

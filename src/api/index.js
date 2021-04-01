@@ -316,6 +316,14 @@ const detail_title = async (id) => {
 }
 // END: API title
 
+const get_list_appointment = async(filters) => {
+    return await _post(api(`appointment/list`), filters);
+} 
+
+const get_detail_appointment = async(id) => {
+    return await _get(api(`appointment/detail/${id}`));
+}
+
 export {
     baseUrl,
     api,
@@ -366,6 +374,8 @@ export {
     update_title,
     delete_title,
     detail_title,
+    get_list_appointment,
+    get_detail_appointment,
 }
 
 export default api;
