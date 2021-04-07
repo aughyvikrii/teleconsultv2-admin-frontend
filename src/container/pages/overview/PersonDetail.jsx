@@ -18,6 +18,7 @@ const PersonDetail = (props) => {
     } = props;
     
     const [data, setData]= useState(person ? person : {});
+    const [_loading, setLoading] = useState(loading);
     const {id} = useParams();
     
     if(Object.keys(person).length === 0){
@@ -31,25 +32,25 @@ const PersonDetail = (props) => {
             return await detail_person(person_id);
         }
     }
-    
-    useEffect( () => {
-        let isSubscribed = true
-        
-        const getData = async () => {
-            if(typeof person_id !== 'undefined') {
-                const {
-                    result,
-                    error,
-                    forceStop
-                } = await _person_data();
-                
-                if(result && isSubscribed) setData(result.data.person);
+
+    const getData = async () => {
+        setLoading(true);
+        if(typeof person_id !== 'undefined') {
+            const {
+                result, error
+            } = await _person_data();
+            
+            if(!error) {
+                setData(result.data.person);
             }
         }
-        if(Object.keys(person).length === 0 && !loading){
+        setLoading(false);
+    }
+    
+    useEffect( () => {
+        if(Object.keys(person).length === 0 && !_loading){
             getData();
         }
-        return () => isSubscribed = false;
     }, []);
     
     const PatientDescription = () => {

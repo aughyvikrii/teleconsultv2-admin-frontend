@@ -178,7 +178,7 @@ const MenuItems = ({ darkMode, toggleCollapsed, topMenu }) => {
 
       <SubMenu key="report" icon={!topMenu && <i aria-hidden="true" className="fa fa-folder-open-o"></i>} title="Laporan">
         <Menu.Item key="inbox">
-          <NavLink onClick={toggleCollapsed} to={`${path}/report/income`}>
+          <NavLink onClick={toggleCollapsed} to={`${path}/report/finance`}>
             Pendapatan
           </NavLink>
         </Menu.Item>

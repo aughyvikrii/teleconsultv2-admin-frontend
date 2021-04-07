@@ -9,27 +9,40 @@ import {Countdown} from '../../../components/countdown';
 import { label_apstatus } from '../../../utility/utility';
 import { Button } from '../../../components/buttons/buttons';
 
-import { get_doctor_appointment } from '../../../api';
+import { get_doctor_appointment, get_list_appointment } from '../../../api';
 
-const PatientAppointment = () => {
+const PatientAppointment = (props) => {
     const history = useHistory();
+
+    const { type = 'doctor' } = props;
 
     const { id } = useParams();
     const [data, setData] = React.useState({});
     const [alert, setAlert] = React.useState(null);
     const [loading, setLoading] = React.useState(true);
+    const [loadingData, setLoadingData] = React.useState(false);
     const [source, setSource] = React.useState([]);
     const [filter, setFilter] = React.useState({
         paginate: true,
         query: null,
-        data_per_page: 10
+        data_per_page: 10,
+        patient_id: parseInt(id)
     });
 
     const getData = async () => {
         setLoading(true);
+        setLoadingData(true);
         setAlert(null);
 
-        const { result, error, message } = await get_doctor_appointment(id, filter);
+        let request;
+
+        if (type === 'doctor') {
+            request = await get_doctor_appointment(id, filter);
+        } else {
+            request = await get_list_appointment(filter);
+        }
+
+        const { result, error, message } = request;
 
         if(error) {
             setAlert(<AlertError message={message}/>);
@@ -38,14 +51,15 @@ const PatientAppointment = () => {
             setLoading(false);
             setData(result.data);
         }
+
+        setLoadingData(false);
     }
 
-    // React.useEffect(() => {
-    //     getData();
-    // }, []);
-
     React.useEffect(() => {
-        getData();
+        if(!loadingData) {
+            console.log('DARI SINI: ', props);
+            getData();
+        }
     }, [filter]);
 
     React.useEffect(() => {
@@ -64,14 +78,14 @@ const PatientAppointment = () => {
                                     <Skeleton avatar active/>
                                 }
                             >
-                                <Avatar size={{ xs: 40, sm: 40, md: 40, lg: 40, xl: 40, xxl: 40 }} src={row.patient_pic} />
+                                <Avatar size={{ xs: 40, sm: 40, md: 40, lg: 40, xl: 40, xxl: 40 }} src={ type === 'doctor' ? row.patient_pic : row.doctor_pic } />
                             </Suspense>
                         </figure>
                         <figcaption>
                             <Heading className="user-name" as="h6">
-                            {row.patient}
+                            { type === 'doctor' ? row.patient : row.doctor_name }
                             </Heading>
-                            <span className="user-designation">{row.age}</span>
+                            <span className="user-designation">{ type === 'doctor' ? row.age : row.branch }</span>
                         </figcaption>
                     </div>
                 ),

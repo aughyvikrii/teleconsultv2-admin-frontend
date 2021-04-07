@@ -1,48 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import { PlusCircleOutlined } from '@ant-design/icons';
-import { Row, Col, Form, Radio, Popconfirm, Table, Skeleton } from 'antd';
+import { Form, Radio, Popconfirm, Table, Skeleton } from 'antd';
 import moment from 'moment';
 import { Cards } from '../../../components/cards/frame/cards-frame';
 import { Button, BtnGroup } from '../../../components/buttons/buttons';
 import { ButtonHeading } from '../../../components/cards/style';
-import { Modal } from '../../../components/modals/antd-modals';
-import { FormAddSchedule, FormAddScheduleNew } from '../../../components/form';
-import { useParams } from 'react-router-dom';
 import { BtnWithIcon } from '../../styled';
 import Heading from '../../../components/heading/heading';
 import { Tag } from '../../../components/tags/tags';
-
-import { ModalAddSchedule } from '../../../components/modals';
-// import { AlertError, AlertSuccess } from '../../../components/alerts/alerts';
-import { get_doctor_schedule, create_doctor_schedule, update_doctor_schedule, get_branch, get_department } from '../../../api';
-
-
-import {
-    loadingStart,
-    loadingContent,
-    loadingClose,
-    loadingSuccess,
-    loadingError
-} from '../../../redux/loadingmodal/actionCreator';
-import { useDispatch } from 'react-redux';
+import { FormAddScheduleNew } from '../../../components/form';
+import { ModalCreateUpdateSchedule } from '../../../components/modals';
+import { get_doctor_schedule } from '../../../api';
+import { useParams } from 'react-router';
 
 const DoctorSchedule = () => {
-    const dispatch = useDispatch();
 
     const [listType, setListType]  = useState('perday');
 
     const [loading, setLoading] = useState(true);
-    const [loadingStatus, setLoadingStatus] = useState('');
     const [alert, setAlert] =  useState();
 
     const [schedules, setSchedules] = useState([]);
     const [perDay, setPerDay] = useState({});
     const [perBranch, setPerBranch] = useState({});
     const [perDepartment, setPerDepartment] = useState({});
-
-    const [listBranch, setListBranch] = useState([]);
-    const [listDepartment, setListDepartment] = useState([]);
 
     const [form] = Form.useForm();
 
@@ -70,29 +52,6 @@ const DoctorSchedule = () => {
             setSchedules(result.data);
         }
     }
-
-    const _get_branch = async () => {
-        const {
-            result, error, forceStop
-        } = await get_branch({all_data: true});
-        if(!error) {
-            setListBranch(result.data);
-        }
-    }
-
-    const _get_department = async () => {
-        const {
-            result, error, forceStop
-        } = await get_department({all_data: true});
-        if(!error) {
-            setListDepartment(result.data);
-        }
-    }
-
-    useEffect( () => {
-        // _get_branch();
-        // _get_department();
-    }, []);
 
     useEffect( () => {
         getData();
@@ -157,10 +116,6 @@ const DoctorSchedule = () => {
         setPerDepartment(department);
 
     }, [schedules]);
-
-    const modalEdit = (row) => {
-        console.log(row);
-    }
 
     const PerDayTable = () => {
 
@@ -312,48 +267,6 @@ const DoctorSchedule = () => {
         setModal({ ...modal, visible: true, action: type, data: data, schedule_id: schedule_id });
     }
 
-    const closeModal = () => {
-        setAlert('');
-        setModal({ ...modal, visible: false, action: 'add', data: {} });
-    }
-
-    const submitForm = async (fields) => {
-        setAlert('');
-
-        fields['start_hour'] = fields['start_hour'].format('HH:mm');
-        fields['end_hour'] = fields['end_hour'].format('HH:mm');
-
-        let response = [];
-        if(modal.action === 'add') response = await create_doctor_schedule(id, fields);
-        else response = await update_doctor_schedule(modal.schedule_id, fields);
-
-        const [result, error] = response;
-
-        if(error) {
-            let error_fields = createFormError(result?.errors);
-
-            setAlert(
-                AlertError(error)
-            );
-
-
-            form.setFields(error_fields);
-        } else {
-            setLoadingStatus('ok');
-
-            setAlert(
-                AlertSuccess(result?.message ? result.message : 'Berhasil '+(modal.action == 'add' ? 'menambah' : 'update') + 'data')
-            );
-
-            form.resetFields();
-            getData();
-
-            setTimeout(() => {
-                closeModal();
-            }, 2000);
-        }
-    }
-
     return(
         <>
         <Cards
@@ -387,7 +300,7 @@ const DoctorSchedule = () => {
             listType === 'perbranch' ? <PerBranchTable/> : <PerDepartment/>
         }
         </Cards>
-        <ModalAddSchedule
+        <ModalCreateUpdateSchedule
             forceRender={true}
             visible={modal.visible}
             title={modal.title}

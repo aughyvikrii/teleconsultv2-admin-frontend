@@ -4,7 +4,7 @@ import { get_branch, get_department, get_specialist, get_doctor } from '../../ap
 
 const DEBUG = 0;
 const defaultFilters = {
-    all_data: true
+    paginate: true
 }
 const funcFilter = (input, option) => {
     return option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
@@ -18,7 +18,7 @@ const selectChange = (e, dispatch) => {
     else dispatch('medium');
 }
 
-export const SelectSpecialist = (props) => {
+export const SelectSpecialistOld = (props) => {
 
     if(DEBUG) console.log('SelectSpecialist: load');
 
@@ -153,7 +153,7 @@ export const SelectWeekday = (props) => {
     );
 }
 
-export const SelectDoctor = (props) => {
+export const SelectDoctorOld = (props) => {
 
     const {
         list = null,
@@ -236,20 +236,174 @@ export const SelectDoctor = (props) => {
     );
 }
 
-export class SelectBranch extends React.Component {
-
+export class SelectSpecialist extends React.Component {
     state = {
-        data: []
+        data: [],
+        list: this.props?.list ? this.props.list : null
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if(this.props?.list) {
+            if(this.props.list.length > 0) {
+                if(this.props?.list != prevProps?.list) {
+                    this.setState({
+                        ...this.state,
+                        data: this.props?.list
+                    });
+                }
+            }
+        }
     }
     
     componentDidMount() {
-        this.getData();
+        if(!this.state.list) this.getData();
+        else {
+            this.setState({
+                ...this.state, data: this.state.list
+            });
+        }
     }
 
     getData = async() => {
         const {
             result, error, message
-        } = await get_branch({all_data: true})
+        } = await get_specialist({paginate: false})
+
+        if(error) {
+            console.log('error get_specialist:', message);
+        } else {
+            this.setState({
+                ...this.state, data: result.data
+            });
+        }
+    }
+
+    render() {
+
+        let {
+            data
+        } = this.state;
+
+        return(
+            <Select
+                showSearch
+                // style={{ width: 200 }}
+                placeholder="Cari Spesialis"
+                optionFilterProp="children"
+                filterOption={ (input, option) => funcFilter(input, option)}
+                className="sDash_fullwidth-select"
+                {...this.props}
+            >
+                {   (data?.length > 0 ? data : []).map(row => {
+                        return <Select.Option key={row.specialist_id} value={row.specialist_id}>{row.title}</Select.Option>
+                    })
+                }
+            </Select>
+        );
+    }
+}
+
+export class SelectDoctor extends React.Component {
+
+    state = {
+        data: [],
+        list: this.props?.list ? this.props.list : null
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if(this.props?.list) {
+            if(this.props.list.length > 0) {
+                if(this.props?.list != prevProps?.list) {
+                    this.setState({
+                        ...this.state,
+                        data: this.props?.list
+                    });
+                }
+            }
+        }
+    }
+    
+    componentDidMount() {
+        if(!this.state.list) this.getData();
+        else {
+            this.setState({
+                ...this.state, data: this.state.list
+            });
+        }
+    }
+
+    getData = async() => {
+        const {
+            result, error, message
+        } = await get_doctor({paginate: false})
+
+        if(error) {
+            console.log('error select doctor:', message);
+        } else {
+            this.setState({
+                ...this.state, data: result.data
+            });
+        }
+    }
+
+    render() {
+
+        let {
+            data
+        } = this.state;
+
+        return(
+            <Select
+                showSearch
+                // style={{ width: 200 }}
+                placeholder="Cari Dokter"
+                optionFilterProp="children"
+                filterOption={ (input, option) => funcFilter(input, option)}
+                className="sDash_fullwidth-select"
+                {...this.props}
+            >
+                {   (data?.length > 0 ? data : []).map(row => {
+                        return <Select.Option key={row.doctor_id} value={row.doctor_id}>{row.display_name}</Select.Option>
+                    })
+                }
+            </Select>
+        );
+    }
+}
+
+export class SelectBranch extends React.Component {
+
+    state = {
+        data: [],
+        list: this.props?.list ? this.props.list : null
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if(this.props?.list) {
+            if(this.props.list.length > 0) {
+                if(this.props?.list != prevProps?.list) {
+                    this.setState({
+                        ...this.state,
+                        data: this.props?.list
+                    });
+                }
+            }
+        }
+    }
+    
+    componentDidMount() {
+        if(!this.state.list) this.getData();
+        else {
+            this.setState({
+                ...this.state, data: this.state.list
+            });
+        }
+    }
+
+    getData = async() => {
+        const {
+            result, error, message
+        } = await get_branch({paginate: false})
 
         if(error) {
             console.log('error select branch:', message);
@@ -269,14 +423,13 @@ export class SelectBranch extends React.Component {
         return(
             <Select
                 showSearch
-                // style={{ width: 200 }}
                 placeholder="Cari Cabang"
                 optionFilterProp="children"
                 filterOption={ (input, option) => funcFilter(input, option)}
                 className="sDash_fullwidth-select"
                 {...this.props}
             >
-                {   data.map(row => {
+                {   (data?.length > 0 ? data : []).map(row => {
                         return <Select.Option key={row.branch_id} value={row.branch_id}>{row.name}</Select.Option>
                     })
                 }
@@ -288,22 +441,36 @@ export class SelectBranch extends React.Component {
 export class SelectDepartment extends React.Component {
 
     state = {
-        data: []
+        data: [],
+        list: this.props?.list ? this.props.list : null
     }
 
-    componentDidUpdate() {
-        // console.log('componentDidUpdate', this.props);
+    componentDidUpdate(prevProps, prevState) {
+        if(this.props?.list) {
+            if(this.props.list.length > 0) {
+                if(this.props?.list != prevProps?.list) {
+                    this.setState({
+                        ...this.state,
+                        data: this.props?.list
+                    });
+                }
+            }
+        }
     }
     
     componentDidMount() {
-        // console.log('componentDidMount', this.props);
-        this.getData();
+        if(!this.state.list) this.getData();
+        else {
+            this.setState({
+                ...this.state, data: this.state.list
+            });
+        }
     }
 
     getData = async() => {
         const {
             result, error, message
-        } = await get_department({all_data: true})
+        } = await get_department({paginate: false})
 
         if(error) {
             console.log('error select department:', message);
@@ -330,7 +497,7 @@ export class SelectDepartment extends React.Component {
                 className="sDash_fullwidth-select"
                 {...this.props}
             >
-                {   data.map(row => {
+                {   (data?.length > 0 ? data : []).map(row => {
                         return <Select.Option key={row.department_id} value={row.department_id}>{row.name}</Select.Option>
                     })
                 }

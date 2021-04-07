@@ -1,54 +1,52 @@
-import React, { useEffect, useState, lazy, Suspense } from 'react';
-import { Row, Col, Skeleton } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Row, Col, Skeleton, Menu } from 'antd';
 import { Main, SettingWrapper } from '../styled';
-import { NavLink, Switch, Route, useRouteMatch, useHistory, useParams } from 'react-router-dom';
+import { NavLink, Switch, Route, useHistory, useParams } from 'react-router-dom';
 
 // Component
 import { PageHeader } from '../../components/page-headers/page-headers';
 import { Button } from '../../components/buttons/buttons';
-import Loading from '../../components/loadings';
 import { Cards } from '../../components/cards/frame/cards-frame';
 
 // API
 import { detail_person } from '../../api';
 
+import UserCards from '../pages/overview/UserCard';
+import UserBio from '../pages/overview/UserBio';
 
-const UserCards = lazy(() => import('../pages/overview/UserCard'));
-const UserBio = lazy(() => import('../pages/overview/UserBio'));
-
-const PersonDetail = lazy(() => import('../pages/overview/PersonDetail'));
-const PatientAppointment = lazy(() => import('../pages/overview/PatientAppointment'));
+import PersonDetail from '../pages/overview/PersonDetail';
+import PatientAppointment from '../pages/overview/PatientAppointment';
 
 const Detail = () => {
-    const { path, url } = useRouteMatch();
     const history = useHistory();
-    const { id } = useParams();
-    const [loading, setLoading] = useState(false);
-    const [loadingStatus, setLoadingStatus] = useState();
-    const [loadingMessage, setLoadingMessage] = useState();
+    let { id, uriPage } = useParams();
+    const [loading, setLoading] = useState(true);
     const [person, setPerson] = useState({});
     const [family, setFamily] = useState([]);
-    
+    const [page, setPage] = useState(uriPage);
 
     useEffect( () => {
+        if(!page) setPage('information');
         getData();
-        // eslint-disable-next-line
-    }, [id]);
+    }, []);
 
     const getData = async () => {
         setLoading(true);
-        setLoadingMessage('Proses mengambil data...');
-        const [result, error] = await detail_person(id);
+
+        const {result, error} = await detail_person(id);
 
         if(error) {
-            setLoadingMessage(error);
-            setLoadingStatus('error');
-        } else {
-            setLoadingStatus('ok');
             setLoading(false);
+        } else {
             setPerson(result.data.person);
             setFamily(result.data.family);
         }
+
+        setLoading(false);
+    }
+
+    const onClickNav = (e) => {
+        setPage(e.key);
     }
 
     return(
@@ -67,77 +65,40 @@ const Detail = () => {
             />
             <Main>
                 <Row gutter={25}>
-                    {   loading ?
-                        <Col xs={24}>
+                    <Col xxl={6} lg={8} md={10} xs={24}>
+                        { loading ?
                             <Cards headless>
-                                <div className="text-center">
-                                    <Loading status={loadingStatus} /> <br/>
-                                    {loadingMessage}
-                                </div>
+                                <Skeleton avatar active paragraph={{ rows: 3 }} />
                             </Cards>
-                        </Col>
-                    :
-                        <>
-                            <Col xxl={6} lg={8} md={10} xs={24}>
-                                <Suspense
-                                fallback={
-                                    <Cards headless>
-                                    <Skeleton avatar active paragraph={{ rows: 3 }} />
-                                    </Cards>
-                                }
-                                >
+                            :
+                            <>
                                 <UserCards
                                     user={{ name: person.full_name, designation: 'Pasien', img: person.profile_pic }}
                                 />
-                                </Suspense>
-                                <Suspense
-                                fallback={
-                                    <Cards headless>
-                                    <Skeleton active paragraph={{ rows: 10 }} />
-                                    </Cards>
-                                }
-                                >
                                 <UserBio person={person} family={family} />
-                                </Suspense>
-                            </Col>
-                            <Col xxl={18} lg={16} md={14} xs={24}>
-                            <SettingWrapper>
-                                <Suspense
-                                    fallback={
-                                    <Cards headless>
-                                        <Skeleton active />
-                                    </Cards>
-                                    }
-                                >
-                                    <div className="coverWrapper">
-                                        <nav className="profileTab-menu">
-                                            <ul>
-                                                <li>
-                                                    <NavLink to={`${url}/information`}>Informasi</NavLink>
-                                                </li>
-                                                <li>
-                                                    <NavLink to={`${url}/appointment`}>Riwayat Perjanjian</NavLink>
-                                                </li>
-                                            </ul>
-                                        </nav>
-                                    </div>
-                                </Suspense>
-                                <Switch>
-                                    <Suspense
-                                    fallback={
-                                        <Cards headless>
-                                        <Skeleton active paragraph={{ rows: 10 }} />
-                                        </Cards>
-                                    }
-                                    >
-                                    <Route exact path={`${path}/information`} component={() => <PersonDetail person={person} />} />
-                                    <Route path={`${path}/appointment`} component={PatientAppointment} />
-                                    </Suspense>
-                                </Switch>
-                            </SettingWrapper>
-                        </Col>
-                        </>
-                    }
+                            </>
+                        }
+                    </Col>
+                    <Col xxl={18} lg={16} md={14} xs={24}>
+                        <SettingWrapper>
+                            <Menu onClick={onClickNav} selectedKeys={page} mode="horizontal">
+                                <Menu.Item key="information">
+                                    <NavLink to={`/admin/patient/detail/${id}/information`}>
+                                        Informasi Pribadi
+                                    </NavLink>
+                                </Menu.Item>
+                                <Menu.Item key="appointment">
+                                    <NavLink to={`/admin/patient/detail/${id}/appointment`}>
+                                        Daftar Perjanjian
+                                    </NavLink>
+                                </Menu.Item>
+                            </Menu> <br/>
+                            <Switch>
+                                    <Route exact key="PatientDetailInformation" path={`/admin/patient/detail/:id/information`} render={() => <PersonDetail person_id={id} person={person}  loading={loading} />} />
+                                    <Route key="PatientDetailAppointment" path={`/admin/patient/detail/:id/appointment`} render={() => <PatientAppointment type="patient" />} />
+                            </Switch>
+                        </SettingWrapper>
+                    </Col>
                 </Row>
             </Main>
         </>

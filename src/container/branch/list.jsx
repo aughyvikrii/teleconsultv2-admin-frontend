@@ -20,40 +20,19 @@ const List = () => {
     const { path } = useRouteMatch();
     const history = useHistory();
 
-    const [alert, setAlert] = useState('');
+    const [alert, setAlert] = useState(null);
     // START: Table event & config
     const [tableLoading, setTableLoading] = useState(true);
+    const [filter, setFilter] = useState({ query: null, page: 0, data_per_page: 10, paginate: true });
+    const [data, setData] = useState({});
     const [source, setSource] = useState([]);
-    const [dataCount, setDataCount] = useState(0);
-    const [filter, setFilter] = useState({ query: null, page: 0, data_per_page: 10 });
 
     const columns = [
-        {
-            title: 'ID',
-            dataIndex: 'branch_id',
-            key: 'branch_id',
-        },
-        {
-            title: 'Kode',
-            dataIndex: 'code',
-            key: 'code',
-        },
-        {
-            title: 'Nama',
-            dataIndex: 'name',
-            key: 'name',
-        },
-        {
-            title: 'Status',
-            dataIndex: 'is_active',
-            key: 'is_active'
-        },
-        {
-            title: '#',
-            dataIndex: 'action',
-            key: 'action',
-            width: '150px',
-        },
+        { title: 'ID', dataIndex: 'branch_id', key: 'branch_id', },
+        { title: 'Kode', dataIndex: 'code', key: 'code', },
+        { title: 'Nama', dataIndex: 'name', key: 'name', },
+        { title: 'Status', dataIndex: 'is_active', key: 'is_active' },
+        { title: '#', dataIndex: 'action', key: 'action', width: '150px', },
     ];
 
     useEffect(() => {
@@ -71,24 +50,25 @@ const List = () => {
     // END: Table event & config
 
     const getData = async () => {
+
         setTableLoading(true);
 
-        const {result, error} = await get_branch(filter);
+        const {result, error, message} = await get_branch(filter);
 
-        if(!result) {
-            setAlert(
-                AlertError(error)
-            );
+        if(error) {
+            setAlert(<AlertError message={message}/>);
         } else {
-            processData(result.data);
+            setData(result.data);
         }
 
         setTableLoading(false);
     }
 
-    const processData = (data) => {
+    const processData = () => {
         let result = [];
-        data.data.map(row => {
+        
+        let _data = !data?.data?.length ? [] : data.data;
+        _data.map(row => {
             return result.push({
                 key: row.branch_id,
                 branch_id: row.branch_id,
@@ -137,17 +117,18 @@ const List = () => {
                 )
             });
         });
-        setDataCount(data.total);
         setSource(result);
     }
 
+    useEffect(processData, [data]);
+
     const deleteData = async (data) => {
         const hide = message.loading('Proses menghapus data..', 0);
-        const [result, error] = await delete_branch(data.branch_id);
+        const result = await delete_branch(data.branch_id);
 
-        if(!result) {
+        if(result.error) {
             hide();
-            message.error(error);
+            message.error(result.message);
         } else {
             hide();
             message.success('Berhasil menghapus data');
@@ -183,7 +164,7 @@ const List = () => {
                                 dataSource={source}
                                 pagination={{
                                     defaultPageSize: filter.data_per_page,
-                                    total: dataCount,
+                                    total: data.total,
                                     showTotal: (total, range) => `${range[0]}-${range[1]} dari ${total} data`,
                                     showQuickJumper: true,
                                     showSizeChanger: true

@@ -14,6 +14,8 @@ import Heading from '../../components/heading/heading';
 import { SelectDepartment, SelectBranch, SelectSpecialist, SelectWeekday, FormAddSchedule } from '../../components/form';
 import Loading from '../../components/loadings';
 import { Modal } from '../../components/modals/antd-modals';
+import { FormAddScheduleNew } from '../../components/form';
+import { ModalCreateUpdateSchedule } from '../../components/modals';
 
 //Api
 import { get_schedule, get_branch, get_department, get_specialist, create_doctor_schedule, update_doctor_schedule } from '../../api';
@@ -30,9 +32,11 @@ const List = () => {
     const [filters, setFilters] = useState({paginate: true, data_per_page: 25});
     const [columns, setColumns] = useState([]);
     const [dataLoaded, setDataLoaded] = useState(false);
-    const [bucketData, setBucketData] = useState({ branch:[], department: [], specialist: [] });
-    const [loadingFilter, setLoadingFilter] = useState(true);
-    const [messageFilter, setMessageFilter] = useState('Loading...');
+
+    const [specialist, setSpecialist] = useState([]);
+    const [branch, setBranch] = useState([]);
+    const [department, setDepartment] = useState([]);
+    const [scheduleData, setScheduleData] = useState({});
 
     const [modal, setModal] = useState({
         visible: false,
@@ -45,7 +49,6 @@ const List = () => {
     });
 
     const [form] = Form.useForm();
-    const [modalForm] = Form.useForm();
 
     const columnDataDefault = [
         { title: 'ID', dataIndex: 'schedule_id', key: 'schedule_id' },
@@ -129,6 +132,13 @@ const List = () => {
         }
     }, [filters]);
 
+    const modalEdit = (row) => {
+        setScheduleData(row);
+        console.log(row);
+        let title = 'Edit Jadwal #' + row.schedule_id + ' [' + row.doctor_name + ']';
+        setModal({...modal, visible: true, title: title});
+    }
+
     const processData = () => {
         let data = {};
         originalSource.data.map(row => {
@@ -138,7 +148,7 @@ const List = () => {
             row.practice_hours = (
                 row.start_hour + ' - ' + row.end_hour
             );
-
+            row.doctor_name = row.doctor;
             row.doctor = (
                 <div className="user-info">
                     <figure>
@@ -192,39 +202,29 @@ const List = () => {
         setColumns(data['layout'])
     }, [listType, source]);
 
-    const fillBucket = async () => {
-        setModal({
-            ...modal,
-            disableButton: true,
-            loading: true,
-            message: 'Memproses data...'
-        });
+    const _get_branch = async() => {
+        let {result} = await get_branch({paginate: false});
 
-        setMessageFilter('Mengambil data cabang...');
-        const {branch, berror} = await get_branch({all_data: true});
-        setMessageFilter('Mengambil data departemen...');
-        const {department, derror} = await get_department({all_data: true});
-        setMessageFilter('Mengambil data spesialis...');
-        const {specialist, serror} = await get_specialist({all_data: true});
-        
-        setBucketData({
-            ...bucketData,
-            branch: berror ? [] : branch?.data,
-            department: derror ? [] : department?.data,
-            specialist: serror ? [] : specialist?.data
-        });
+        result = result?.data ? result.data : []
+        setBranch(result);
+    }
 
-        setLoadingFilter(false);
-        setModal({
-            ...modal,
-            disableButton: false,
-            loading: false,
-            message: ''
-        });
+    const _get_department = async() => {
+        let {result} = await get_department({paginate: false});
+        result = result?.data ? result.data : []
+        setDepartment(result);
+    }
+
+    const _get_specialist = async() => {
+        let {result} = await get_specialist({paginate: false});
+        result = result?.data ? result.data : []
+        setSpecialist(result);
     }
 
     useEffect( () => {
-        fillBucket();
+        _get_branch();
+        _get_department();
+        _get_specialist();
     }, []);
 
     const applyFilter = (fields) => {
@@ -236,21 +236,22 @@ const List = () => {
         });
     }
 
+    const showModal = () => {
+        setScheduleData({});
+        setModal({...modal, visible: true, title: 'Tambah Jadwal'});
+    }
+
+    const onTableChange = (e) => {
+        setDataLoaded(false);
+        setFilters({
+            ...filters,
+            page: e.current,
+            data_per_page: e.pageSize,
+        });
+    }
+
     const formFilter = (
         <PopoverFormWrapper>
-                <div
-                    style={{
-                        display: loadingFilter ? '' : 'none'
-                    }}
-                >
-                    <Loading/>
-                    {messageFilter}
-                </div>
-                <div
-                    style={{
-                        display: !loadingFilter ? '' : 'none'
-                    }}
-                >
                     <Form
                         form={form}
                         onFinish={applyFilter}
@@ -265,7 +266,7 @@ const List = () => {
                             </Col>
                             <Col lg={8} xs={24}>
                                 <Form.Item label="Spesialis" name="specialist">
-                                    <SelectSpecialist list={bucketData.specialist} mode="multiple" searchable="true" dropdownClassName="ant-select-popover" />
+                                    <SelectSpecialist list={specialist} mode="multiple" searchable="true" dropdownClassName="ant-select-popover" />
                                 </Form.Item>
                             </Col>
                             <Col lg={8} xs={24}>
@@ -278,12 +279,12 @@ const List = () => {
                         <Row gutter={25}>
                             <Col lg={8} xs={24}>
                                 <Form.Item label="Cabang" name="branch">
-                                    <SelectBranch list={bucketData.branch} mode="multiple" searchable="true" dropdownClassName="ant-select-popover" />
+                                    <SelectBranch list={branch} mode="multiple" searchable="true" dropdownClassName="ant-select-popover" />
                                 </Form.Item>
                             </Col>
                             <Col lg={8} xs={24}>
                                 <Form.Item label="Departemen" name="department">
-                                    <SelectDepartment list={bucketData.department} mode="multiple" searchable="true" dropdownClassName="ant-select-popover" />
+                                    <SelectDepartment list={department} mode="multiple" searchable="true" dropdownClassName="ant-select-popover" />
                                 </Form.Item>
                             </Col>
                         </Row>
@@ -305,76 +306,8 @@ const List = () => {
                             Terapkan Pencarian
                         </Button>
                     </PopoverButtonGroup>
-                </div>
         </PopoverFormWrapper>
     );
-
-    const showModal = () => {
-        setModal({...modal, visible: true});
-    }
-
-    const modalClose = () => {
-        setModal({...modal, visible: false});
-    }
-
-    const modalConfirm = async (fields) =>  {
-        fields.start_hour = fields.start_hour.format('HH:mm');
-        fields.end_hour = fields.end_hour.format('HH:mm');
-        
-        setModal({
-            ...modal,
-            disableButton: true,
-            loading: true,
-            message: 'Memproses data...'
-        });
-
-        let response = [];
-
-        if(modal.action === 'add') {
-            response = await create_doctor_schedule(fields.doctor, fields);
-        }  else {
-            response = await update_doctor_schedule(fields.schedule_id, fields);
-        }
-
-        const {result, error} = response;
-
-        if(error) {
-            setModal({
-                ...modal,
-                disableButton: false,
-                loading: false,
-                message: error
-            });
-        } else {
-            setModal({
-                ...modal,
-                message: result?.message,
-                loadingStatus: 'ok',
-                loading: true
-            });
-
-            modalForm.resetFields();
-            getData();
-            setTimeout(() => {
-                setModal({
-                    ...modal,
-                    message: '',
-                    loadingStatus: '',
-                    loading: false
-                })
-                modalClose();
-            }, 2000);
-        }
-    }
-
-    const onTableChange = (e) => {
-        setDataLoaded(false);
-        setFilters({
-            ...filters,
-            page: e.current,
-            data_per_page: e.pageSize,
-        });
-    }
 
     return(
         <>
@@ -391,7 +324,7 @@ const List = () => {
                 ]}
             />
             <Main>
-                <Row gutter={25}>
+                <Row gutter={[25, 25]}>
                     <Col lg={24} xs={24}>
                         <Cards
                             title={cardTitle}
@@ -442,34 +375,16 @@ const List = () => {
                     </Col>
                 </Row>
             </Main>
-            <Modal
+            <ModalCreateUpdateSchedule
+                forceRender={true}
                 visible={modal.visible}
                 title={modal.title}
-                onCancel={modalClose}
-                onConfirm={() => modalForm.submit()}
-                forceRender='true'
-                disableButton={modal.disableButton}
-            >
-                <div className="text-center" style={{
-                    display: modal.loading ? null : 'none'
-                }}>
-                    <Loading status={modal.loadingStatus} /> {modal.message}
-                </div>
-                <div
-                    style={{
-                        display: modal.loading ? 'none' : null
-                    }}
-                >
-                    <FormAddSchedule
-                        form={modalForm}
-                        onFinish={modalConfirm}
-                        showDoctor={true}
-                        loadDoctor='true'
-                        dataBranch={bucketData.branch}
-                        dataDepartment={bucketData.department}
-                    />
-                </div>
-            </Modal>
+                callback={getData}
+                mState={[modal, setModal]}
+                departments={department}
+                branches={branch}
+                scheduleData={scheduleData}
+            />
         </>
     );
 }

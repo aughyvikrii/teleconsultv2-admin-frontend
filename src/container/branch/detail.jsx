@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Col, Form, Input } from 'antd';
+import { useDispatch } from 'react-redux';
+import { Row, Col, Form, Input, Skeleton } from 'antd';
 import { Main, BasicFormWrapper } from '../styled';
-import { useHistory, useParams, Link } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
 
@@ -13,39 +14,52 @@ import { Button } from '../../components/buttons/buttons';
 import Loading from '../../components/loadings';
 import { AlertError } from '../../components/alerts/alerts';
 
+import {
+    loadingStart,
+    loadingClose,
+    loadingContent,
+    loadingError,
+    loadingSuccess
+} from '../../redux/loadingmodal/actionCreator';
+
 // API
 import { update_branch, detail_branch } from '../../api';
 
 const Detail = () => {
     const history = useHistory();
+    const dispatch = useDispatch();
+
     const { id } = useParams();
     const [alert, setAlert] = useState('');
     const [loading, setLoading] = useState(true);
-    const [loadingStatus, setLoadingStatus] = useState();
-    const [loadingMessage, setLoadingMessage] = useState();
     const [data, setData] = useState({});
     const [form] = Form.useForm();
 
     useEffect( () => {
         getData();
-        // eslint-disable-next-line
     }, []);
 
     const getData = async () => {
-        setLoadingMessage('Proses mengambil data...');
-        const [result, error] = await detail_branch(id);
+        setLoading(true);
+        dispatch(loadingStart());
+        dispatch(loadingContent('Mengambil data cabang'));
+
+        const {result, error, message} = await detail_branch(id);
+
+        setLoading(false);
 
         if(error) {
-            setLoadingMessage(error);
-            setLoadingStatus('error');
+            dispatch(loadingError());
+            dispatch(loadingContent(message));
+            setTimeout(() => {
+                dispatch(loadingClose());
+                history.goBack();
+            }, 3000);
         } else {
-            setLoadingStatus('ok');
-            setLoadingMessage('Data ditemukan');
-
+            dispatch(loadingClose());
             setData(result.data);
             form.setFieldsValue(result.data);
             setCropData(result.data.thumbnail);
-            setLoading(false);
         }
     }
 
@@ -86,33 +100,25 @@ const Detail = () => {
         form.setFieldsValue({
             thumbnail: cropData
         });
-        // eslint-disable-next-line
     }, [cropData]);
-// End: Cropper
+    // End: Cropper
 
     const onSubmit = async (fields) => {
-        setAlert('');
-        setLoading(true);
-        setLoadingStatus('');
-        setLoadingMessage('memproses permintaan...');
-        const [result, error] = await update_branch(data.branch_id, fields);
-        if(!result) {
-            setLoading(false);
-            setLoadingStatus('');
-            setLoadingMessage('');
-            setAlert(
-                AlertError(error)
-            );
+        setAlert(null);
+        dispatch(loadingStart());
+        dispatch(loadingContent('memproses permintaan...'));
+
+        const {error, message} = await update_branch(data.branch_id, fields);
+
+        if(error) {
+            dispatch(loadingError());
+            dispatch(loadingContent(message));
+            setTimeout(() => dispatch(loadingClose()), 3000);
+            setAlert(<AlertError message={message}/>);
         } else {
-            setLoadingStatus('ok');
-            setLoadingMessage(
-                <>
-                Proses berhasil! Anda akan dialihkan atau <Link onClick={getData}>klik disini</Link>...
-                </>
-            );
-            setTimeout(() => {
-                getData();
-            }, 2000);
+            dispatch(loadingSuccess());
+            dispatch(loadingContent(message));
+            setTimeout(() => dispatch(loadingClose()), 3000);
         }
     }
 
@@ -134,33 +140,36 @@ const Detail = () => {
                 <Row gutter={25}>
                     <Col lg={24} xs={24}>
                         {alert}
-                        <Cards headless={true} >
-                            {   loading ?
-                                <div className="text-center">
-                                    <Loading status={loadingStatus} /> <br/>
-                                    {loadingMessage}
-                                </div>
-                            :
+
+                        <Cards headless={true} style={{ display: loading ? '' : 'none' }}>
+                            <Skeleton active />
+                        </Cards>
+
+                        <Cards headless={true} style={{ display: !loading ? '' : 'none' }}>
                             <BasicFormWrapper>
-                                <Heading>
-                                    Umum
-                                </Heading>
                                 <Form
+                                    className=""
+                                    layout="vertical"
                                     form={form}
+                                    name="create_new"
                                     onFinish={onSubmit}
                                 >
-                                    <Row gutter={25}>
+                                    <Heading>
+                                        Umum
+                                    </Heading>
+
+                                    <Row gutter={[8, 8]}>
                                         <Col lg={24} xs={24}>
                                             <Form.Item label="Gambar/Logo Cabang">
                                                 <input type="file" accept="image/*" onChange={imageChange} /> <br/>
 
-                                                <div style={{ width: "100%", display: ( cropData.length > 2 ? '' : 'none' ) }}>
+                                                <div style={{ width: "100%", display: ( cropData?.length > 2 ? '' : 'none' ) }}>
                                                     <img src={cropData} alt="cropped" />
                                                 </div>
 
                                                 <div style={{ display: ( image ? '' : 'none' ) }} >
                                                     <Cropper
-                                                        style={{ height: 400, width: "100%", display: ( cropData.length < 2 ? '' : 'none' ) }}
+                                                        style={{ height: 400, width: "100%", display: ( !cropData ? '' : 'none' ) }}
                                                         // initialAspectRatio={1}
                                                         // preview=".img-preview"
                                                         aspectRatio={2}
@@ -177,7 +186,7 @@ const Detail = () => {
                                                             setCropper(instance);
                                                         }}
                                                     /> <br/>
-                                                    <button type="button" style={{ float: "right", display: ( cropData.length < 2 ? '' : 'none' ) }} onClick={getCropData}>
+                                                    <button type="button" style={{ float: "right", display: ( !cropData ? '' : 'none' ) }} onClick={getCropData}>
                                                         Potong Gambar
                                                     </button>
                                                 </div>
@@ -190,9 +199,7 @@ const Detail = () => {
                                                 <Input placeholder="..."/>
                                             </Form.Item>
                                         </Col>
-                                    </Row>
 
-                                    <Row gutter={25}>
                                         <Col lg={12} xs={24}>
                                             <Form.Item name="code" label="Kode"
                                                 rules={[
@@ -207,7 +214,7 @@ const Detail = () => {
                                         </Col>
 
                                         <Col lg={12} xs={24}>
-                                        <Form.Item name="name" label="Nama Cabang"
+                                            <Form.Item name="name" label="Nama Cabang"
                                                 rules={[
                                                     {
                                                         required: true,
@@ -218,10 +225,7 @@ const Detail = () => {
                                                 <Input placeholder="..." />
                                             </Form.Item>
                                         </Col>
-                                    </Row>
-                                    <br/>
-                                    
-                                    <Row gutter={25}>
+
                                         <Col lg={12} xs={24}>
                                             <Form.Item name="company" label="Perusahaan"
                                                 rules={[
@@ -236,7 +240,7 @@ const Detail = () => {
                                         </Col>
 
                                         <Col lg={12} xs={24}>
-                                        <Form.Item name="npwp" label="Nomor NPWP"
+                                            <Form.Item name="npwp" label="Nomor NPWP"
                                                 rules={[
                                                     {
                                                         required: true,
@@ -247,10 +251,7 @@ const Detail = () => {
                                                 <Input placeholder="..." />
                                             </Form.Item>
                                         </Col>
-                                    </Row>
 
-                                    <br/>
-                                    <Row gutter={25}>
                                         <Col lg={12} xs={24}>
                                             <Form.Item name="bank_name" label="Nama Bank"
                                                 rules={[
@@ -265,7 +266,7 @@ const Detail = () => {
                                         </Col>
 
                                         <Col lg={12} xs={24}>
-                                        <Form.Item name="account_number" label="Nomor Rekening"
+                                            <Form.Item name="account_number" label="Nomor Rekening"
                                                 rules={[
                                                     {
                                                         required: true,
@@ -276,10 +277,7 @@ const Detail = () => {
                                                 <Input placeholder="..." />
                                             </Form.Item>
                                         </Col>
-                                    </Row>
 
-                                    <br/>
-                                    <Row gutter={25}>
                                         <Col lg={12} xs={24}>
                                             <Form.Item name="whatsapp_number" label="Nomor Whatsapp"
                                                 rules={[
@@ -294,7 +292,7 @@ const Detail = () => {
                                         </Col>
 
                                         <Col lg={12} xs={24}>
-                                        <Form.Item name="phone_number" label="Nomor Telepon"
+                                            <Form.Item name="phone_number" label="Nomor Telepon"
                                                 rules={[
                                                     {
                                                         required: true,
@@ -305,97 +303,159 @@ const Detail = () => {
                                                 <Input placeholder="..." />
                                             </Form.Item>
                                         </Col>
-                                    </Row>
-                                    <br/>
 
-                                    <div onClick={() => setShowSimRS(!showSimRS)}>
-                                        <Heading>
-                                            Integrasi Espay
-                                        </Heading>
-                                        <small className="color-error">Untuk alasan kerahasiaan, data integrasi tidak akan dimunculkan.</small>
-                                    </div> <br/>
+                                        <Col span={24}>
+                                            <Heading>
+                                                Integrasi Midtrans
+                                            </Heading>
+                                            <small className="color-error">Setelah data tersimpan, inputan  integrasi tidak akan menampilkan apapun.</small>
 
-                                    <Row gutter={25}>
-                                        <Col lg={12} xs={24}>
-                                            <Form.Item name="espay_commcode" label="Espay Commmunity Code" >
-                                                <Input placeholder="..." />
-                                            </Form.Item>
+                                            <Row gutter={[8, 8]}>
+                                                <Col lg={12} xs={24}>
+                                                    <Form.Item name="midtrans_id_merchant" label="ID Merchant"
+                                                        rules={[
+                                                            {
+                                                                required: true,
+                                                                message: 'Masukan data'
+                                                            }
+                                                        ]}
+                                                    >
+                                                        <Input placeholder="..." />
+                                                    </Form.Item>
+                                                </Col>
+
+                                                <Col lg={12} xs={24}>
+                                                    <Form.Item name="midtrans_client_key" label="Client key"
+                                                        rules={[
+                                                            {
+                                                                required: true,
+                                                                message: 'Masukan data'
+                                                            }
+                                                        ]}
+                                                    >
+                                                        <Input placeholder="..." />
+                                                    </Form.Item>
+                                                </Col>
+
+                                                <Col lg={12} xs={24}>
+                                                    <Form.Item name="midtrans_server_key" label="Server Key"
+                                                        rules={[
+                                                            {
+                                                                required: true,
+                                                                message: 'Masukan data'
+                                                            }
+                                                        ]}
+                                                    >
+                                                        <Input placeholder="..." />
+                                                    </Form.Item>
+                                                </Col>
+                                            </Row>
+
+                                            { false && (<Row gutter={[8, 8]}>
+                                                <Col lg={12} xs={24}>
+                                                    <Form.Item name="espay_commcode" label="Espay Commmunity Code"
+                                                        rules={[
+                                                            {
+                                                                required: true,
+                                                                message: 'Masukan data'
+                                                            }
+                                                        ]}
+                                                    >
+                                                        <Input placeholder="..." />
+                                                    </Form.Item>
+                                                </Col>
+
+                                                <Col lg={12} xs={24}>
+                                                    <Form.Item name="espay_api_key" label="Espay Api Key"
+                                                        rules={[
+                                                            {
+                                                                required: true,
+                                                                message: 'Masukan data'
+                                                            }
+                                                        ]}
+                                                    >
+                                                        <Input placeholder="..." />
+                                                    </Form.Item>
+                                                </Col>
+
+                                                <Col lg={12} xs={24}>
+                                                    <Form.Item name="espay_password" label="Espay Password"
+                                                        rules={[
+                                                            {
+                                                                required: true,
+                                                                message: 'Masukan data'
+                                                            }
+                                                        ]}
+                                                    >
+                                                        <Input placeholder="..." />
+                                                    </Form.Item>
+                                                </Col>
+
+                                                <Col lg={12} xs={24}>
+                                                    <Form.Item name="espay_signature" label="Espay Signature"
+                                                        rules={[
+                                                            {
+                                                                required: true,
+                                                                message: 'Masukan data'
+                                                            }
+                                                        ]}
+                                                    >
+                                                        <Input placeholder="..." />
+                                                    </Form.Item>
+                                                </Col>
+                                            </Row>) }
+
                                         </Col>
 
-                                        <Col lg={12} xs={24}>
-                                            <Form.Item name="espay_api_key" label="Espay Api Key" >
-                                                <Input placeholder="..." />
-                                            </Form.Item>
-                                        </Col>
-                                    </Row>
-                                    <br/>
-
-                                    <Row gutter={25}>
-                                        <Col lg={12} xs={24}>
-                                            <Form.Item name="espay_password" label="Espay Password" >
-                                                <Input placeholder="..." />
-                                            </Form.Item>
+                                        <Col span={24}>
+                                            <div onClick={() => setShowSimRS(!showSimRS)} style={{ cursor: 'pointer'}}>
+                                                <Heading>
+                                                    Integrasi SimRS <i className={"fa fa-"+( !showSimRS ? 'plus' : 'minus' )+"-square"}></i>
+                                                </Heading>
+                                            </div>
                                         </Col>
 
-                                        <Col lg={12} xs={24}>
-                                            <Form.Item name="espay_signature" label="Espay Signature" >
-                                                <Input placeholder="..." />
-                                            </Form.Item>
+                                        <Col span={24}  style={{ display: (showSimRS ? '' : 'none')}}>
+                                            <Row gutter={[8, 8]}>
+                                                <Col lg={12} xs={24}>
+                                                    <Form.Item name="his_api_production" label="Link API Production">
+                                                        <Input placeholder="..." />
+                                                    </Form.Item>
+                                                </Col>
+
+                                                <Col lg={12} xs={24}>
+                                                    <Form.Item name="his_api_development" label="Link API Development">
+                                                        <Input placeholder="..." />
+                                                    </Form.Item>
+                                                </Col>
+
+                                                <Col lg={12} xs={24}>
+                                                    <Form.Item name="his_api_user" label="Username API">
+                                                        <Input placeholder="..." />
+                                                    </Form.Item>
+                                                </Col>
+
+                                                <Col lg={12} xs={24}>
+                                                    <Form.Item name="his_api_pass" label="Password API">
+                                                        <Input placeholder="..." />
+                                                    </Form.Item>
+                                                </Col>
+                                            </Row>
                                         </Col>
-                                    </Row>
-                                    <br/>
-
-                                    <div onClick={() => setShowSimRS(!showSimRS)} style={{ cursor: 'pointer'}}>
-                                        <Heading>
-                                            Integrasi SimRS <i className={"fa fa-"+( !showSimRS ? 'plus' : 'minus' )+"-square"}></i>
-                                        </Heading>
-                                    </div>
-
-                                    <div style={{ display: (showSimRS ? '' : 'none')}}>
-                                        <Row gutter={25}>
-                                            <Col lg={12} xs={24}>
-                                                <Form.Item name="his_api_production" label="Link API Production">
-                                                    <Input placeholder="..." />
-                                                </Form.Item>
-                                            </Col>
-
-                                            <Col lg={12} xs={24}>
-                                                <Form.Item name="his_api_development" label="Link API Development">
-                                                    <Input placeholder="..." />
-                                                </Form.Item>
-                                            </Col>
-                                        </Row>
-                                        <br/>
-
-                                        <Row gutter={25}>
-                                            <Col lg={12} xs={24}>
-                                                <Form.Item name="his_api_user" label="Username API">
-                                                    <Input placeholder="..." />
-                                                </Form.Item>
-                                            </Col>
-
-                                            <Col lg={12} xs={24}>
-                                                <Form.Item name="his_api_pass" label="Password API">
-                                                    <Input placeholder="..." />
-                                                </Form.Item>
-                                            </Col>
-                                        </Row>
-                                        <br/>
-                                    </div>
+                                    </Row> <br/><br/>
 
                                     <Form.Item>
                                         <Button type="primary" htmlType="submit" className="login-form-button" block={true}>
-                                                Update Data
+                                                Tambah Data
                                         </Button>
                                     </Form.Item>
                                 </Form>
                             </BasicFormWrapper>
-                            }
                         </Cards>
                     </Col>
                 </Row>
             </Main>
-        </>
+            </>
     );
 }
 

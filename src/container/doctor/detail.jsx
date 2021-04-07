@@ -1,12 +1,11 @@
-import React, { useEffect, useState, lazy, Suspense } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Row, Col, Skeleton, Menu } from 'antd';
 import { Main, SettingWrapper } from '../styled';
-import { NavLink, useRouteMatch, Switch, Route, useHistory, useParams } from 'react-router-dom';
+import { NavLink, Switch, Route, useHistory, useParams } from 'react-router-dom';
 
 // Component
 import { PageHeader } from '../../components/page-headers/page-headers';
 import { Button } from '../../components/buttons/buttons';
-import Loading from '../../components/loadings';
 import { Cards } from '../../components/cards/frame/cards-frame';
 
 // API
@@ -24,9 +23,7 @@ import { uri_segment } from '../../utility/utility';
 const Detail = (props) => {
     const history = useHistory();
     let { id, uriPage } = useParams();
-    const [loading, setLoading] = useState();
-    const [loadingStatus, setLoadingStatus] = useState();
-    const [loadingMessage, setLoadingMessage] = useState();
+    const [loading, setLoading] = useState(true);
     const [person, setPerson] = useState({});
     const [family, setFamily] = useState([]);
     const [page, setPage] = useState(uriPage);
@@ -38,7 +35,6 @@ const Detail = (props) => {
 
     const getData = async () => {
         setLoading(true);
-        setLoadingMessage('Proses mengambil data...');
         const {
             result,
             error,
@@ -46,7 +42,6 @@ const Detail = (props) => {
 
         if(error) {
             setLoading(false);
-            setLoadingMessage(error);
         } else {
             setPerson(result.data.person);
             setFamily(result.data.family);
@@ -57,12 +52,6 @@ const Detail = (props) => {
     const onClickNav = (e) => {
         setPage(e.key);
     }
-
-    // useEffect(() => {
-    //     if(page === 'information') {
-    //         getData();
-    //     }
-    // }, [page])
 
     return(
         <div key="DoctorDetail">

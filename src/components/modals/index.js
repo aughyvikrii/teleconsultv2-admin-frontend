@@ -3,7 +3,7 @@ import { Form } from 'antd';
 import { Modal } from '../modals/antd-modals';
 import { FormAddScheduleNew } from '../form/form';
 
-export const ModalAddSchedule = (props) => {
+export const ModalCreateUpdateSchedule = (props) => {
 
     let {
         visible = false,
@@ -14,6 +14,11 @@ export const ModalAddSchedule = (props) => {
         callback = null,
         form = null,
         mState = [],
+        doctors = null,
+        departments = null,
+        branches = null,
+        schedule_id = null,
+        scheduleData = null,
         ...otherProps
     } = props;
 
@@ -22,7 +27,7 @@ export const ModalAddSchedule = (props) => {
     const [modal, setModal] = mState.length === 0 ?  React.useState() : mState ;
 
     const _onCancel = () => {
-        _form.resetFields();
+        // _form.resetFields();
         setModal({...modal, visible: false});
     }
 
@@ -57,6 +62,10 @@ export const ModalAddSchedule = (props) => {
                 defaultForm={_form}
                 callback={callback}
                 closeModal={_onCancel}
+                doctors={doctors}
+                departments={departments}
+                branches={branches}
+                scheduleData={scheduleData}
             />
         </Modal>
     </>);

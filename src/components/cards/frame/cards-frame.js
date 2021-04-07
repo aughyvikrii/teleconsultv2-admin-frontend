@@ -20,6 +20,7 @@ const Cards = props => {
     headStyle,
     border,
     bodypadding,
+    ...otherProps
   } = props;
   return (
     <>
@@ -42,7 +43,7 @@ const Cards = props => {
               {isbutton && isbutton}
             </>
           }
-          style={{ width: '100%' }}
+          {...otherProps}
         >
           {children}
         </CardFrame>
@@ -51,8 +52,8 @@ const Cards = props => {
           bodypadding={bodypadding && bodypadding}
           bodyStyle={bodyStyle && bodyStyle}
           size={size}
-          style={{ width: '100%' }}
           bordered={border}
+          {...otherProps}
         >
           {title && <Heading as="h4">{title}</Heading>}
           {caption && <p>{caption}</p>}

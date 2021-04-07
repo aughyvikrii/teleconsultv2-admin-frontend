@@ -87,7 +87,7 @@ const CreateOrUpdate = () => {
                 setCropData(storageCreate.cropData);
             }
         } else {
-            getData();
+            if(id) getData();
         }
     }, []);
     
