@@ -2,8 +2,8 @@ import Axios from 'axios';
 import Cookies from 'js-cookie';
 import store from '../redux/store';
 import { loginModal } from '../redux/authentication/actionCreator';
-
-const baseUrl = 'http://teleconsultv2.localhost/api';
+const rootUrl = 'http://teleconsultv2.localhost';
+const baseUrl = rootUrl + '/api';
 let res = [];
 let result = {
     result: null,
@@ -92,6 +92,13 @@ Axios.interceptors.response.use(
         }
         return Promise.reject(result);
 });
+
+const createParams = (params) => {
+    const qs = Object.keys(params)
+    .map(key => `${key}=` + (!params[key] ? '' : params[key]))
+    .join('&');
+    return qs;
+}
 
 const api = (endpoint) => {
     return `${baseUrl}/${endpoint}`;
@@ -317,15 +324,33 @@ const detail_title = async (id) => {
 // END: API title
 
 const get_list_appointment = async(filters) => {
-    return await _post(api(`appointment/list`), filters);
+    const params = await createParams(filters);
+    return await _get(api(`appointment/list?`+ params ));
 } 
 
 const get_detail_appointment = async(id) => {
     return await _get(api(`appointment/detail/${id}`));
 }
 
+const get_patient = async(filter) => {
+    const params = await createParams(filter);
+    return await _get(api(`patient/list?` + params ));
+}
+
+const get_report_finance = async(filter) => {
+    const params = await createParams(filter);
+    return await _get(api(`report/finance?` + params ));
+}
+
+const get_report_appointment = async(filter) => {
+    const params = await createParams(filter);
+    return await _get(api(`report/appointment?` + params ));
+}
+
 export {
+    rootUrl,
     baseUrl,
+    createParams,
     api,
     _get,
     _post,
@@ -376,6 +401,9 @@ export {
     detail_title,
     get_list_appointment,
     get_detail_appointment,
+    get_patient,
+    get_report_finance,
+    get_report_appointment
 }
 
 export default api;

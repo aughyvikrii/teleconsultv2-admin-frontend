@@ -52,6 +52,10 @@ const PersonDetail = (props) => {
             getData();
         }
     }, []);
+
+    useEffect(() => {
+        if(Object.keys(person).length > 0) setData(person);
+    }, [props])
     
     const PatientDescription = () => {
         return(

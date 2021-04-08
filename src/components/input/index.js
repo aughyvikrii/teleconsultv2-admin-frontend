@@ -1,6 +1,6 @@
 import React from 'react';
 import { Select, Row, Col, Input } from 'antd';
-import { maskingInputTime } from '../../utility/utility';
+import { maskingInputTime, maskingInputDate } from '../../utility/utility';
 
 const SelectDate = (props) => {
 
@@ -111,6 +111,12 @@ const InputTime = (props) => {
     );
 }
 
+const InputDate = (props) => {
+    return(
+        <Input placeholder="23:59" onKeyDown={maskingInputDate} onKeyUp={maskingInputDate} {...props}/>
+    );
+}
+
 export {
     SelectDate,
     GetMonth,
@@ -118,5 +124,6 @@ export {
     yearNow,
     SelectYear,
     SelectFullDate,
-    InputTime
+    InputTime,
+    InputDate
 };

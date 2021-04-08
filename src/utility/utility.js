@@ -61,6 +61,19 @@ const label_apstatus = (status) => {
   } else return status;
 }
 
+const payment_label = (status) => {
+  if(!status) return;
+  if(status == 'expire') {
+    return <Tag color="#4347D9">Kedaluwarsa</Tag>
+  } else if ( status == 'cancel' ) {
+    return <Tag color="#f50">Dibatalkan</Tag>
+  } else if ( status == 'paid' ) {
+    return <Tag color="#47bc14">Lunas</Tag>
+  } else if ( status == 'waiting_payment' ) {
+    return <Tag color="#ea8519">Menunggu Pembayaran</Tag>
+  } else return status;
+}
+
 const maskingInputTime = (e) => {
 
   if(e.keyCode === 8) return; /// delete
@@ -93,6 +106,28 @@ const maskingInputTime = (e) => {
   e.target.value = format
 }
 
+const maskingInputDate = (e) => {
+  if(e.keyCode === 8) return; /// delete
+
+  let value = e.target?.value,
+      format = null,
+      last_char = parseInt(value.substr(value.length - 1));
+
+      if(value.length === 1 && parseInt(value) > 2) {
+        format = null;
+      }
+      else if(value.length === 4) {
+        format = value + '-';
+      } else if(value.length === 7) {
+        format = value + '-';
+      } else if(value.length > 10) {
+        format = value.substr(0, 10);
+      } else {
+        format = value;
+      }
+  e.target.value = format
+}
+
 const uri_segment = (index) => {
   let loc = document.URL,
       split = loc.split('/');
@@ -103,11 +138,21 @@ const uri_segment = (index) => {
   else return split[index];
 }
 
+const createParams = (params) => {
+  const qs = Object.keys(params)
+  .map(key => `${key}=` + (!params[key] ? '' : params[key]))
+  .join('&');
+  return qs;
+}
+
 export {
   ellipsis,
   format_rupiah,
   day_tanslate,
   label_apstatus,
   maskingInputTime,
-  uri_segment
+  uri_segment,
+  payment_label,
+  maskingInputDate,
+  createParams
 };

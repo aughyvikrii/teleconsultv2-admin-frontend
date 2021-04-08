@@ -89,6 +89,21 @@ const MenuItems = ({ darkMode, toggleCollapsed, topMenu }) => {
       <Menu.Item
         icon={
           !topMenu && (
+            <NavLink className="menuItem-iocn" to={`${path}/bill`}>
+              <i aria-hidden="true" className="fa fa-file-text-o"></i>
+            </NavLink>
+          )
+        }
+        key="bill"
+      >
+        <NavLink onClick={toggleCollapsed} to={`${path}/bill`}>
+          Tagihan
+        </NavLink>
+      </Menu.Item>
+
+      <Menu.Item
+        icon={
+          !topMenu && (
             <NavLink className="menuItem-iocn" to={`${path}/doctor`}>
               <i aria-hidden="true" className="fa fa-user-md"></i>
             </NavLink>
@@ -176,7 +191,7 @@ const MenuItems = ({ darkMode, toggleCollapsed, topMenu }) => {
         </NavLink>
       </Menu.Item>
 
-      <SubMenu key="report" icon={!topMenu && <i aria-hidden="true" className="fa fa-folder-open-o"></i>} title="Laporan">
+      {/* <SubMenu key="report" icon={!topMenu && <i aria-hidden="true" className="fa fa-folder-open-o"></i>} title="Laporan">
         <Menu.Item key="inbox">
           <NavLink onClick={toggleCollapsed} to={`${path}/report/finance`}>
             Pendapatan
@@ -187,7 +202,7 @@ const MenuItems = ({ darkMode, toggleCollapsed, topMenu }) => {
             Perjanjian
           </NavLink>
         </Menu.Item>
-      </SubMenu>
+      </SubMenu> */}
 
       <Menu.Item
         icon={

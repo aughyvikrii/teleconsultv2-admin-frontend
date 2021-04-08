@@ -10,7 +10,8 @@ import Patient from './Patient';
 import Doctor from './Doctor';
 import Schedule from './Schedule';
 import Appointment from './Appointment';
-import Report from './Report';
+import Bill from './Bill';
+// import Report from './Report';
 
 const Admin = () => {
   const { path } = useRouteMatch();
@@ -24,7 +25,8 @@ const Admin = () => {
         <Route key="DoctorRoute" path={`${path}/doctor`} component={Doctor} />
         <Route key="ScheduleRoute" path={`${path}/schedule`} component={Schedule} />
         <Route key="AppointmentRoute" path={`${path}/appointment`} component={Appointment} />
-        <Route key="ReportRoute" path={`${path}/report`} component={Report} />
+        {/* <Route key="ReportRoute" path={`${path}/report`} component={Report} /> */}
+        <Route key="BillRoute" path={`${path}/bill`} component={Bill} />
     </Switch>
   </>);
 };

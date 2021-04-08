@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Select } from 'antd';
-import { get_branch, get_department, get_specialist, get_doctor } from '../../api';
+import {
+    get_branch,
+    get_department,
+    get_specialist,
+    get_doctor,
+    get_patient
+} from '../../api';
 
 const DEBUG = 0;
 const defaultFilters = {
@@ -499,6 +505,73 @@ export class SelectDepartment extends React.Component {
             >
                 {   (data?.length > 0 ? data : []).map(row => {
                         return <Select.Option key={row.department_id} value={row.department_id}>{row.name}</Select.Option>
+                    })
+                }
+            </Select>
+        );
+    }
+}
+
+export class SelectPatient extends React.Component {
+
+    state = {
+        data: [],
+        list: this.props?.list ? this.props.list : null
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if(this.props?.list) {
+            if(this.props.list.length > 0) {
+                if(this.props?.list != prevProps?.list) {
+                    this.setState({
+                        ...this.state,
+                        data: this.props?.list
+                    });
+                }
+            }
+        }
+    }
+    
+    componentDidMount() {
+        if(!this.state.list) this.getData();
+        else {
+            this.setState({
+                ...this.state, data: this.state.list
+            });
+        }
+    }
+
+    getData = async() => {
+        const {
+            result, error, message
+        } = await get_patient({paginate: false})
+
+        if(error) {
+            console.log('error select doctor:', message);
+        } else {
+            this.setState({
+                ...this.state, data: result.data
+            });
+        }
+    }
+
+    render() {
+
+        let {
+            data
+        } = this.state;
+
+        return(
+            <Select
+                showSearch
+                placeholder="Cari Pasien"
+                optionFilterProp="children"
+                filterOption={ (input, option) => funcFilter(input, option)}
+                className="sDash_fullwidth-select"
+                {...this.props}
+            >
+                {   (data?.length > 0 ? data : []).map(row => {
+                        return <Select.Option key={row.pid} value={row.pid}>{row.full_name}</Select.Option>
                     })
                 }
             </Select>
