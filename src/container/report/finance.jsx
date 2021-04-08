@@ -169,7 +169,19 @@ const Finance = (props) => {
                 title="Laporan Keuangan"
                 buttons={[
                 <div key="6" className="page-header-actions">
-                    <Button type="warning" onClick={() => setShowFilter(!showFilter)}>Filter Data</Button>
+                    <Button type="warning" onClick={() => setShowFilter(!showFilter)}>
+                        <i className="fa fa-search-plus"></i>
+                        Filter Data
+                    </Button>
+                    <Popover
+                        action="click"
+                        placement="bottom"
+                        content={printOption}
+                    >
+                        <Button type="primary">
+                            <i className="fa fa-print"></i> Cetak
+                        </Button>
+                    </Popover>
                     <Button size="small" key="4" type="primary" onClick={() => history.goBack()}>
                         <i aria-hidden="true" className="fa fa-arrow-circle-left"></i> Kembali
                     </Button>
@@ -268,19 +280,7 @@ const Finance = (props) => {
                     </Form>
                 </Cards>
 
-                <Cards
-                    isbutton={(
-                        <Popover
-                            action="click"
-                            placement="bottom"
-                            content={printOption}
-                        >
-                            <Button type="primary">
-                                <i className="fa fa-print"></i>
-                            </Button>
-                        </Popover>
-                    )}
-                >
+                <Cards headless>
                     <TableWrapper>
                         <Table
                             loading={loading}

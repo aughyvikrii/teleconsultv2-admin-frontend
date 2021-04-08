@@ -173,7 +173,8 @@ const update_doctor_schedule = async (id, fields) => {
 }
 
 const get_schedule = async (filters) => {
-    return await _post( api(`schedule/list`), filters);
+    const params = await createParams(filters);
+    return await _get( api(`schedule/list?` + params));
 }
 
 const create_specialist = async (fields) => {

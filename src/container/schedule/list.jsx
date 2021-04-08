@@ -1,24 +1,36 @@
 // Package
 import React, { useEffect, useState, Suspense } from 'react';
-import { Row, Col, Table, Radio, Skeleton, Avatar, Popconfirm, Form, Input } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
-
+import { Row, Col, Table, Skeleton, Avatar, Popconfirm, Form, Input, Select } from 'antd';
+import { Link } from 'react-router-dom';
 // Component
 import { PageHeader } from '../../components/page-headers/page-headers';
-import { Button, BtnGroup } from '../../components/buttons/buttons';
+import { Button } from '../../components/buttons/buttons';
 import { Popover } from '../../components/popup/popup';
 import { Cards } from '../../components/cards/frame/cards-frame';
-import { ButtonHeading } from '../../components/cards/style';
 import { Main, TableWrapper, PopoverFormWrapper, BtnWithIcon, PopoverButtonGroup } from '../styled';
 import Heading from '../../components/heading/heading';
-import { SelectDepartment, SelectBranch, SelectSpecialist, SelectWeekday, FormAddSchedule } from '../../components/form';
-import Loading from '../../components/loadings';
-import { Modal } from '../../components/modals/antd-modals';
 import { FormAddScheduleNew } from '../../components/form';
 import { ModalCreateUpdateSchedule } from '../../components/modals';
 
 //Api
-import { get_schedule, get_branch, get_department, get_specialist, create_doctor_schedule, update_doctor_schedule } from '../../api';
+import { createParams } from '../../utility/utility';
+import {
+    SelectDoctor,
+    SelectBranch,
+    SelectSpecialist,
+    SelectDepartment,
+    SelectWeekday,
+
+} from '../../components/form';
+
+import {
+    get_schedule,
+    get_branch,
+    get_department,
+    get_specialist,
+    rootUrl,
+    get_doctor
+} from '../../api';
 
 const List = () => {
 
@@ -29,10 +41,26 @@ const List = () => {
     });
     const [source, setSource] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [filters, setFilters] = useState({paginate: true, data_per_page: 25});
+    const [filter, setFilter]  = useState({
+        star_date: null,
+        end_date:null,
+        branch_id: null,
+        department_id: null,
+        specialist_id: null,
+        doctor_id: null,
+        patient_id: null,
+        status: null,
+        paginate: true,
+        data_per_page: 50,
+        page: 1
+    });
     const [columns, setColumns] = useState([]);
     const [dataLoaded, setDataLoaded] = useState(false);
 
+    
+    const [showFilter, setShowFilter] = useState(false);
+
+    const [doctor, setDoctor] = useState([]);
     const [specialist, setSpecialist] = useState([]);
     const [branch, setBranch] = useState([]);
     const [department, setDepartment] = useState([]);
@@ -115,7 +143,7 @@ const List = () => {
 
     const getData = async() => {
         setLoading(true);
-        const {result, error}  = await get_schedule(filters);
+        const {result, error}  = await get_schedule(filter);
         if(error) {
             if(error === 'Token is Invalid') return;
         } else {
@@ -127,10 +155,8 @@ const List = () => {
     }
 
     useEffect(()  => {
-        if(!dataLoaded) {
-            getData()
-        }
-    }, [filters]);
+        getData();
+    }, [filter]);
 
     const modalEdit = (row) => {
         setScheduleData(row);
@@ -221,18 +247,25 @@ const List = () => {
         setSpecialist(result);
     }
 
+    const _get_doctor = async()=> {
+        let {result} = await get_doctor({paginate: false});
+        result = result?.data ? result.data : []
+        setDoctor(result);
+    }
+
     useEffect( () => {
         _get_branch();
         _get_department();
         _get_specialist();
+        _get_doctor();
     }, []);
 
     const applyFilter = (fields) => {
         setDataLoaded(false);
         setLoading(true);
-        setFilters({
-            ...filters,
-            filters: fields
+        setFilter({
+            ...filter,
+            filter: fields
         });
     }
 
@@ -241,73 +274,50 @@ const List = () => {
         setModal({...modal, visible: true, title: 'Tambah Jadwal'});
     }
 
+    const onFinish = (fields) => {
+        setFilter({
+            ...filter,
+            paginate: true,
+            ...fields
+        });
+    }
+
     const onTableChange = (e) => {
-        setDataLoaded(false);
-        setFilters({
-            ...filters,
+        setFilter({
+            ...filter,
             page: e.current,
             data_per_page: e.pageSize,
         });
     }
 
-    const formFilter = (
-        <PopoverFormWrapper>
-                    <Form
-                        form={form}
-                        onFinish={applyFilter}
-                        layout="vertical"
-                        size="small"
-                    >
-                        <Row gutter={25}>
-                            <Col lg={8} xs={24}>
-                                <Form.Item label="Nama Dokter" name="doctor">
-                                    <Input placeholder="..."/>
-                                </Form.Item>
-                            </Col>
-                            <Col lg={8} xs={24}>
-                                <Form.Item label="Spesialis" name="specialist">
-                                    <SelectSpecialist list={specialist} mode="multiple" searchable="true" dropdownClassName="ant-select-popover" />
-                                </Form.Item>
-                            </Col>
-                            <Col lg={8} xs={24}>
-                                <Form.Item label="Hari" name="weekday">
-                                    <SelectWeekday mode="multiple" searchable="true" dropdownClassName="ant-select-popover" />
-                                </Form.Item>
-                            </Col>
-                        </Row>
+    const print = async (type, page) => {
+        if(page === 'all_page') filter['paginate'] = false;
 
-                        <Row gutter={25}>
-                            <Col lg={8} xs={24}>
-                                <Form.Item label="Cabang" name="branch">
-                                    <SelectBranch list={branch} mode="multiple" searchable="true" dropdownClassName="ant-select-popover" />
-                                </Form.Item>
-                            </Col>
-                            <Col lg={8} xs={24}>
-                                <Form.Item label="Departemen" name="department">
-                                    <SelectDepartment list={department} mode="multiple" searchable="true" dropdownClassName="ant-select-popover" />
-                                </Form.Item>
-                            </Col>
-                        </Row>
-                        
-                        <Form.Item style={{display:'none'}}>
-                            <Button type="primary" htmlType="submit">
-                            Submit
-                            </Button>
-                        </Form.Item>
-                    </Form>
-                    <PopoverButtonGroup>
-                        <Button size="small" type="danger" outlined onClick={() => {
-                            form.resetFields();
-                            form.submit();
-                        }}>
-                            Cancel
-                        </Button>
-                        <Button size="small" type="primary" onClick={() => form.submit()}>
-                            Terapkan Pencarian
-                        </Button>
-                    </PopoverButtonGroup>
-        </PopoverFormWrapper>
-    );
+        filter['print_type'] = type;
+
+        const params = await createParams(filter);
+        const url = rootUrl + '/report/doctor?' + params;
+        window.open(url ,'__target=blank');
+    }
+
+    const printOption = (<>
+        <Link to="#" onClick={() => print('pdf', 'this_page')}>
+            <i className="fa fa-file-pdf-o color-error"></i>
+            <span>Cetak PDF Halaman Ini</span>
+        </Link>
+        <Link to="#" onClick={() => print('xls', 'this_page')}>
+            <i className="fa fa-file-pdf-o color-success"></i>
+            <span>Cetak Excel Halaman Ini</span>
+        </Link>
+        <Link to="#" onClick={() => print('pdf', 'all_page')}>
+            <i className="fa fa-file-pdf-o color-error"></i>
+            <span>Cetak PDF Seluruh Halaman</span>
+        </Link>
+        <Link to="#" onClick={() => print('xls', 'all_page')}>
+            <i className="fa fa-file-pdf-o color-success"></i>
+            <span>Cetak Excel Seluruh Halaman</span>
+        </Link>
+    </>);
 
     return(
         <>
@@ -320,40 +330,94 @@ const List = () => {
                         <i aria-hidden="true" className="fa fa-plus"></i>
                         Tambah Baru
                     </Button>
+                    <Button type="warning" size="small" onClick={() => setShowFilter(!showFilter)}>
+                        <i className="fa fa-search-plus"></i>
+                        Filter Data
+                    </Button>
+                    <Popover
+                        action="click"
+                        placement="bottom"
+                        content={printOption}
+                    >
+                        <Button type="primary">
+                            <i className="fa fa-print"></i> Cetak
+                        </Button>
+                    </Popover>
+                    <Button size="small" key="4" type="primary" onClick={() => history.goBack()}>
+                        <i aria-hidden="true" className="fa fa-arrow-circle-left"></i> Kembali
+                    </Button>
                 </div>,
                 ]}
             />
             <Main>
+
+            <Cards
+                    title="Filter Data"
+                    
+                    style={{
+                        display: showFilter ? '' : 'none'
+                    }}
+                >
+                    <Form
+                        form={form}
+                        onFinish={onFinish}
+                        name="modal"
+                        layout="vertical"
+                    >
+                        <Row gutter={[8, 8]}>
+                            <Col xl={4} xs={24}>
+                                <Form.Item name="doctor_id" label="Dokter" >
+                                    <SelectDoctor mode="multiple" list={doctor}/>
+                                </Form.Item>
+                            </Col>
+                            <Col xl={4} xs={24}>
+                                <Form.Item name="branch_id" label="Cabang" >
+                                    <SelectBranch mode="multiple" list={branch}/>
+                                </Form.Item>
+                            </Col>
+                            <Col xl={4} xs={24}>
+                                <Form.Item name="department_id" label="Departemen" >
+                                    <SelectDepartment mode="multiple" list={department}/>
+                                </Form.Item>
+                            </Col>
+                            <Col xl={4} xs={24}>
+                                <Form.Item name="specialist_id" label="Spesialis" >
+                                    <SelectSpecialist mode="multiple" list={specialist} />
+                                </Form.Item>
+                            </Col>
+                            <Col xl={4} xs={24}>
+                                <Form.Item name="weekday_id" label="Hari" >
+                                    <SelectWeekday mode="multiple" />
+                                </Form.Item>
+                            </Col>
+                            <Col xl={4} xs={24}>
+                                <Form.Item name="data_per_page" label="Data Per Halaman" >
+                                    <Select defaultValue={filter.data_per_page}>
+                                        <Select.Option key={10} value={10}>10</Select.Option>
+                                        <Select.Option key={25} value={25}>25</Select.Option>
+                                        <Select.Option key={50} value={50}>50</Select.Option>
+                                        <Select.Option key={100} value={100}>100</Select.Option>
+                                        <Select.Option key={250} value={250}>250</Select.Option>
+                                        <Select.Option key={500} value={500}>500</Select.Option>
+                                        <Select.Option key={1000} value={1000}>1000</Select.Option>
+                                    </Select>
+                                </Form.Item>
+                            </Col>
+                            <Col span={24} className="text-right">
+                                <Form.Item>
+                                    <Button type="primary" size="default" htmlType="submit" className="login-form-button">
+                                        Submit
+                                    </Button>
+                                </Form.Item>
+                            </Col>
+                        </Row>
+                    </Form>
+                </Cards>
+
+
                 <Row gutter={[25, 25]}>
                     <Col lg={24} xs={24}>
-                        <Cards
-                            title={cardTitle}
-                            extra
-                            isbutton={
-                                <div className="card-radio">
-                                    <ButtonHeading>
-                                        <Radio.Group size='small' defaultValue={listType} onChange={(e) => setListType(e.target.value)} >
-                                            <Radio.Button value="default">Default</Radio.Button>
-                                            <Radio.Button value="perday">Hari</Radio.Button>
-                                            <Radio.Button value="perbranch">Cabang</Radio.Button>
-                                            <Radio.Button value="perdepartment">Departemen</Radio.Button>
-                                        </Radio.Group>
-                                    </ButtonHeading>  &nbsp;&nbsp;
-                                    <Popover placement="bottomLeft" title="Filter Pencarian" content={formFilter} action="click">
-                                        <BtnWithIcon>
-                                            <BtnGroup>
-                                                <Button size="small" type="danger" className="active">
-                                                    <SearchOutlined/>
-                                                </Button>
-                                                <Button size="small" type="danger" className="active">
-                                                    Filter Pencarian
-                                                </Button>
-                                            </BtnGroup>
-                                        </BtnWithIcon>
-                                    </Popover>
-                                </div>
-                            }
-                        >
+                        <Cards headless>
                             <TableWrapper>
                                 <Table
                                     loading={loading}
@@ -362,11 +426,10 @@ const List = () => {
                                     pagination={false}
                                     dataSource={ Object.values(source) }
                                     pagination={{
-                                        defaultPageSize: filters.data_per_page,
+                                        defaultPageSize: filter.data_per_page,
                                         total: originalSource.total,
                                         showTotal: (total, range) => `${range[0]}-${range[1]} dari ${total} data`,
                                         showQuickJumper: true,
-                                        showSizeChanger: true
                                     }}
                                     onChange={onTableChange}
                                 />
@@ -383,6 +446,7 @@ const List = () => {
                 mState={[modal, setModal]}
                 departments={department}
                 branches={branch}
+                doctors={doctor}
                 scheduleData={scheduleData}
             />
         </>
