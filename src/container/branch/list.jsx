@@ -1,7 +1,7 @@
 import React, { useEffect, useState, Suspense } from 'react';
 import { Table, Row, Col, Input, Popconfirm, message, Skeleton, Avatar } from 'antd';
 import { Main, TableWrapper } from '../styled';
-import { useRouteMatch, useHistory } from 'react-router-dom';
+import { useRouteMatch, useHistory, Link } from 'react-router-dom';
 
 // Component
 import { PageHeader } from '../../components/page-headers/page-headers';
@@ -10,11 +10,10 @@ import { Button } from '../../components/buttons/buttons';
 import { Tag } from '../../components/tags/tags';
 import { AlertError } from '../../components/alerts/alerts';
 import Heading from '../../components/heading/heading';
+import { Popover } from '../../components/popup/popup';
 
 // Api Function
-import  { get_branch, delete_branch } from '../../api';
-
-const { Search } = Input;
+import  { get_branch, delete_branch, rootUrl, createParams } from '../../api';
 
 const List = () => {
     const { path } = useRouteMatch();
@@ -22,10 +21,23 @@ const List = () => {
 
     const [alert, setAlert] = useState(null);
     // START: Table event & config
-    const [tableLoading, setTableLoading] = useState(true);
-    const [filter, setFilter] = useState({ query: null, page: 0, data_per_page: 10, paginate: true });
     const [data, setData] = useState({});
     const [source, setSource] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [showFilter, setShowFilter] = useState(false);
+    const [filter, setFilter]  = useState({
+        star_date: null,
+        end_date:null,
+        branch_id: null,
+        department_id: null,
+        specialist_id: null,
+        doctor_id: null,
+        patient_id: null,
+        status: null,
+        paginate: true,
+        data_per_page: 50,
+        page: 1,
+    });
 
     const columns = [
         { title: 'ID', dataIndex: 'branch_id', key: 'branch_id', },
@@ -37,22 +49,11 @@ const List = () => {
 
     useEffect(() => {
         getData();
-        // eslint-disable-next-line
     }, [filter]);
-
-    const onTableChange = (e) => {
-        setFilter({
-            ...filter,
-            page: e.current,
-            data_per_page: e.pageSize,
-        });
-    }
     // END: Table event & config
 
     const getData = async () => {
-
-        setTableLoading(true);
-
+        setLoading(true);
         const {result, error, message} = await get_branch(filter);
 
         if(error) {
@@ -60,8 +61,7 @@ const List = () => {
         } else {
             setData(result.data);
         }
-
-        setTableLoading(false);
+        setLoading(false);
     }
 
     const processData = () => {
@@ -136,16 +136,65 @@ const List = () => {
         }
     }
 
+    const onTableChange = (e) => {
+        setFilter({
+            ...filter,
+            page: e.current,
+            data_per_page: e.pageSize,
+        });
+    }
+
+    const print = async (type, page) => {
+        if(page === 'all_page') filter['paginate'] = false;
+
+        filter['print_type'] = type;
+
+        const params = await createParams(filter);
+        const url = rootUrl + '/report/branch?' + params;
+        window.open(url ,'__target=blank');
+    }
+
+    const printOption = (<>
+        <Link to="#" onClick={() => print('pdf', 'this_page')}>
+            <i className="fa fa-file-pdf-o color-error"></i>
+            <span>Cetak PDF Halaman Ini</span>
+        </Link>
+        <Link to="#" onClick={() => print('xls', 'this_page')}>
+            <i className="fa fa-file-pdf-o color-success"></i>
+            <span>Cetak Excel Halaman Ini</span>
+        </Link>
+        <Link to="#" onClick={() => print('pdf', 'all_page')}>
+            <i className="fa fa-file-pdf-o color-error"></i>
+            <span>Cetak PDF Seluruh Halaman</span>
+        </Link>
+        <Link to="#" onClick={() => print('xls', 'all_page')}>
+            <i className="fa fa-file-pdf-o color-success"></i>
+            <span>Cetak Excel Seluruh Halaman</span>
+        </Link>
+    </>);
+
     return(
             <>
             <PageHeader
                 ghost
-                title="Halaman Spesialis"
+                title="Halaman Cabang"
                 buttons={[
                 <div key="6" className="page-header-actions">
                     <Button size="small" key="4" type="primary" onClick={() => history.push(`${path}/create`)}>
                     <i aria-hidden="true" className="fa fa-plus"></i>
                     Tambah Baru
+                    </Button>
+                    <Popover
+                        action="click"
+                        placement="bottom"
+                        content={printOption}
+                    >
+                        <Button type="primary">
+                            <i className="fa fa-print"></i> Cetak
+                        </Button>
+                    </Popover>
+                    <Button size="small" key="4" type="primary" onClick={() => history.goBack()}>
+                        <i aria-hidden="true" className="fa fa-arrow-circle-left"></i> Kembali
                     </Button>
                 </div>,
                 ]}
@@ -155,22 +204,21 @@ const List = () => {
                     <Col lg={24} xs={24}>
                     {alert}
                         <Cards headless={true} >
-                            <Search placeholder="input search text" onSearch={(value) => setFilter({...filter, query: value })}/> <br/> <br/>
                             <TableWrapper>
-                            <Table
-                                loading={tableLoading}
-                                bordered={false}
-                                columns={columns}
-                                dataSource={source}
-                                pagination={{
-                                    defaultPageSize: filter.data_per_page,
-                                    total: data.total,
-                                    showTotal: (total, range) => `${range[0]}-${range[1]} dari ${total} data`,
-                                    showQuickJumper: true,
-                                    showSizeChanger: true
-                                }}
-                                onChange={onTableChange}
-                            />
+                                <Table
+                                    loading={loading}
+                                    bordered={false}
+                                    columns={columns}
+                                    dataSource={source}
+                                    pagination={{
+                                        defaultPageSize: filter.data_per_page,
+                                        total: data.total,
+                                        showTotal: (total, range) => `${range[0]}-${range[1]} dari ${total} data`,
+                                        showQuickJumper: true,
+                                        showSizeChanger: true
+                                    }}
+                                    onChange={onTableChange}
+                                />
                             </TableWrapper>
                         </Cards>
                     </Col>

@@ -29,7 +29,7 @@ const List = () => {
     const [data, setData] = useState({});
     const [showFilter, setShowFilter] = useState(false);
     const [source, setSource] = useState([]);
-    const [filter, setFilter]  = React.useState({
+    const [filter, setFilter]  = useState({
         star_date: null,
         end_date:null,
         branch_id: null,
