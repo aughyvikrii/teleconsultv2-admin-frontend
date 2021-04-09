@@ -1,4 +1,5 @@
 import React, { useEffect, useState, Suspense } from 'react';
+import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
@@ -9,10 +10,11 @@ import { Main, TableWrapper } from '../styled';
 import { PageHeader } from '../../components/page-headers/page-headers';
 import { Cards } from '../../components/cards/frame/cards-frame';
 import { Button } from '../../components/buttons/buttons';
-import { AlertError, AlertSuccess } from '../../components/alerts/alerts';
+import { AlertError } from '../../components/alerts/alerts';
 import { Modal } from '../../components/modals/antd-modals';
 import Loading from '../../components/loadings';
 import Heading from '../../components/heading/heading';
+import { Popover } from '../../components/popup/popup';
 
 import {
     loadingStart,
@@ -24,7 +26,7 @@ import {
 
 
 // Api Function
-import  { get_department, update_department, create_department, delete_department } from '../../api';
+import  { get_department, update_department, create_department, delete_department, createParams, rootUrl } from '../../api';
 const { Search, TextArea } = Input;
 
 const Department = () => {
@@ -299,6 +301,38 @@ const Department = () => {
         
     /* Start: Modal event & config */
 
+    
+
+    const print = async (type, page) => {
+        if(page === 'all_page') filter['paginate'] = false;
+
+        filter['print_type'] = type;
+
+        const params = await createParams(filter);
+        const url = rootUrl + '/report/department?' + params;
+        window.open(url ,'__target=blank');
+    }
+
+    const printOption = (<>
+        <Link to="#" onClick={() => print('pdf', 'this_page')}>
+            <i className="fa fa-file-pdf-o color-error"></i>
+            <span>Cetak PDF Halaman Ini</span>
+        </Link>
+        <Link to="#" onClick={() => print('xls', 'this_page')}>
+            <i className="fa fa-file-pdf-o color-success"></i>
+            <span>Cetak Excel Halaman Ini</span>
+        </Link>
+        <Link to="#" onClick={() => print('pdf', 'all_page')}>
+            <i className="fa fa-file-pdf-o color-error"></i>
+            <span>Cetak PDF Seluruh Halaman</span>
+        </Link>
+        <Link to="#" onClick={() => print('xls', 'all_page')}>
+            <i className="fa fa-file-pdf-o color-success"></i>
+            <span>Cetak Excel Seluruh Halaman</span>
+        </Link>
+    </>);
+
+
     return (
         <>
         <PageHeader
@@ -309,6 +343,18 @@ const Department = () => {
                 <Button size="small" key="4" type="primary" onClick={() => showModal(true)}>
                 <i aria-hidden="true" className="fa fa-plus"></i>
                 Tambah Baru
+                </Button>
+                <Popover
+                    action="click"
+                    placement="bottom"
+                    content={printOption}
+                >
+                    <Button type="primary">
+                        <i className="fa fa-print"></i> Cetak
+                    </Button>
+                </Popover>
+                <Button size="small" key="4" type="primary" onClick={() => history.goBack()}>
+                    <i aria-hidden="true" className="fa fa-arrow-circle-left"></i> Kembali
                 </Button>
             </div>,
             ]}
@@ -408,7 +454,6 @@ const Department = () => {
                 <Col span={24}>
                 {alert}
                     <Cards headless={true} >
-                        <Search placeholder="input search text" onSearch={(value) => setFilter({...filter, query: value })}/> <br/> <br/>
                         <TableWrapper>
                             <Table
                                 loading={loading}
