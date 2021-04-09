@@ -6,7 +6,7 @@ import { Main } from '../styled';
 import { PageHeader } from '../../components/page-headers/page-headers';
 import { AlertError } from '../../components/alerts/alerts';
 import { PatientCard } from '../../components/cards';
-import { GoogleMaterialBarChart } from '../../components/charts/google-chart';
+import { GoogleMaterialBarChart, GoogleBasicPieChart } from '../../components/charts/google-chart';
 import { get_dashboard } from '../../api';
 import { Button } from '../../components/buttons/buttons';
 import { Cards } from '../../components/cards/frame/cards-frame';
@@ -27,12 +27,12 @@ const Index = (props) => {
     const [chart, setChart] = useState([]);
     const [loading, setLoading] = useState(true);
     const [alert, setAlert] = useState(null);
-    const [showFilter, setShowFilter] = useState(true);
+    const [showFilter, setShowFilter] = useState(false);
     const [filter, setFilter] = useState({
         start_year: yearNow(),
-        start_month: monthNow(),
+        start_month: monthNow() - 1,
         end_year: yearNow(),
-        end_month: monthNow(),
+        end_month: monthNow() + 1,
     });
 
     const getData = async() => {
@@ -49,7 +49,7 @@ const Index = (props) => {
             setAlert(<AlertError message={message}/>);
         } else {
             setListAppointment(result.data.appointments);
-            setChart(result.data.chart);
+            setChart(result.data.charts);
         }
 
     }
@@ -143,12 +143,22 @@ const Index = (props) => {
                     <Card>
                         { loading ? <Skeleton /> : (
                             <GoogleMaterialBarChart
-                                data={chart?.data ? chart.data : []}
+                                data={chart?.appointment?.data ? chart?.appointment?.data : []}
                                 width="100%"
                                 height="300px"
-                                title={chart?.title ? chart?.title : 'Title'}
-                                subtitle={chart?.subtitle ? chart?.subtitle : 'Subtitle'}
+                                title={chart?.appointment?.title ? chart?.appointment?.title : 'Title'}
+                                subtitle={chart?.appointment?.subtitle ? chart?.appointment?.subtitle : 'Subtitle'}
                                 chartArea="50%"
+                            />
+                        ) }
+                    </Card> <br/>
+                    <Card
+                        title="Chart Dokter"
+                    >
+                        { loading ? <Skeleton /> : (
+                            <GoogleBasicPieChart
+                                data={chart?.doctor?.data ? chart?.doctor?.data : []}
+                                height="300px"
                             />
                         ) }
                     </Card>
@@ -163,6 +173,45 @@ const Index = (props) => {
                             return <PatientCard key={appointment.appointment_id} patient={appointment} from="dashboard" />
                         })
                     }
+                </Col>
+
+                <Col lg={8} xs={24}>
+                    <Card
+                        title="Chart Departemen"
+                    >
+                        { loading ? <Skeleton /> : (
+                            <GoogleBasicPieChart
+                                data={chart?.department?.data ? chart?.department?.data : []}
+                                height="300px"
+                            />
+                        ) }
+                    </Card>
+                </Col>
+
+                <Col lg={8} xs={24}>
+                    <Card
+                        title="Chart Spesialis"
+                    >
+                        { loading ? <Skeleton /> : (
+                            <GoogleBasicPieChart
+                                data={chart?.specialist?.data ? chart?.specialist?.data : []}
+                                height="300px"
+                            />
+                        ) }
+                    </Card>
+                </Col>
+
+                <Col lg={8} xs={24}>
+                    <Card
+                        title="Chart Cabang"
+                    >
+                        { loading ? <Skeleton /> : (
+                            <GoogleBasicPieChart
+                                data={chart?.branch?.data ? chart?.branch?.data : []}
+                                height="300px"
+                            />
+                        ) }
+                    </Card>
                 </Col>
             </Row>
         </Main>
