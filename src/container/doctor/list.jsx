@@ -203,7 +203,7 @@ const List = () => {
                             <i aria-hidden="true" className="fa fa-arrow-circle-left"></i> Kembali
                         </Button>
                     </div>,
-                    ]}
+                ]}
             />
             <Main>
                 
@@ -264,7 +264,6 @@ const List = () => {
                         </Row>
                     </Form>
                 </Cards>
-
 
                 <Row gutter={25}>
                     <Col lg={24} xs={24}>
