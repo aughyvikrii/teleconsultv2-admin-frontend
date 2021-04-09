@@ -348,6 +348,11 @@ const get_report_appointment = async(filter) => {
     return await _get(api(`report/appointment?` + params ));
 }
 
+const get_dashboard = async(filter) => {
+    const params = await createParams(filter);
+    return await _get(api(`dashboard?` + params));
+}
+
 export {
     rootUrl,
     baseUrl,
@@ -358,6 +363,7 @@ export {
     _put,
     _delete,
     _login,
+    get_dashboard,
     user_info,
     get_doctor,
     create_doctor,

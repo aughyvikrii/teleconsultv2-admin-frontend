@@ -63,6 +63,10 @@ const yearNow = () => {
     return new Date().getFullYear();
 }
 
+const monthNow = () => {
+    return new Date().getMonth();
+}
+
 const SelectYear = (props) => {
     const [option, setOption] = React.useState([]);
     const [eProps, setEProps] = React.useState(props);
@@ -122,6 +126,7 @@ export {
     GetMonth,
     SelectMonth,
     yearNow,
+    monthNow,
     SelectYear,
     SelectFullDate,
     InputTime,

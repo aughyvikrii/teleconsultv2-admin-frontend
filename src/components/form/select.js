@@ -578,3 +578,94 @@ export class SelectPatient extends React.Component {
         );
     }
 }
+
+export const SelectDate = (props) => {
+
+    const [option, setOption] = useState([]);
+
+    useEffect(() => {
+        let tempOption = [];
+        for (let index =1; index <= 31; index++) {
+            tempOption.push(
+                <Select.Option key={index} value={parseInt(index)}>{index}</Select.Option>
+            );
+        }
+
+        setOption(tempOption);
+    }, []);
+
+    return(
+        <Select {...props} placeholder="Tanggal">
+            {option}
+        </Select>
+    );
+}
+
+export const GetMonth = function (month, short) {
+
+	// Create month names
+	var format = short ? 'short' : 'long';
+	var monthNames = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(function (mon) {
+		return new Date(2000, mon).toLocaleString({}, {month: format});
+	});
+
+	// Return month name (or all of them)
+	if (month) {
+		return monthNames[(month - 1)];
+	}
+	return monthNames;
+
+};
+
+export const SelectMonth = (props) => {
+
+    const [option, setOption] = useState([]);
+    const [eProps, setEProps] = useState(props);
+
+    useEffect(() => {
+        let monthNames = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(function (mon) {
+            return (
+                <Select.Option key={mon} value={mon+1}>
+                    {new Date(2000, mon).toLocaleString({}, {month: 'long'})}
+                </Select.Option>
+            );
+        });
+        
+        setOption(monthNames);
+
+        if(!props.placeholder) setEProps({...eProps, placeholder: 'Bulan'});
+    }, []);
+
+    return(
+        <Select {...eProps} {...props}>
+            {option}
+        </Select>
+    );
+}
+
+export const yearNow = () => {
+    return new Date().getFullYear();
+}
+
+export const SelectYear = (props) => {
+
+    const [option, setOption] = useState([]);
+    const [eProps, setEProps] = useState(props);
+
+    useEffect(() => {
+        let tempYear = [];
+        for(let i= yearNow() ; i >= 1900 ; i--)  {
+            tempYear.push(<Select.Option key={i} value={i}>{i}</Select.Option>);
+        }
+        
+        setOption(tempYear);
+
+        if(!props.placeholder) setEProps({...eProps, placeholder: 'Tahun'});
+    }, []);
+
+    return(
+        <Select {...eProps} {...props} showSearch={true}>
+            {option}
+        </Select>
+    );
+}
