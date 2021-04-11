@@ -79,16 +79,20 @@ const List = (props) => {
 
                 mobile_data: (<>
                     <Cards border={true} headless={true} className="text-left">
-                        <b>ID</b> <br/>
-                        #{row.aid} <br/>
+                        <b>ID</b> #{row.aid} <br/>
+
                         <b>Pasien</b><br/>
                         <Link to={`/admin/patient/detail/${row.patient_id}/information`}>{row.patient_name}</Link> <br/>
+
                         <b>Dokter</b><br/>
                         <Link to={`/admin/patient/detail/${row.doctor_id}/information`}>{row.doctor_name}</Link> <br/>
+
                         <b>Tanggal Konsul</b> <br/>
                         {row.consul_date} {row.consul_time} <br/>
+
                         <b>Status</b><br/>
                         {label_apstatus(row.status)} <br/><br/>
+                        
                         <>
                             <Link to={`/admin/appointment/${row.aid}`}>
                                 <Button size="default" block={true} type="primary" title="Detail" onClick={() =>  history.push(`${path}/${row.doctor_id}`) }>

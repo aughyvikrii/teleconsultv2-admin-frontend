@@ -94,8 +94,7 @@ const List = () => {
 
                 mobile_data: (<>
                     <Cards border={true} headless={true} className="text-left">
-                        <b>ID</b> <br/>
-                        {row.doctor_id} <br/>
+                        <b>ID</b> #{row.doctor_id} <br/>
 
                         <b>Nama</b> <br/>
                         {row.display_name} <br/>

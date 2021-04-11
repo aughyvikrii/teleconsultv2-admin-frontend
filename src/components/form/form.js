@@ -49,6 +49,8 @@ export const FormAddScheduleNew = (props) => {
         if(!loadingDoctor && firstLoading && !schedule_id) {
             if(!doctors && !doctor_id) get_data_doctor();
             else setListDoctor(doctors);
+        }  else if (doctors?.length > 0) {
+            setListDoctor(doctors);
         }
 
         if(!loadingDepartment) {
@@ -83,6 +85,7 @@ export const FormAddScheduleNew = (props) => {
         } else {
             form.resetFields();
         }
+
     }, [props]);
 
     const get_data_doctor = async () => {

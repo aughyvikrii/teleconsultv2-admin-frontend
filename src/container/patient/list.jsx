@@ -83,10 +83,9 @@ const List = () => {
                 
                 mobile_data: (
                     <Cards border={true} headless={true} className="text-left">
-                        <b>ID</b> <br/>
-                        {row.pid} <br/>
+                        <b>ID</b> #{row.pid} <br/>
 
-                        <b>Nama Pasien</b>
+                        <b>Nama Pasien</b> <br/>
                         {row.full_name} <br/>
 
                         <b>Email</b> <br/>

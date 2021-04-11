@@ -60,8 +60,7 @@ const Department = () => {
 
                 mobile_data: (<>
                     <Cards border={true} headless={true} className="text-left">
-                        <b>ID</b> <br/>
-                        {row.department_id} <br/>
+                        <b>ID</b> #{row.department_id} <br/>
 
                         <b>Nama</b> <br/>
                         {row.name} <br/>

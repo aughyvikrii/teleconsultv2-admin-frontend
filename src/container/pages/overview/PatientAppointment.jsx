@@ -8,6 +8,7 @@ import Heading from '../../../components/heading/heading';
 import {Countdown} from '../../../components/countdown';
 import { label_apstatus } from '../../../utility/utility';
 import { Button } from '../../../components/buttons/buttons';
+import { Cards } from '../../../components/cards/frame/cards-frame';
 
 import { get_doctor_appointment, get_list_appointment } from '../../../api';
 
@@ -57,7 +58,6 @@ const PatientAppointment = (props) => {
 
     React.useEffect(() => {
         if(!loadingData) {
-            console.log('DARI SINI: ', props);
             getData();
         }
     }, [filter]);
@@ -70,6 +70,38 @@ const PatientAppointment = (props) => {
             return _source.push({
                 key: row.aid,
                 id: row.aid,
+
+                mobile_data: (<>
+                    <Cards border={true} headless={true} className="text-left">
+                        <b>ID</b> <br/>
+                        {row.aid} <br/>
+
+                        { type === 'doctor' ?
+                            <>
+                                <b>Pasien</b> <br/>
+                                {row.patient} <br/>
+                            </> :
+                            <>
+                                <b>Dokter</b>  <br/>
+                                {row.doctor_name} <br/>
+                            </>
+                        }
+
+                        <b>Tanggal  Konsul</b> <br/>
+                        {row.id_consul_date} {row.consul_time} <br/>
+                        <Countdown date={row.consul_date} time={row.consul_time}/>
+
+                        <b>Status</b> <br/>
+                        {label_apstatus(row.status)} <br/> <br/>
+
+                        <Link to={`/admin/appointment/${row.aid}`}>
+                            <Button className="btn-icon" size="small" block={true} type="primary" title="Detail" onClick={() =>  history.push(`/admin/appointment/${row.aid}`) }>
+                                <i aria-hidden="true" className="fa fa-folder-open-o color-white"></i> Detail
+                            </Button>
+                        </Link>
+                    </Cards>
+                </>),
+
                 patient: (
                     <div className="user-info">
                         <figure>
@@ -120,11 +152,12 @@ const PatientAppointment = (props) => {
     }
 
     const columns = [
-        { title: 'ID', dataIndex: 'id', key: 'id', },
-        { title: 'Pasien', dataIndex: 'patient', key: 'patient', },
-        { title: 'Tanggal Konsultasi', dataIndex: 'consul_date', key: 'consul_date', },
-        { title: 'Status', dataIndex: 'status', key: 'status', },
-        { title: '#', dataIndex: 'action', key: 'action', width: '150px', },
+        { title: 'Data', dataIndex: 'mobile_data', key: 'mobile_data', responsive: ['xs'] },
+        { title: 'ID', dataIndex: 'id', key: 'id', responsive: ['sm'] },
+        { title: 'Pasien', dataIndex: 'patient', key: 'patient', responsive: ['sm'] },
+        { title: 'Tanggal Konsultasi', dataIndex: 'consul_date', key: 'consul_date', responsive: ['sm'] },
+        { title: 'Status', dataIndex: 'status', key: 'status', responsive: ['sm'] },
+        { title: '#', dataIndex: 'action', key: 'action', width: '150px', responsive: ['sm'] },
     ];
 
     return(

@@ -75,8 +75,7 @@ const Specialists = () => {
 
                     mobile_data: (
                         <Cards border={true} headless={true} className="text-left">
-                            <b>ID</b> <br/>
-                            {row.sid} <br/>
+                            <b>ID</b> #{row.sid} <br/>
 
                             <b>Titel</b> <br/>
                             {row.title} <br/>

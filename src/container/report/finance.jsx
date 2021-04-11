@@ -79,18 +79,21 @@ const Finance = (props) => {
                 invoice_id: ('#'+row.bill_uniq),
                 mobile_data: (<>
                     <Cards border={true} headless={true} className="text-left">
-                        <b>Invoice</b> <br/>
-                        #{row.bill_uniq} <br/>
-                        <b>Perjanjian</b> <br/>
-                        <Link to={`/admin/appointment/${row.appointment_id}`}>#{row.appointment_id}</Link> <br/>
+                        <b>Invoice</b> #{row.bill_uniq} <br/>
+
+                        <b>Perjanjian</b> <Link to={`/admin/appointment/${row.appointment_id}`}>#{row.appointment_id}</Link> <br/>
+
                         <b>Tanggal Bayar</b><br/>
                         {row.id_paid_on ? row.id_paid_on : '-'} <br/>
+
                         <b>Pasien</b><br/>
                         <Link to={`/admin/patient/detail/${row.patient_id}/information`}>{row.patient_name}</Link> <br/>
-                        <b>Status</b> <br/>
-                        {payment_label(row.status)} <br/>
+
                         <b>Nominal</b> <br/>
-                        Rp. {format_rupiah(row.amount)}
+                        Rp. {format_rupiah(row.amount)} <br/>
+
+                        <b>Status</b> <br/>
+                        {payment_label(row.status)}
                     </Cards>
                 </>),
                 appointment_id: (

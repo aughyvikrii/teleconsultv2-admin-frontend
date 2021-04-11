@@ -322,7 +322,8 @@ export class SelectDoctor extends React.Component {
                 if(this.props?.list != prevProps?.list) {
                     this.setState({
                         ...this.state,
-                        data: this.props?.list
+                        data: this.props?.list,
+                        list: this.props.list
                     });
                 }
             }
@@ -333,7 +334,7 @@ export class SelectDoctor extends React.Component {
         if(!this.state.list) this.getData();
         else {
             this.setState({
-                ...this.state, data: this.state.list
+                ...this.state, data: this.state.list, list: this.state.list
             });
         }
     }

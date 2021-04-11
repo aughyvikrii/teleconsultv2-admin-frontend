@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import _ from 'lodash';
 import { PlusCircleOutlined } from '@ant-design/icons';
 import { Form, Radio, Popconfirm, Table, Skeleton } from 'antd';
-import moment from 'moment';
 import { Cards } from '../../../components/cards/frame/cards-frame';
 import { Button, BtnGroup } from '../../../components/buttons/buttons';
 import { ButtonHeading } from '../../../components/cards/style';
@@ -16,15 +14,11 @@ import { useParams } from 'react-router';
 
 const DoctorSchedule = () => {
 
-    const [listType, setListType]  = useState('perday');
-
     const [loading, setLoading] = useState(true);
-    const [alert, setAlert] =  useState();
-
+    const [listType, setListType] = useState('perday');
     const [schedules, setSchedules] = useState([]);
     const [perDay, setPerDay] = useState({});
-    const [perBranch, setPerBranch] = useState({});
-    const [perDepartment, setPerDepartment] = useState({});
+    const [scheduleData, setScheduleData] = useState({});
 
     const [form] = Form.useForm();
 
@@ -59,25 +53,70 @@ const DoctorSchedule = () => {
 
     useEffect( () =>{
         let day = {};
-        let branch = {};
-        let department = {};
-
-        let struct = {
-            name: '',
-            data: []
-        };
 
         schedules.map(row => {
 
-            if(typeof day[row.weekday] === 'undefined') day[row.weekday] = _.cloneDeep(struct);
+            if(typeof day[row.weekday] === 'undefined') {
+                day[row.weekday] = {
+                    name: '',
+                    data: []
+                };
+            }
 
             row.key = row.schedule_id;
             row.id = row.schedule_id;
 
+            row.mobile_data = (<>
+                <Cards border={true} headless={true} className="text-left">
+                    <b>ID</b> #{row.schedule_id} <br/>
+
+                    { listType !== 'perday' && (<>
+                        <b>Hari</b> <br/>
+                        {row.weekday_alt} <br/>
+                    </>) }
+
+                    { listType !== 'perbranch' && (<>
+                        <b>Cabang</b> <br/>
+                        {row.branch} <br/>
+                    </>) }
+
+                    { listType !== 'perdepartment' && (<>
+                        <b>Departemen</b> <br/>
+                        {row.department} <br/>
+                    </>)}
+
+                    <b>Jam Praktek</b>  <br/>
+                    {row.start_hour} - {row.end_hour} <br/>
+
+                    <b>Durasi</b> <br/>
+                    {row.duration} Menit <br/>
+
+                    <b>Ditambah oleh</b> <br/>
+                    {row.creator} <br/>
+
+                    <b>Status</b> <br/>
+                    {!row.is_active ?  <Tag color="#f50">Nonaktif</Tag> :  <Tag color="#87d068">Aktif</Tag>} <br/> <br/>
+
+                    <Button className="btn-icon" size="default" block={true} type="primary" title="Update" onClick={() => modalFunc('edit',row)}>
+                        <i aria-hidden="true" className="fa fa-pencil"></i> Edit Data
+                    </Button> &nbsp;
+                    <Popconfirm
+                        title="Yakin menghapus data ini?"
+                        onConfirm={() => deleteData(row)}
+                        okText="Ya"
+                        cancelText="Batal"
+                    >
+                        <Button className="btn-icon" size="default" outlined block={true} type="danger" title="Hapus">
+                        <i aria-hidden="true" className="fa fa-trash-o"></i> Hapus
+                        </Button>
+                    </Popconfirm>
+                </Cards>
+            </>);
+
             row.action = (
                 <div className="table-actions">
                     <>
-                        <Button className="btn-icon" size="default" shape="round" type="primary" title="Update" onClick={() => modalFunc('edit',row)}>
+                        <Button className="btn-icon" size="default" shape="round" type="primary" title="Update" onClick={() => modalEdit(row)}>
                             <i aria-hidden="true" className="fa fa-pencil"></i>
                         </Button> &nbsp;
                         <Popconfirm
@@ -100,42 +139,14 @@ const DoctorSchedule = () => {
 
             day[row.weekday]['name'] = row.weekday_alt;
             day[row.weekday]['data'].push(row);
-
-            if(typeof branch[row.branch_id] === 'undefined') branch[row.branch_id] = _.cloneDeep(struct);
-
-            branch[row.branch_id]['name'] = row.branch;
-            branch[row.branch_id]['data'].push(row);
-
-            if(typeof department[row.department_id] === 'undefined') department[row.department_id] = _.cloneDeep(struct);
-            department[row.department_id]['name'] = row.department;
-            department[row.department_id]['data'].push(row);
         });
 
         setPerDay(day);
-        setPerBranch(branch);
-        setPerDepartment(department);
 
     }, [schedules]);
 
     const PerDayTable = () => {
 
-        let columns = [
-            {
-                title: 'Senin',
-                children: [
-                    { title: 'ID', dataIndex: 'id', key: 'id'},
-                    { title: 'Cabang', dataIndex: 'branch', key: 'branch' },
-                    { title: 'Departemen', dataIndex: 'department', key: 'department' },
-                    { title: 'Mulai', dataIndex: 'start_hour', key: 'start_hour' },
-                    { title: 'Selesai', dataIndex: 'end_hour', key: 'end_hour' },
-                    { title: 'Durasi', dataIndex: 'duration', key: 'duration' },
-                    { title: 'Tarif', dataIndex: 'fee', key: 'fee' },
-                    { title: 'Status', dataIndex: 'status', key: 'status' },
-                    { title: 'Dibuat oleh', dataIndex: 'creator', key: 'creator' },
-                    { title: '#', dataIndex: 'action', key: 'action'},
-                ]
-            },
-        ]
         return(
             <>
                 <Heading className="text-center">
@@ -143,8 +154,27 @@ const DoctorSchedule = () => {
                 </Heading> <br/>
                 {   Object.keys(perDay).map(id => {
                         let source = perDay[id];
-                        let column = _.cloneDeep(columns);
-                            column[0].title = 'Hari ' + source.name;
+
+                        let column = [
+                            {
+                                title: 'Hari ' + source.name,
+                                children: [
+                                    { title: 'ID', dataIndex: 'id', key: 'id', responsive: ['sm'] },
+                                    { title: 'Cabang', dataIndex: 'branch', key: 'branch', responsive: ['sm'] },
+                                    { title: 'Departemen', dataIndex: 'department', key: 'department', responsive: ['sm'] },
+                                    { title: 'Mulai', dataIndex: 'start_hour', key: 'start_hour', responsive: ['sm'] },
+                                    { title: 'Selesai', dataIndex: 'end_hour', key: 'end_hour', responsive: ['sm'] },
+                                    { title: 'Durasi', dataIndex: 'duration', key: 'duration', responsive: ['sm'] },
+                                    { title: 'Tarif', dataIndex: 'fee', key: 'fee', responsive: ['sm'] },
+                                    { title: 'Status', dataIndex: 'status', key: 'status', responsive: ['sm'] },
+                                    { title: 'Dibuat oleh', dataIndex: 'creator', key: 'creator', responsive: ['sm'] },
+                                    { title: '#', dataIndex: 'action', key: 'action', responsive: ['sm'] },
+                                ],
+                                responsive: ['sm']
+                            },
+                            { title: 'Hari ' + source.name, dataIndex: 'mobile_data', key: 'mobile_data', responsive: ['xs'] },
+                        ];
+
                         return (
                             <div key={id}>
                                 <Table
@@ -161,133 +191,30 @@ const DoctorSchedule = () => {
         );
     }
 
-    const PerBranchTable = () => {
-        const columns = [
-            {
-                title: 'Cabang',
-                children: [
-                    { title: 'ID', dataIndex: 'id', key: 'id'},
-                    { title: 'Departemen', dataIndex: 'department', key: 'department' },
-                    { title: 'Hari', dataIndex: 'weekday_alt', key: 'weekday_alt' },
-                    { title: 'Mulai', dataIndex: 'start_hour', key: 'start_hour' },
-                    { title: 'Selesai', dataIndex: 'end_hour', key: 'end_hour' },
-                    { title: 'Durasi', dataIndex: 'duration', key: 'duration' },
-                    { title: 'Tarif', dataIndex: 'fee', key: 'fee' },
-                    { title: 'Status', dataIndex: 'status', key: 'status' },
-                    { title: 'Dibuat oleh', dataIndex: 'creator', key: 'creator' },
-                    { title: '#', dataIndex: 'action', key: 'action'},
-                ]
-            }
-        ]
-
-        return(
-            <>
-                <Heading className="text-center">
-                    Data Percabang
-                </Heading> <br/>
-                {   Object.keys(perBranch).map(id => {
-                        let source = perBranch[id];
-                        let column = _.cloneDeep(columns);
-                            column[0].title = 'Cabang ' + source.name
-                        return (
-                            <div key={id}>
-                                <Table
-                                    columns={column}
-                                    dataSource={source.data}
-                                    pagination={false}
-                                />
-                                <br/>
-                            </div>
-                        );
-                    })
-                }
-            </>
-        );
+    const modalEdit = (row) => {
+        setScheduleData(row);
+        console.log(row);
+        let title = 'Edit Jadwal #' + row.schedule_id;
+        setModal({...modal, visible: true, title: title});
     }
 
-    const PerDepartment = () => {
-        const columns = [
-            {
-                title: 'Departemen',
-                children: [
-                    { title: 'ID', dataIndex: 'id', key: 'id'},
-                    { title: 'Cabang', dataIndex: 'branch', key: 'branch' },
-                    { title: 'Hari', dataIndex: 'weekday_alt', key: 'weekday_alt' },
-                    { title: 'Mulai', dataIndex: 'start_hour', key: 'start_hour' },
-                    { title: 'Selesai', dataIndex: 'end_hour', key: 'end_hour' },
-                    { title: 'Durasi', dataIndex: 'duration', key: 'duration' },
-                    { title: 'Tarif', dataIndex: 'fee', key: 'fee' },
-                    { title: 'Status', dataIndex: 'status', key: 'status' },
-                    { title: 'Dibuat oleh', dataIndex: 'creator', key: 'creator' },
-                    { title: '#', dataIndex: 'action', key: 'action'},
-                ]
-            }
-        ]
-
-        return(
-            <>
-                <Heading className="text-center">
-                    Data Perdepartemen
-                </Heading> <br/>
-                {   Object.keys(perDepartment).map(id => {
-                        let source = perDepartment[id];
-                        let column = _.cloneDeep(columns);
-                            column[0].title = 'Departemen ' + source.name;
-                        return (
-                            <div key={id}>
-                                <Table
-                                    columns={column}
-                                    dataSource={source.data}
-                                    pagination={false}
-                                />
-                                <br/>
-                            </div>
-                        );
-                    })
-                }
-            </>
-        );
-    }
-
-    const modalFunc = (type, data={}) => {
-        data = _.cloneDeep(data)
-        let schedule_id = 0;
-        if(type === 'edit') {
-            data['start_hour'] = moment(data['start_hour'], 'HH:mm');
-            data['end_hour'] = moment(data['end_hour'], 'HH:mm');
-            data['branch'] = data['branch_id'];
-            data['department'] = data['department_id'];
-            schedule_id = data.schedule_id;
-            form.setFieldsValue(data);
-        }else{
-            form.resetFields();
-            data = {};
-            type = 'add';
-        }
-        setModal({ ...modal, visible: true, action: type, data: data, schedule_id: schedule_id });
+    const showModal = () => {
+        setScheduleData({});
+        setModal({...modal, visible: true, title: 'Tambah Jadwal'});
     }
 
     return(
         <>
         <Cards
             title="Jadwal Praktek"
-            extra
-            isbutton={
+            extra={
                 <div className="card-radio">
-                    <ButtonHeading>
-                        <Radio.Group size='small' defaultValue={listType} onChange={(e) => setListType(e.target.value)} >
-                            <Radio.Button value="perday">Hari</Radio.Button>
-                            <Radio.Button value="perbranch">Cabang</Radio.Button>
-                            <Radio.Button value="perdepartment">Departemen</Radio.Button>
-                        </Radio.Group>
-                    </ButtonHeading>
-                    &nbsp;&nbsp;
                     <BtnWithIcon>
                         <BtnGroup>
-                            <Button size="small" type="danger" onClick={() => modalFunc('add')}>
+                            <Button size="small" type="danger" onClick={() => showModal(true)}>
                                 <PlusCircleOutlined/>
                             </Button>
-                            <Button size="small" type="danger" onClick={() => modalFunc('add')}>
+                            <Button size="small" type="danger" onClick={() => showModal(true)}>
                                 Tambah Jadwal
                             </Button>
                         </BtnGroup>
@@ -295,10 +222,7 @@ const DoctorSchedule = () => {
                 </div>
             }
         >
-        {   loading ? <Skeleton/> :
-            listType === 'perday' ? <PerDayTable/> :
-            listType === 'perbranch' ? <PerBranchTable/> : <PerDepartment/>
-        }
+        { loading ? <Skeleton/> : <PerDayTable/> }
         </Cards>
         <ModalCreateUpdateSchedule
             forceRender={true}
@@ -307,6 +231,7 @@ const DoctorSchedule = () => {
             doctor_id={id}
             callback={getData}
             mState={[modal, setModal]}
+            scheduleData={scheduleData}
         />
         </>
     );

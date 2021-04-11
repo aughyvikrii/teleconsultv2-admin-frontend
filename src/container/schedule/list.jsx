@@ -174,8 +174,7 @@ const List = () => {
 
             row.mobile_data = (<>
                 <Cards border={true} headless={true} className="text-left">
-                    <b>ID</b> <br/>
-                    {row.schedule_id} <br/>
+                    <b>ID</b> #{row.schedule_id} <br/>
 
                     <b>Dokter</b> <br/>
                     {row.doctor} <br/>
@@ -367,8 +366,8 @@ const List = () => {
                 ghost
                 title="Jadwal Dokter"
                 buttons={[
-                <div key="6" className="page-header-actions">
-                    <Button size="small" key="4" type="primary" onClick={() => showModal(true)}>
+                <div key="button_header" className="page-header-actions">
+                    <Button size="small" key="button_create_new" type="primary" onClick={() => showModal(true)}>
                         <i aria-hidden="true" className="fa fa-plus"></i>
                         Tambah Baru
                     </Button>
@@ -385,7 +384,7 @@ const List = () => {
                             <i className="fa fa-print"></i> Cetak
                         </Button>
                     </Popover>
-                    <Button size="small" key="4" type="primary" onClick={() => history.goBack()}>
+                    <Button size="small" key="button_back" type="primary" onClick={() => history.goBack()}>
                         <i aria-hidden="true" className="fa fa-arrow-circle-left"></i> Kembali
                     </Button>
                 </div>,
@@ -433,8 +432,8 @@ const List = () => {
                                 </Form.Item>
                             </Col>
                             <Col xl={4} xs={24}>
-                                <Form.Item name="data_per_page" label="Data Per Halaman" >
-                                    <Select defaultValue={filter.data_per_page}>
+                                <Form.Item name="data_per_page" label="Data Per Halaman" defaultValue={filter.data_per_page}>
+                                    <Select>
                                         <Select.Option key={10} value={10}>10</Select.Option>
                                         <Select.Option key={25} value={25}>25</Select.Option>
                                         <Select.Option key={50} value={50}>50</Select.Option>

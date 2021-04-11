@@ -141,7 +141,8 @@ const user_info = async () => {
 }
 
 const get_doctor = async (filters) => {
-    return await _post(api(`doctor/list`), filters);
+    const params = createParams(filters);
+    return await _get(api(`doctor/list?` + params));
 }
 
 const create_doctor = async (fields) => {

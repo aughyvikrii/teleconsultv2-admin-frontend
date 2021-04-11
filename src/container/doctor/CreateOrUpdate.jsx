@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { Row, Col, Form, Input, InputNumber } from 'antd';
+import { Row, Col, Form, Input, InputNumber, Avatar } from 'antd';
 import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
 import { Main, BasicFormWrapper } from '../styled';
@@ -209,7 +209,8 @@ const CreateOrUpdate = () => {
                                                 <input type="file" accept="image/*" onChange={imageChange} /> <br/>
 
                                                 <div style={{ width: "100%", display: ( cropData.length > 2 ? '' : 'none' ) }}>
-                                                    <img src={cropData} alt="cropped" />
+                                                    {/* <img src={cropData} alt="cropped" /> */}
+                                                    <Avatar shape="square" size={{ xs: 250, sm: 250, md: 250, lg: 250, xl: 250, xxl: 250 }} src={cropData} />
                                                 </div>
 
                                                 <div style={{ display: ( image ? '' : 'none' ) }} >
@@ -305,7 +306,7 @@ const CreateOrUpdate = () => {
                                         </Col>
                                     </Row> <br/>
 
-                                    <Row gutter={25}>
+                                    <Row gutter={[25, 25]}>
                                         <Col lg={12} xs={24}>
                                             <Form.Item name="phone_number" label="Nomor Telepon"
                                                 rules={[
@@ -332,7 +333,7 @@ const CreateOrUpdate = () => {
                                         </Col>
                                     </Row> <br/>
 
-                                    <Row gutter={25}>
+                                    <Row gutter={[25, 25]}>
                                         <Col lg={12} xs={24}>
                                             <Form.Item name="birth_place" label="Tempat Lahir" rules={[{ required: true, message: 'Masukan tempat lahir' } ]} >
                                                 <Input placeholder="..." />
@@ -340,18 +341,18 @@ const CreateOrUpdate = () => {
                                         </Col>
                                         <Col lg={12} xs={24}>
                                             <Row gutter={[8, 8]}>
-                                                <Col span={8}>
+                                                <Col xl={8} sm={24}>
                                                     <Form.Item name="birth_date_d" label="Tanggal Lahir" rules={[ { required: true, message: 'Masukan tanggal lahir' } ]} >
                                                         <SelectDate/>
                                                     </Form.Item>
                                                 </Col>
-                                                <Col span={8}>
-                                                    <Form.Item name="birth_date_m" label={(<br/>)} className="no-required" rules={[ { required: true, message: 'Masukan bulan lahir' } ]} >
+                                                <Col xl={8} sm={24}>
+                                                    <Form.Item name="birth_date_m" label="Bulan Lahir" rules={[ { required: true, message: 'Masukan bulan lahir' } ]} >
                                                         <SelectMonth/>
                                                     </Form.Item>
                                                 </Col>
-                                                <Col span={8}>
-                                                    <Form.Item name="birth_date_y" label={(<br/>)} className="no-required" rules={[ { required: true, message: 'Masukan tahun lahir' } ]} >
+                                                <Col xl={8} sm={24}>
+                                                    <Form.Item name="birth_date_y" label="Tahun Lahir" rules={[ { required: true, message: 'Masukan tahun lahir' } ]} >
                                                         <SelectYear start={1850}/>
                                                     </Form.Item>
                                                 </Col>
