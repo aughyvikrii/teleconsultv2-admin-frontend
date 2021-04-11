@@ -3,6 +3,40 @@ import React from 'react';
 import { Chart } from 'react-google-charts';
 import PropTypes from 'prop-types';
 
+const GoogleBasicAreaChart = props => {
+  const { width, height, data, title, chartArea } = props;
+    return (
+      <Chart
+        width={width}
+        height={height}
+        chartType="AreaChart"
+        loader={<div>Loading Chart</div>}
+        data={data}
+        options={{
+          title,
+          chartArea: { width: chartArea },
+          hAxis: {
+            title: 'Total',
+            minValue: 0,
+          },
+          vAxis: {
+            title: 'City',
+          },
+        }}
+        // For tests
+        rootProps={{ 'data-testid': '1' }}
+      />
+    );
+};
+
+GoogleBasicAreaChart.propTypes = {
+  width: PropTypes.string.isRequired,
+  height: PropTypes.string.isRequired,
+  data: PropTypes.array,
+  title: PropTypes.string.isRequired,
+  chartArea: PropTypes.string.isRequired,
+};
+
 const GoogleBasicBarChart = props => {
   const { width, height, data, title, chartArea } = props;
   return (
@@ -257,7 +291,7 @@ GoogleOrgChart.propTypes = {
 };
 
 const GoogleBasicPieChart = props => {
-  const { width, height, data, chartArea, title } = props;
+  const { width, height, data, title } = props;
   return (
     <Chart
       width={width}
@@ -267,7 +301,6 @@ const GoogleBasicPieChart = props => {
       data={data}
       options={{
         title,
-        chartArea: { width: chartArea },
       }}
       // For tests
       rootProps={{ 'data-testid': '9' }}
@@ -280,7 +313,6 @@ GoogleBasicPieChart.propTypes = {
   height: PropTypes.string.isRequired,
   data: PropTypes.array.isRequired,
   title: PropTypes.string.isRequired,
-  chartArea: PropTypes.string.isRequired,
 };
 
 const Google3dPieChart = props => {
@@ -312,6 +344,7 @@ Google3dPieChart.propTypes = {
 };
 
 export {
+  GoogleBasicAreaChart,
   Google3dPieChart,
   GoogleBasicPieChart,
   GoogleOrgChart,

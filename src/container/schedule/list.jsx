@@ -79,14 +79,15 @@ const List = () => {
     const [form] = Form.useForm();
 
     const columnDataDefault = [
-        { title: 'ID', dataIndex: 'schedule_id', key: 'schedule_id' },
-        { title: 'Dokter', dataIndex: 'doctor', key: 'doctor' },
-        { title: 'Cabang', dataIndex: 'branch', key: 'branch' },
-        { title: 'Departemen', dataIndex: 'department', key: 'department' },
-        { title: 'Hari', dataIndex: 'weekday', key: 'weekday' },
-        { title: 'Jam Praktek', dataIndex: 'practice_hours', key: 'practice_hours' },
-        { title: 'Durasi', dataIndex: 'duration', key: 'duration' },
-        { title: '#', dataIndex: 'action',  key: 'action' }
+        { title: 'Data', dataIndex: 'mobile_data', key: 'mobile_data', responsive: ['xs'] },
+        { title: 'ID', dataIndex: 'schedule_id', key: 'schedule_id', responsive: ['sm'] },
+        { title: 'Dokter', dataIndex: 'doctor', key: 'doctor', responsive: ['sm'] },
+        { title: 'Cabang', dataIndex: 'branch', key: 'branch', responsive: ['sm'] },
+        { title: 'Departemen', dataIndex: 'department', key: 'department', responsive: ['sm'] },
+        { title: 'Hari', dataIndex: 'weekday', key: 'weekday', responsive: ['sm'] },
+        { title: 'Jam Praktek', dataIndex: 'practice_hours', key: 'practice_hours', responsive: ['sm'] },
+        { title: 'Durasi', dataIndex: 'duration', key: 'duration', responsive: ['sm'] },
+        { title: '#', dataIndex: 'action',  key: 'action', responsive: ['sm'] },
     ];
 
     const columnDataPerday = [
@@ -170,6 +171,47 @@ const List = () => {
         originalSource.data.map(row => {
             row.originRow = row;
             row.key = row.schedule_id;
+
+            row.mobile_data = (<>
+                <Cards border={true} headless={true} className="text-left">
+                    <b>ID</b> <br/>
+                    {row.schedule_id} <br/>
+
+                    <b>Dokter</b> <br/>
+                    {row.doctor} <br/>
+
+                    <b>Cabang</b> <br/>
+                    {row.branch} <br/>
+
+                    <b>Departemen</b> <br/>
+                    {row.department} <br/>
+
+                    <b>Hari</b> <br/>
+                    {row.weekday} <br/>
+
+                    <b>Jam</b> <br/>
+                    {row.start_hour} - {row.end_hour} <br/>
+                    
+                    <b>Durasi</b> <br/>
+                    {row.duration} Menit <br/><br/>
+
+                    <div className="table-actions">
+                        <Button className="btn-icon" block={true} size="default" type="primary" title="Detail" onClick={() => modalEdit(row)}>
+                            <i aria-hidden="true" className="fa fa-pencil"></i> Ubah
+                        </Button> &nbsp;
+                        <Popconfirm
+                            title="Yakin menghapus data ini?"
+                            onConfirm={() => deleteData(row)}
+                            okText="Ya"
+                            cancelText="Batal"
+                        >
+                            <Button className="btn-icon" block={true} size="default" outlined  type="danger" title="Hapus">
+                            <i aria-hidden="true" className="fa fa-trash-o"></i> Hapus
+                            </Button>
+                        </Popconfirm>
+                    </div>
+                </Cards>
+            </>),
 
             row.practice_hours = (
                 row.start_hour + ' - ' + row.end_hour

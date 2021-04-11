@@ -57,6 +57,34 @@ const Department = () => {
             return result.push({
                 key: row.department_id,
                 id: row.department_id,
+
+                mobile_data: (<>
+                    <Cards border={true} headless={true} className="text-left">
+                        <b>ID</b> <br/>
+                        {row.department_id} <br/>
+
+                        <b>Nama</b> <br/>
+                        {row.name} <br/>
+
+                        <b>Keterangan</b> <br/>
+                        {row.description} <br/> <br/>
+
+                        <Button className="btn-icon" size="default" block={true} type="primary" title="Detail" onClick={() => modalEdit(row)}>
+                            <i aria-hidden="true" className="fa fa-pencil"></i> Edit Data
+                        </Button> &nbsp;
+                        <Popconfirm
+                            title="Yakin menghapus data ini?"
+                            onConfirm={() => deleteData(row)}
+                            okText="Ya"
+                            cancelText="Batal"
+                        >
+                            <Button className="btn-icon" size="default" outlined block={true} type="danger" title="Hapus">
+                            <i aria-hidden="true" className="fa fa-trash-o"></i> Hapus Data
+                            </Button>
+                        </Popconfirm>
+                    </Cards>
+                </>),
+
                 name: (
                     <div className="user-info">
                         <figure>
@@ -108,10 +136,11 @@ const Department = () => {
         const [filter, setFilter] = useState({ query: null, page: 0, data_per_page: 10, paginate: true });
 
         const columns = [
-            { title: 'ID', dataIndex: 'id', key: 'id', },
-            { title: 'Departemen', dataIndex: 'name', key: 'name', },
-            { title: 'Keterangan', dataIndex: 'description', key: 'description', },
-            { title: '#', dataIndex: 'action', key: 'action', width: '150px', },
+            { title: 'Data', dataIndex: 'mobile_data', key: 'mobile_data', responsive: ['xs'] },
+            { title: 'ID', dataIndex: 'id', key: 'id', responsive: ['sm'] },
+            { title: 'Departemen', dataIndex: 'name', key: 'name', responsive: ['sm'] },
+            { title: 'Keterangan', dataIndex: 'description', key: 'description', responsive: ['sm'] },
+            { title: '#', dataIndex: 'action', key: 'action', width: '150px', responsive: ['sm'] },
         ];
 
         useEffect(() => {

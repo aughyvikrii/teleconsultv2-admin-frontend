@@ -39,10 +39,11 @@ const Specialists = () => {
         const [filter, setFilter] = useState({ query: null, page: 0, data_per_page: 10, paginate: true });
 
         const columns = [
-            { title: 'ID', dataIndex: 'id', key: 'id' },
-            { title: 'Titel', dataIndex: 'title', key: 'title' },
-            { title: 'Keterangan', dataIndex: 'alt_name', key: 'alt_name' },
-            { title: '#', dataIndex: 'action', key: 'action', width: '150px' },
+            { title: 'Data', dataIndex: 'mobile_data', key: 'mobile_data', responsive: ['xs'] },
+            { title: 'ID', dataIndex: 'id', key: 'id', responsive: ['sm'] },
+            { title: 'Titel', dataIndex: 'title', key: 'title', responsive: ['sm'] },
+            { title: 'Keterangan', dataIndex: 'alt_name', key: 'alt_name', responsive: ['sm'] },
+            { title: '#', dataIndex: 'action', key: 'action', width: '150px', responsive: ['sm'] },
         ];
 
         const getData = async () => {
@@ -71,6 +72,34 @@ const Specialists = () => {
                 return result.push({
                     key: row.sid,
                     id: row.sid,
+
+                    mobile_data: (
+                        <Cards border={true} headless={true} className="text-left">
+                            <b>ID</b> <br/>
+                            {row.sid} <br/>
+
+                            <b>Titel</b> <br/>
+                            {row.title} <br/>
+
+                            <b>Nama</b> <br/>
+                            {row.alt_name} <br/><br/>
+
+                            <Button className="btn-icon" size="default" block={true} type="primary" title="Detail" onClick={() => modalEdit(row)}>
+                                <i aria-hidden="true" className="fa fa-pencil"></i> Edit Data
+                            </Button> &nbsp;
+                            <Popconfirm
+                                title="Yakin menghapus data ini?"
+                                onConfirm={() => deleteData(row)}
+                                okText="Ya"
+                                cancelText="Batal"
+                            >
+                                <Button className="btn-icon" size="default" outlined block={true} type="danger" title="Hapus">
+                                <i aria-hidden="true" className="fa fa-trash-o"></i> Hapus
+                                </Button>
+                            </Popconfirm>
+                        </Cards>
+                    ),
+
                     title: row.title,
                     alt_name: row.alt_name,
                     action: (

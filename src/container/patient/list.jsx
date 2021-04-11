@@ -44,13 +44,13 @@ const List = () => {
     });
 
     const columns = [
-        { title: 'ID', dataIndex: 'id', key: 'id', },
-        { title: 'Nama', dataIndex: 'name', key: 'name', },
-        { title: 'Email', dataIndex: 'email', key: 'email', },
-        { title: 'Nomor Telepon', dataIndex: 'phone_number', key: 'phone_number' },
-        { title: 'Tanggal Daftar', dataIndex: 'created_at', key: 'created_at' },
-        { title: '#', dataIndex: 'action', key: 'action', width: '150px',
-        },
+        { title: 'Data', dataIndex: 'mobile_data', key: 'mobile_data', responsive: ['xs'] },
+        { title: 'ID', dataIndex: 'id', key: 'id', responsive: ['sm'] },
+        { title: 'Nama', dataIndex: 'name', key: 'name', responsive: ['sm'] },
+        { title: 'Email', dataIndex: 'email', key: 'email', responsive: ['sm'] },
+        { title: 'Nomor Telepon', dataIndex: 'phone_number', key: 'phone_number', responsive: ['sm'] },
+        { title: 'Tanggal Daftar', dataIndex: 'created_at', key: 'created_at', responsive: ['sm'] },
+        { title: '#', dataIndex: 'action', key: 'action', width: '150px', responsive: ['sm'] },
     ];
 
     useEffect(() => {
@@ -80,6 +80,29 @@ const List = () => {
             return result.push({
                 key: row.pid,
                 id: row.pid,
+                
+                mobile_data: (
+                    <Cards border={true} headless={true} className="text-left">
+                        <b>ID</b> <br/>
+                        {row.pid} <br/>
+
+                        <b>Nama Pasien</b>
+                        {row.full_name} <br/>
+
+                        <b>Email</b> <br/>
+                        {row.email ? row.email : '-'} <br/>
+
+                        <b>Nomor Telepon</b> <br/>
+                        {row.phone_number} <br/><br/>
+
+                        <Link to={`${path}/detail/${row.pid}/information`}>
+                            <Button className="btn-icon" size="default" block={true} type="primary" title="Detail" onClick={() =>  history.push(`${path}/detail/${row.pid}`) }>
+                                <i aria-hidden="true" className="fa fa-folder-open-o color-white"></i> Detail
+                            </Button>
+                        </Link>
+                    </Cards>
+                ),
+
                 name: (
                     <div className="user-info">
                     <figure>

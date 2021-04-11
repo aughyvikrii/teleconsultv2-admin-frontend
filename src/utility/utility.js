@@ -14,7 +14,7 @@ const ellipsis = (text, size) => {
 };
 
 const format_rupiah = (angka, prefix) =>{
-  if(!angka) return;
+  if(!angka) return 0;
   let number_string = parseFloat(angka).toString().replace(/[^,\d]/g, '');
   let split   = number_string.split(',')
   let sisa     = split[0].length % 3

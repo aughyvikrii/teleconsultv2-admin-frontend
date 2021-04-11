@@ -76,6 +76,28 @@ const List = (props) => {
             return _source.push({
                 key: row.aid,
                 id: row.aid,
+
+                mobile_data: (<>
+                    <Cards border={true} headless={true} className="text-left">
+                        <b>ID</b> <br/>
+                        #{row.aid} <br/>
+                        <b>Pasien</b><br/>
+                        <Link to={`/admin/patient/detail/${row.patient_id}/information`}>{row.patient_name}</Link> <br/>
+                        <b>Dokter</b><br/>
+                        <Link to={`/admin/patient/detail/${row.doctor_id}/information`}>{row.doctor_name}</Link> <br/>
+                        <b>Tanggal Konsul</b> <br/>
+                        {row.consul_date} {row.consul_time} <br/>
+                        <b>Status</b><br/>
+                        {label_apstatus(row.status)} <br/><br/>
+                        <>
+                            <Link to={`/admin/appointment/${row.aid}`}>
+                                <Button size="default" block={true} type="primary" title="Detail" onClick={() =>  history.push(`${path}/${row.doctor_id}`) }>
+                                    <i aria-hidden="true" className="fa fa-folder-open-o color-white"></i> Detail Perjanjian
+                                </Button>
+                            </Link>
+                        </>
+                    </Cards>
+                </>),
                 patient: (
                     <div className="user-info">
                         <figure>
@@ -140,13 +162,14 @@ const List = (props) => {
     React.useEffect(processData, [data]);
 
     const columns = [
-        { title: 'ID', dataIndex: 'id', key: 'id', },
-        { title: 'Pasien', dataIndex: 'patient', key: 'patient', },
-        { title: 'doctor', dataIndex: 'doctor', key: 'doctor', },
-        { title: 'Tanggal Perjanjian', dataIndex: 'appointment_date', key: 'appointment_date' },
-        { title: 'Status', dataIndex: 'status', key: 'status' },
-        { title: 'Tanggal Daftar', dataIndex: 'created_at', key: 'created_at' },
-        { title: '#', dataIndex: 'action', key: 'action', width: '150px', },
+        { title: 'Data', dataIndex: 'mobile_data', key: 'mobile_data', responsive: ['xs'] },
+        { title: 'ID', dataIndex: 'id', key: 'id', responsive: ['sm'] },
+        { title: 'Pasien', dataIndex: 'patient', key: 'patient', responsive: ['sm'] },
+        { title: 'doctor', dataIndex: 'doctor', key: 'doctor', responsive: ['sm'] },
+        { title: 'Tanggal Perjanjian', dataIndex: 'appointment_date', key: 'appointment_date', responsive: ['sm'] },
+        { title: 'Status', dataIndex: 'status', key: 'status', responsive: ['sm'] },
+        { title: 'Tanggal Daftar', dataIndex: 'created_at', key: 'created_at', responsive: ['sm'] },
+        { title: '#', dataIndex: 'action', key: 'action', width: '150px', responsive: ['sm'] },
     ];
 
     const onFinish = (fields) => {
@@ -272,15 +295,15 @@ const List = (props) => {
                                 </Form.Item>
                             </Col>
                             <Col xl={4} xs={24}>
-                                <Form.Item name="appointment_id" label="ID Perjanjian" >
-                                    <Select defaultValue={null} mode="tags">
+                                <Form.Item name="appointment_id" label="ID Perjanjian" defaultValue={null} >
+                                    <Select mode="tags">
                                         <Select.Option value={null}>Semua</Select.Option>
                                     </Select>
                                 </Form.Item>
                             </Col>
                             <Col xl={4} xs={24}>
-                                <Form.Item name="status" label="Status" >
-                                    <Select defaultValue={filter.status} mode="multiple">
+                                <Form.Item name="status" label="Status" defaultValue={filter.status} >
+                                    <Select mode="multiple">
                                         <Select.Option value={null}>Semua</Select.Option>
                                         <Select.Option key="waiting_payment" value='waiting_payment'>Menunggu Pembayaran</Select.Option>
                                         <Select.Option key="waiting_consul" value='waiting_consul'>Menunggu Konsultasi</Select.Option>
@@ -291,8 +314,8 @@ const List = (props) => {
                                 </Form.Item>
                             </Col>
                             <Col xl={4} xs={24}>
-                                <Form.Item name="data_per_page" label="Data Per Halaman" >
-                                    <Select defaultValue={filter.data_per_page}>
+                                <Form.Item name="data_per_page" label="Data Per Halaman" defaultValue={filter.data_per_page}>
+                                    <Select >
                                         <Select.Option key={10} value={10}>10</Select.Option>
                                         <Select.Option key={25} value={25}>25</Select.Option>
                                         <Select.Option key={50} value={50}>50</Select.Option>

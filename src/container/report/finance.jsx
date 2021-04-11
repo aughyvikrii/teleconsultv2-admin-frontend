@@ -77,6 +77,22 @@ const Finance = (props) => {
             return result.push({
                 key: row.appointment_id,
                 invoice_id: ('#'+row.bill_uniq),
+                mobile_data: (<>
+                    <Cards border={true} headless={true} className="text-left">
+                        <b>Invoice</b> <br/>
+                        #{row.bill_uniq} <br/>
+                        <b>Perjanjian</b> <br/>
+                        <Link to={`/admin/appointment/${row.appointment_id}`}>#{row.appointment_id}</Link> <br/>
+                        <b>Tanggal Bayar</b><br/>
+                        {row.id_paid_on ? row.id_paid_on : '-'} <br/>
+                        <b>Pasien</b><br/>
+                        <Link to={`/admin/patient/detail/${row.patient_id}/information`}>{row.patient_name}</Link> <br/>
+                        <b>Status</b> <br/>
+                        {payment_label(row.status)} <br/>
+                        <b>Nominal</b> <br/>
+                        Rp. {format_rupiah(row.amount)}
+                    </Cards>
+                </>),
                 appointment_id: (
                     <Link to={`/admin/appointment/${row.appointment_id}`}>#{row.appointment_id}</Link>
                 ),
@@ -121,16 +137,17 @@ const Finance = (props) => {
     }
 
     const columns = [
-        { title: 'Invoice', dataIndex: 'invoice_id', key: 'invoice_id', },
-        { title: 'Perjanjian', dataIndex: 'appointment_id', key: 'appointment_id', },
-        { title: 'Tanggal Bayar', dataIndex: 'payment_date', key: 'payment_date', },
-        { title: 'Pasien', dataIndex: 'patient', key: 'patient', },
-        { title: 'Tanggal Konsultasi', dataIndex: 'consul_datetime', key: 'consul_datetime' },
-        { title: 'Dokter', dataIndex: 'doctor', key: 'doctor' },
-        { title: 'Poliklinik', dataIndex: 'department', key: 'department' },
-        { title: 'Cabang', dataIndex: 'branch', key: 'branch' },
-        { title: 'Status', dataIndex: 'status', key: 'status' },
-        { title: 'Nominal', dataIndex: 'amount', key: 'amount' },
+        { title: 'Data', dataIndex: 'mobile_data', key: 'mobile_data', responsive: ['xs'] },
+        { title: 'Invoice', dataIndex: 'invoice_id', key: 'invoice_id', responsive: ['sm'] },
+        { title: 'Perjanjian', dataIndex: 'appointment_id', key: 'appointment_id', responsive: ['sm'] },
+        { title: 'Tanggal Bayar', dataIndex: 'payment_date', key: 'payment_date', responsive: ['sm'] },
+        { title: 'Pasien', dataIndex: 'patient', key: 'patient', responsive: ['sm'] },
+        { title: 'Tanggal Konsultasi', dataIndex: 'consul_datetime', key: 'consul_datetime', responsive: ['sm'] },
+        { title: 'Dokter', dataIndex: 'doctor', key: 'doctor', responsive: ['sm'] },
+        { title: 'Poliklinik', dataIndex: 'department', key: 'department', responsive: ['xxl'] },
+        { title: 'Cabang', dataIndex: 'branch', key: 'branch', responsive: ['xxl'] },
+        { title: 'Status', dataIndex: 'status', key: 'status', responsive: ['sm'] },
+        { title: 'Nominal', dataIndex: 'amount', key: 'amount', responsive: ['sm'] },
     ];
 
     const print = async (type, page) => {
@@ -239,15 +256,15 @@ const Finance = (props) => {
                                 </Form.Item>
                             </Col>
                             <Col xl={4} xs={24}>
-                                <Form.Item name="appointment_id" label="ID Perjanjian" >
-                                    <Select defaultValue={null} mode="tags">
+                                <Form.Item name="appointment_id" label="ID Perjanjian" defaultValue={null}>
+                                    <Select mode="tags">
                                         <Select.Option value={null}>Semua</Select.Option>
                                     </Select>
                                 </Form.Item>
                             </Col>
                             <Col xl={4} xs={24}>
-                                <Form.Item name="status" label="Status" >
-                                    <Select defaultValue={filter.status} mode="multiple">
+                                <Form.Item name="status" label="Status" defaultValue={filter.status}>
+                                    <Select mode="multiple">
                                         <Select.Option value={null}>Semua</Select.Option>
                                         <Select.Option key="waiting_payment" value='waiting_payment'>Menunggu Pembayaran</Select.Option>
                                         <Select.Option key="paid" value='paid'>Lunas</Select.Option>
@@ -257,8 +274,8 @@ const Finance = (props) => {
                                 </Form.Item>
                             </Col>
                             <Col xl={4} xs={24}>
-                                <Form.Item name="data_per_page" label="Data Per Halaman" >
-                                    <Select defaultValue={filter.data_per_page}>
+                                <Form.Item name="data_per_page" label="Data Per Halaman" defaultValue={filter.data_per_page}>
+                                    <Select>
                                         <Select.Option key={10} value={10}>10</Select.Option>
                                         <Select.Option key={25} value={25}>25</Select.Option>
                                         <Select.Option key={50} value={50}>50</Select.Option>

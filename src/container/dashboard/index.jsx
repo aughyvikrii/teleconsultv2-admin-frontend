@@ -1,15 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Col, Card, Skeleton, Form } from 'antd';
+import { Row, Col, Skeleton, Form } from 'antd';
 import { useHistory } from 'react-router-dom';
 
 import { Main } from '../styled';
+import { CardBarChart2, OverviewSalesCard } from './style';
 import { PageHeader } from '../../components/page-headers/page-headers';
 import { AlertError } from '../../components/alerts/alerts';
-import { PatientCard } from '../../components/cards';
 import { GoogleMaterialBarChart, GoogleBasicPieChart } from '../../components/charts/google-chart';
 import { get_dashboard } from '../../api';
 import { Button } from '../../components/buttons/buttons';
 import { Cards } from '../../components/cards/frame/cards-frame';
+
+import IMGNewCustomer from '../../static/img/icon/New Customer.svg';
+import IMGSalesRevenue from '../../static/img/icon/SalesRevenue.svg';
+import IMGProvit from '../../static/img/icon/Profit.svg';
 
 import {
     SelectMonth,
@@ -19,15 +23,20 @@ import {
     GetMonth
 } from '../../components/input';
 
+import {
+    format_rupiah
+} from '../../utility/utility';
+
+
 const Index = (props) => {
 
-    const history = useHistory();
     const [form] = Form.useForm();
-    const [listAppointment, setListAppointment] = useState([]);
     const [chart, setChart] = useState([]);
+    const [cardData, setCardData] = useState({});
     const [loading, setLoading] = useState(true);
     const [alert, setAlert] = useState(null);
     const [showFilter, setShowFilter] = useState(false);
+    const [dateRange, setDateRange] = useState(null);
     const [filter, setFilter] = useState({
         start_year: yearNow(),
         start_month: monthNow() - 1,
@@ -48,14 +57,15 @@ const Index = (props) => {
         if(error) {
             setAlert(<AlertError message={message}/>);
         } else {
-            setListAppointment(result.data.appointments);
             setChart(result.data.charts);
+            setCardData(result.data.cards);
         }
 
     }
 
     useEffect(() => {
         getData();
+        setDateRange(GetMonth(filter.start_month) + ' ' + filter.start_year + ' s/d ' + GetMonth(filter.end_month) + ' ' + filter.end_year  );
     }, [filter]);
 
     const onFinish = (fields) => {
@@ -67,7 +77,8 @@ const Index = (props) => {
     <>
         <PageHeader
             ghost
-            title={"Dashboard Dokter | " + (GetMonth(filter.start_month) + ' ' + filter.start_year + ' s/d ' + GetMonth(filter.end_month) + ' ' + filter.end_year  )}
+            className="header-boxed"
+            title={"Dashboard Dokter | " + dateRange}
             buttons={[
             <div key="6" className="page-header-actions">
                 {/* <Popover
@@ -86,133 +97,168 @@ const Index = (props) => {
             </div>,
             ]}
         />
-        <Main>
+        <Main className="grid-boxed">
 
-        <Cards
-            title="Filter Data"
-            
-            style={{
-                display: showFilter ? '' : 'none'
-            }}
-        >
-            <Form
-                form={form}
-                onFinish={onFinish}
-                name="modal"
-                layout="vertical"
+            <Cards
+                title="Filter Data"
+                
+                style={{
+                    display: showFilter ? '' : 'none'
+                }}
             >
-                <Row gutter={[8, 8]}>
-                    <Col xl={4} xs={24}>
-                        <Form.Item name="start_year" label="Tahun Awal" initialValue={filter.start_year}>
-                            <SelectYear start={2021}/>
-                        </Form.Item>
-                    </Col>
-                    <Col xl={4} xs={24}>
-                        <Form.Item name="start_month" label="Bulan Awal" initialValue={filter.start_month}>
-                            <SelectMonth/>
-                        </Form.Item>
-                    </Col>
-                    <Col xl={4} xs={24}>
-                        <Form.Item name="end_year" label="Tahun Akhir" initialValue={filter.start_year}>
-                            <SelectYear start={2021}/>
-                        </Form.Item>
-                    </Col>
-                    <Col xl={4} xs={24}>
-                        <Form.Item name="end_month" label="Bulan Akhir" initialValue={filter.end_month}>
-                            <SelectMonth/>
-                        </Form.Item>
-                    </Col>
-                    <Col span={24} className="text-right">
-                        <Form.Item>
-                            <Button type="primary" size="default" htmlType="submit" className="login-form-button">
-                                Submit
-                            </Button>
-                        </Form.Item>
-                    </Col>
-                </Row>
-            </Form>
-        </Cards>
-
+                <Form
+                    form={form}
+                    onFinish={onFinish}
+                    name="modal"
+                    layout="vertical"
+                >
+                    <Row gutter={[8, 8]}>
+                        <Col xl={4} xs={24}>
+                            <Form.Item name="start_year" label="Tahun Awal" initialValue={filter.start_year}>
+                                <SelectYear start={2021}/>
+                            </Form.Item>
+                        </Col>
+                        <Col xl={4} xs={24}>
+                            <Form.Item name="start_month" label="Bulan Awal" initialValue={filter.start_month}>
+                                <SelectMonth/>
+                            </Form.Item>
+                        </Col>
+                        <Col xl={4} xs={24}>
+                            <Form.Item name="end_year" label="Tahun Akhir" initialValue={filter.start_year}>
+                                <SelectYear start={2021}/>
+                            </Form.Item>
+                        </Col>
+                        <Col xl={4} xs={24}>
+                            <Form.Item name="end_month" label="Bulan Akhir" initialValue={filter.end_month}>
+                                <SelectMonth/>
+                            </Form.Item>
+                        </Col>
+                        <Col span={24} className="text-right">
+                            <Form.Item>
+                                <Button type="primary" size="default" htmlType="submit" className="login-form-button">
+                                    Submit
+                                </Button>
+                            </Form.Item>
+                        </Col>
+                    </Row>
+                </Form>
+            </Cards>
 
             <Row gutter={[25, 25]}>
-                { alert && (<Col span={24}>{alert}</Col>) }
-                <Col
-                    lg={14}
-                    xs={24}
-                >
-                    <Card>
-                        { loading ? <Skeleton /> : (
+                <Col lg={8} xs={24}>
+                    <Cards headless>
+                        <OverviewSalesCard>
+                        <div className="icon-box box-secondary">
+                            <img src={IMGNewCustomer} alt="" />
+                        </div>
+                        <div className="card-chunk">
+                            <CardBarChart2>
+                            <h2>{cardData?.user}</h2>
+                            <span>Jumlah Pengguna</span>
+                            </CardBarChart2>
+                        </div>
+                        </OverviewSalesCard>
+                    </Cards>
+
+                    <Cards headless>
+                        <OverviewSalesCard>
+                        <div className="icon-box box-primary">
+                            <img src={IMGSalesRevenue} alt="" />
+                        </div>
+                        <div className="card-chunk">
+                            <CardBarChart2>
+                            <h2>{cardData?.appointment}</h2>
+                            <span>Jumlah Pendaftar</span>
+                            </CardBarChart2>
+                        </div>
+                        </OverviewSalesCard>
+                    </Cards>
+
+                    <Cards headless>
+                        <OverviewSalesCard>
+                        <div className="icon-box box-success">
+                            <img src={IMGProvit} alt="" />
+                        </div>
+                        <div className="card-chunk">
+                            <CardBarChart2>
+                            <h2>Rp {format_rupiah(cardData?.income)}</h2>
+                            <span>Uang Masuk</span>
+                            </CardBarChart2>
+                        </div>
+                        </OverviewSalesCard>
+                    </Cards>
+                </Col>
+
+                <Col lg={16} xs={24}>
+                    <Cards headless>
+                        { loading ? <Skeleton/> :
                             <GoogleMaterialBarChart
+                                title={chart?.appointment?.title ? chart?.appointment?.title : 'Title'}
+                                subtitle={dateRange}
                                 data={chart?.appointment?.data ? chart?.appointment?.data : []}
                                 width="100%"
                                 height="300px"
-                                title={chart?.appointment?.title ? chart?.appointment?.title : 'Title'}
-                                subtitle={chart?.appointment?.subtitle ? chart?.appointment?.subtitle : 'Subtitle'}
-                                chartArea="50%"
                             />
-                        ) }
-                    </Card> <br/>
-                    <Card
-                        title="Chart Dokter"
-                    >
+                        }
+                    </Cards>
+                </Col>
+
+                <Col lg={12} xs={24}>
+                    <Cards headless>
                         { loading ? <Skeleton /> : (
                             <GoogleBasicPieChart
+                                title="Chart Dokter"
+                                subtitle={dateRange}
                                 data={chart?.doctor?.data ? chart?.doctor?.data : []}
+                                width="100%"
                                 height="300px"
                             />
                         ) }
-                    </Card>
-                </Col>
-                <Col
-                    lg={10}
-                    xs={24}
-                >
-                    { loading ? <Card><Skeleton /></Card> :
-                        listAppointment.length === 0 ? <Card><h2 className="text-center">Tidak ada perjanjian</h2></Card> :
-                        listAppointment.map(appointment => {
-                            return <PatientCard key={appointment.appointment_id} patient={appointment} from="dashboard" />
-                        })
-                    }
+                    </Cards>
                 </Col>
 
-                <Col lg={8} xs={24}>
-                    <Card
-                        title="Chart Departemen"
-                    >
+                <Col lg={12} xs={24}>
+                    <Cards headless>
                         { loading ? <Skeleton /> : (
                             <GoogleBasicPieChart
+                                title="Chart Departemen"
+                                subtitle={dateRange}
                                 data={chart?.department?.data ? chart?.department?.data : []}
+                                width="100%"
                                 height="300px"
                             />
                         ) }
-                    </Card>
+                    </Cards>
                 </Col>
 
-                <Col lg={8} xs={24}>
-                    <Card
-                        title="Chart Spesialis"
-                    >
+                <Col lg={12} xs={24}>
+                    <Cards headless>
                         { loading ? <Skeleton /> : (
                             <GoogleBasicPieChart
+                                title="Chart Spesialis"
+                                subtitle={dateRange}
                                 data={chart?.specialist?.data ? chart?.specialist?.data : []}
+                                width="100%"
                                 height="300px"
                             />
                         ) }
-                    </Card>
+                    </Cards>
                 </Col>
 
-                <Col lg={8} xs={24}>
-                    <Card
-                        title="Chart Cabang"
-                    >
+                <Col lg={12} xs={24}>
+                    <Cards headless>
                         { loading ? <Skeleton /> : (
                             <GoogleBasicPieChart
+                                title="Chart Cabang"
+                                subtitle={dateRange}
                                 data={chart?.branch?.data ? chart?.branch?.data : []}
+                                width="100%"
                                 height="300px"
                             />
                         ) }
-                    </Card>
+                    </Cards>
                 </Col>
+                
             </Row>
         </Main>
     </>

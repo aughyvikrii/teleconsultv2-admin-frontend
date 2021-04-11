@@ -40,11 +40,12 @@ const List = () => {
     });
 
     const columns = [
-        { title: 'ID', dataIndex: 'branch_id', key: 'branch_id', },
-        { title: 'Kode', dataIndex: 'code', key: 'code', },
-        { title: 'Nama', dataIndex: 'name', key: 'name', },
-        { title: 'Status', dataIndex: 'is_active', key: 'is_active' },
-        { title: '#', dataIndex: 'action', key: 'action', width: '150px', },
+        { title: 'Data', dataIndex: 'mobile_data', key: 'mobile_data', responsive: ['xs'] },
+        { title: 'ID', dataIndex: 'branch_id', key: 'branch_id', responsive: ['sm'] },
+        { title: 'Kode', dataIndex: 'code', key: 'code', responsive: ['sm'] },
+        { title: 'Nama', dataIndex: 'name', key: 'name', responsive: ['sm'] },
+        { title: 'Status', dataIndex: 'is_active', key: 'is_active', responsive: ['sm'] },
+        { title: '#', dataIndex: 'action', key: 'action', width: '150px', responsive: ['sm'] },
     ];
 
     useEffect(() => {
@@ -71,6 +72,39 @@ const List = () => {
         _data.map(row => {
             return result.push({
                 key: row.branch_id,
+
+                mobile_data: (<>
+                    <Cards border={true} headless={true} className="text-left">
+                        <b>ID</b> <br/>
+                        {row.branch_id} <br/>
+
+                        <b>Kode</b> <br/>
+                        {row.code} <br/>
+
+                        <b>Nama</b> <br/>
+                        {row.name} <br/>
+
+                        <b>Status</b> <br/>
+                        {row.is_active ? 
+                        <Tag color="#87d068">Aktif</Tag> : 
+                        <Tag color="#f50">Nonaktif</Tag>} <br/> <br/>
+
+                            <Button className="btn-icon" size="default" block={true} type="primary" title="Detail" onClick={() =>  history.push(`${path}/detail/${row.branch_id}`) }>
+                                <i aria-hidden="true" className="fa fa-pencil"></i> Ubah Data
+                            </Button> &nbsp;
+                            <Popconfirm
+                                title="Yakin menghapus data ini?"
+                                onConfirm={() => deleteData(row)}
+                                okText="Ya"
+                                cancelText="Batal"
+                            >
+                                <Button className="btn-icon" size="default" outlined block={true} type="danger" title="Hapus">
+                                <i aria-hidden="true" className="fa fa-trash-o"></i> Hapus
+                                </Button>
+                            </Popconfirm>
+                    </Cards>
+                    </>),
+
                 branch_id: row.branch_id,
                 code: (
                     <div className="user-info">

@@ -47,12 +47,13 @@ const List = () => {
     });
 
     const columns = [
-        { title: 'ID', dataIndex: 'id', key: 'id', },
-        { title: 'Nama', dataIndex: 'name', key: 'name', },
-        { title: 'Email', dataIndex: 'email', key: 'email', },
-        { title: 'Nomor Telepon', dataIndex: 'phone_number', key: 'phone_number' },
-        { title: 'Tanggal Didaftarkan', dataIndex: 'created_at', key: 'created_at' },
-        { title: '#', dataIndex: 'action', key: 'action', width: '150px', },
+        { title: 'Data', dataIndex: 'mobile_data', key: 'mobile_data', responsive: ['xs'] },
+        { title: 'ID', dataIndex: 'id', key: 'id', responsive: ['sm'] },
+        { title: 'Nama', dataIndex: 'name', key: 'name', responsive: ['sm'] },
+        { title: 'Email', dataIndex: 'email', key: 'email', responsive: ['sm'] },
+        { title: 'Nomor Telepon', dataIndex: 'phone_number', key: 'phone_number', responsive: ['sm'] },
+        { title: 'Tanggal Didaftarkan', dataIndex: 'created_at', key: 'created_at', responsive: ['sm'] },
+        { title: '#', dataIndex: 'action', key: 'action', width: '150px', responsive: ['sm'] },
     ];
 
     useEffect(() => {
@@ -90,6 +91,29 @@ const List = () => {
             return result.push({
                 key: row.doctor_id,
                 id: row.doctor_id,
+
+                mobile_data: (<>
+                    <Cards border={true} headless={true} className="text-left">
+                        <b>ID</b> <br/>
+                        {row.doctor_id} <br/>
+
+                        <b>Nama</b> <br/>
+                        {row.display_name} <br/>
+
+                        <b>Email</b> <br/>
+                        {row.email} <br/>
+
+                        <b>Nomor Telepon</b> <br/>
+                        {row.phone_number} <br/><br/>
+
+                        <Link to={`${path}/${row.doctor_id}/information`}>
+                            <Button size="default" block={true} type="primary" title="Detail" onClick={() =>  history.push(`${path}/${row.doctor_id}`) }>
+                                <i aria-hidden="true" className="fa fa-folder-open-o color-white"></i> Detail
+                            </Button>
+                        </Link>
+                    </Cards>
+                </>),
+
                 name: (
                     <div className="user-info">
                         <figure>
