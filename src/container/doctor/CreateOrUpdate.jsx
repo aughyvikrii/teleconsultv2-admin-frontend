@@ -37,6 +37,7 @@ const CreateOrUpdate = () => {
     const [formValue, setFormValue] = useState({});
     const storage = !id ? 'doctorCreate' : 'doctorUpdate';
     const [form] = Form.useForm();
+    const [validToken, setValidToken]  = useState(!id ? false : true);
     
     const getData = async() => {
 
@@ -131,6 +132,13 @@ const CreateOrUpdate = () => {
 
     const onSubmit = async (fields) => {
 
+        if(!validToken) {
+            dispatch(loadingError());
+            dispatch(loadingContent('Silahkan verifikasi token terlebih dahulu!'));
+            setTimeout(() => dispatch(loadingClose()), 3000);
+            return;
+        }
+
         dispatch(loadingStart());
         dispatch(loadingContent(!id ? 'Proses menambah dokter...' : 'Proses update dokter...'));
         setAlert(null);
@@ -173,6 +181,12 @@ const CreateOrUpdate = () => {
         setFormValue(formValue);
         
         localStorage.setItem(storage, JSON.stringify(formValue));
+    }
+
+    const validateZoomAccount = () => {
+        dispatch(loadingStart());
+        dispatch(loadingContent('Memverifikasi token zoom...'));
+
     }
 
     return(
@@ -357,6 +371,35 @@ const CreateOrUpdate = () => {
                                                     </Form.Item>
                                                 </Col>
                                             </Row>
+                                        </Col>
+                                    </Row> <br/>
+
+                                    <Heading>
+                                        Akun Zoom
+                                    </Heading>
+                                    <div className="color-error">Klik <a href="https://www.youtube.com/watch?v=LBMgKCPgfc4" target="__blank">di sini</a> untuk tutorial mendapatkan api key akun zoom</div><br/>
+
+                                    <Row gutter={[25, 25]}>
+                                        <Col span={24}>
+                                            <Form.Item name="zoom_api_key" label="API Key" rules={[{required: true, message: 'Masukan api key zoom'}]} >
+                                                <Input placeholder="..."/>
+                                            </Form.Item>
+                                        </Col>
+
+                                        <Col span={24}>
+                                            <Form.Item name="zoom_api_secret" label="API Secret" rules={[{required: true, message: 'Masukan api secret zoom'}]} >
+                                                <Input placeholder="..."/>
+                                            </Form.Item>
+                                        </Col>
+
+                                        <Col span={24}>
+                                            <Form.Item name="zoom_jwt_token" label="JWT Token" rules={[{required: true, message: 'Masukan jwt token'}]} >
+                                                <Input placeholder="..."/>
+                                            </Form.Item>
+                                        </Col>
+
+                                        <Col span={24}>
+                                            <Button type="warning" onClick={validateZoomAccount}>Validasi akun zoom</Button>
                                         </Col>
                                     </Row> <br/>
                                     

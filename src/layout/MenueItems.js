@@ -1,16 +1,20 @@
 import React from 'react';
 import { useHistory } from "react-router";
+import { useDispatch } from 'react-redux';
 import Cookies from 'js-cookie';
 import { Menu } from 'antd';
 import { NavLink, useRouteMatch } from 'react-router-dom';
 import FeatherIcon from 'feather-icons-react';
 import propTypes from 'prop-types';
 
+import { loginModal } from '../redux/authentication/actionCreator';
+
 const { SubMenu } = Menu;
 
 const MenuItems = ({ darkMode, toggleCollapsed, topMenu }) => {
   const { path } = useRouteMatch();
   const history = useHistory();
+  const dispatch = useDispatch();
 
   const pathName = window.location.pathname;
   const pathArray = pathName.split(path);
@@ -29,7 +33,7 @@ const MenuItems = ({ darkMode, toggleCollapsed, topMenu }) => {
     localStorage.clear();
     Cookies.remove('token');
     history.push('/');
-    window.location.reload();
+    dispatch(loginModal(true))
   }
 
   const onClick = item => {

@@ -32,8 +32,8 @@ const FrontendRoutes = () => {
           </div>
         }
       >
-        {/* <Route exact path="/" component={Login} /> */}
-        {/* <Route exact path="*" component={NotFound} /> */}
+        <Route exact path="/" component={NotFound} />
+        <Route exact path="*" component={NotFound} />
       </Suspense>
     </Switch>
   );
