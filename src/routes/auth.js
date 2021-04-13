@@ -18,7 +18,7 @@ const NotFound = (props) => {
   }, []);
 
   return(
-    AdminHistory ? 'Login' : <Redirect to="/"/>
+    AdminHistory ? '' : <Redirect to="/"/>
   );
 };
 

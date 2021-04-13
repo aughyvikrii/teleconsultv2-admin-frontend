@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { Row, Col, Form, Input, InputNumber, Avatar } from 'antd';
+import { Row, Col, Form, Input, InputNumber, Avatar, Alert } from 'antd';
 import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
 import { Main, BasicFormWrapper } from '../styled';
@@ -15,7 +15,7 @@ import { AlertError, AlertSuccess } from '../../components/alerts/alerts';
 import { SelectBranch, SelectDepartment, SelectSpecialist, RadioWeekDay, RadioGender } from '../../components/form';
 
 // API
-import { create_doctor, detail_doctor, update_doctor } from '../../api';
+import { create_doctor, detail_doctor, update_doctor, zoom_verification } from '../../api';
 
 import { SelectDate, SelectMonth, SelectYear, InputTime } from '../../components/input';
 import {
@@ -38,6 +38,7 @@ const CreateOrUpdate = () => {
     const storage = !id ? 'doctorCreate' : 'doctorUpdate';
     const [form] = Form.useForm();
     const [validToken, setValidToken]  = useState(!id ? false : true);
+    const [tokenInfo, setTokenInfo] = useState({});
     
     const getData = async() => {
 
@@ -65,6 +66,9 @@ const CreateOrUpdate = () => {
                 birth_date_m: birth_date_m,
                 birth_date_y: birth_date_y,
                 cropData: person?.profile_pic,
+                zoom_api_key: person?.zoom_api_key,
+                zoom_api_secret: person?.zoom_api_secret,
+                zoom_jwt_token: person?.zoom_jwt_token
             };
 
             form.setFieldsValue(_form_data);
@@ -183,10 +187,33 @@ const CreateOrUpdate = () => {
         localStorage.setItem(storage, JSON.stringify(formValue));
     }
 
-    const validateZoomAccount = () => {
+    const validateZoomAccount = async () => {
         dispatch(loadingStart());
         dispatch(loadingContent('Memverifikasi token zoom...'));
 
+        const fields = {
+            zoom_api_key: form.getFieldValue('zoom_api_key'),
+            zoom_api_secret: form.getFieldValue('zoom_api_secret'),
+            zoom_jwt_token: form.getFieldValue('zoom_jwt_token'),
+            doctor_id: id
+        };
+
+        const {
+            result, error, message, errors
+        } = await zoom_verification(fields);
+
+        if(error) {
+            dispatch(loadingError());
+            dispatch(loadingContent(message));
+        } else {
+            dispatch(loadingSuccess());
+            dispatch(loadingContent('Token valid'));
+            setTokenInfo(result.data);
+        }
+
+        setTimeout(() => dispatch(loadingClose()), 3000);
+
+        console.log(result);
     }
 
     return(
@@ -398,10 +425,19 @@ const CreateOrUpdate = () => {
                                             </Form.Item>
                                         </Col>
 
+                                        { tokenInfo?.account_id ? (<Col span={24}>
+                                            <Alert type="info" showIcon message="Informasi Akun Zoom" description={(<>
+                                                <b>ID:</b> {tokenInfo?.account_id} <br/>
+                                                <b>Email:</b> {tokenInfo?.email} <br/>
+                                                <b>Masa Aktif Token: </b> {tokenInfo?.expire_token}
+                                            </>)} />
+                                        </Col>) : ''}
+
                                         <Col span={24}>
                                             <Button type="warning" onClick={validateZoomAccount}>Validasi akun zoom</Button>
                                         </Col>
-                                    </Row> <br/>
+                                    </Row> 
+                                    <br/>
                                     
                                     {!id && (<>
                                         <Heading>

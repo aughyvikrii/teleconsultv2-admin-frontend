@@ -152,18 +152,6 @@ const Detail = (props) => {
                         </Cards>
                         )}
                     </Col>
-
-                    {   data?.status === 'waiting_consul' || data?.status === 'done' ? (
-                        <Col lg={12} xs={24}>
-                            <Cards
-                                title="Pembayaran [midtrans]"
-                            >
-                                <pre>
-                                    {JSON.stringify(JSON.parse(data?.midtrans_paid_log), null, 2)}
-                                </pre>
-                            </Cards>
-                        </Col>
-                    ) : ''}
                 </Row>
             </Main>
         </div>

@@ -354,10 +354,20 @@ const get_dashboard = async(filter) => {
     return await _get(api(`dashboard?` + params));
 }
 
+const get_invoice_detail = async(invoice_id) => {
+    return await _get(api(`bill/${invoice_id}/detail`));
+}
+
+const zoom_verification = async(fields) => {
+    return await _post(api(`zoom_verification`), fields);
+}
+
 export {
     rootUrl,
     baseUrl,
     createParams,
+    get_invoice_detail,
+    zoom_verification,
     api,
     _get,
     _post,
