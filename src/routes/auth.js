@@ -6,7 +6,6 @@ import AuthLayout from '../container/auth';
 
 import { loginModal } from '../redux/authentication/actionCreator';
 
-const Login = lazy(() => import('../container/auth/login'));
 const AdminHistory = localStorage.getItem('admin_history');
 
 const NotFound = (props) => {
@@ -14,7 +13,7 @@ const NotFound = (props) => {
   const dispatch = useDispatch();
 
   React.useEffect(() => {
-    AdminHistory ? dispatch(loginModal(true)) : '';
+    dispatch(loginModal(true));
   }, []);
 
   return(

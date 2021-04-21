@@ -153,6 +153,21 @@ const MenuItems = ({ darkMode, toggleCollapsed, topMenu }) => {
       <Menu.Item
         icon={
           !topMenu && (
+            <NavLink className="menuItem-iocn" to={`${path}/news`}>
+              <i aria-hidden="true" className="fa fa-newspaper-o"></i>
+            </NavLink>
+          )
+        }
+        key="news"
+      >
+        <NavLink onClick={toggleCollapsed} to={`${path}/news`}>
+          Berita
+        </NavLink>
+      </Menu.Item>
+
+      <Menu.Item
+        icon={
+          !topMenu && (
             <NavLink className="menuItem-iocn" to={`${path}/branch`}>
               <i aria-hidden="true" className="fa fa-hospital-o"></i>
             </NavLink>

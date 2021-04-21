@@ -34,7 +34,8 @@
     "react-scripts": "^4.0.3",
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
-    "styled-components": "^4.4.1"
+    "styled-components": "^4.4.1",
+    "suneditor-react": "^2.16.3"
   },
   "homepage": "/",
   "scripts": {

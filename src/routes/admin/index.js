@@ -11,6 +11,7 @@ import Doctor from './Doctor';
 import Schedule from './Schedule';
 import Appointment from './Appointment';
 import Bill from './Bill';
+import News from './News';
 import Dashboard from '../../container/dashboard';
 // import Report from './Report';
 
@@ -29,6 +30,7 @@ const Admin = () => {
         <Route key="AppointmentRoute" path={`${path}/appointment`} component={Appointment} />
         {/* <Route key="ReportRoute" path={`${path}/report`} component={Report} /> */}
         <Route key="BillRoute" path={`${path}/bill`} component={Bill} />
+        <Route key="NewsRoute" path={`${path}/news`} component={News} />
     </Switch>
   </>);
 };

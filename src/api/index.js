@@ -2,6 +2,7 @@ import Axios from 'axios';
 import Cookies from 'js-cookie';
 import store from '../redux/store';
 import { loginModal } from '../redux/authentication/actionCreator';
+
 const rootUrl = 'http://teleconsultv2.localhost';
 const baseUrl = rootUrl + '/api';
 let res = [];
@@ -362,7 +363,18 @@ const zoom_verification = async(fields) => {
     return await _post(api(`zoom_verification`), fields);
 }
 
+const get_news = async(filters) => {
+    const params = createParams(filters);
+    return await _get(api(`news/list?${params}`));
+}
+
+const get_news_detail = async(id) => {
+    return await _get(api(`news/${id}`));
+}
+
 export {
+    get_news_detail,
+    get_news,
     rootUrl,
     baseUrl,
     createParams,
