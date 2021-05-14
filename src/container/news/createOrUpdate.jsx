@@ -26,6 +26,8 @@ import {
 // API
 import { create_branch } from '../../api';
 
+import sliceUpload from '../../utility/upload';
+
 const createOrUpdate = () => {
     const {
         news_id = null
@@ -88,13 +90,16 @@ const createOrUpdate = () => {
             }).toDataURL());
         }
     }
-
-    // useEffect(() => {
-    //     form.setFieldsValue({
-    //         thumbnail: cropData
-    //     });
-    // }, [cropData]);
 // End: Cropper
+
+    const handleImageUploadBefore = async (files, info, uploadHandler) => {
+        console.log('START UPLOAD IMAGE...');
+        let uploadedFile = new sliceUpload({
+            file: files[0]
+        });
+        console.log(uploadedFile);
+        // uploadHandler(files)
+    }
 
     const onSubmit = async (fields) => {
         setAlert(null);
@@ -232,35 +237,28 @@ const createOrUpdate = () => {
                                             <Form.Item label="Isi Berita" name="news" rules={[{required: true, message: 'Masukan isi berita!'}]}>
                                                 {/* <Input.TextArea rows={5}/> */}
                                                 <SunEditor
+                                                    onImageUploadBefore={handleImageUploadBefore}
                                                     enableToolbar={true}
                                                     showToolbar={true}
+                                                    height="500px"
                                                     setOptions={{
                                                         buttonList: [[
-                                                            'blockquote',
-                                                            'align',
-                                                            'image',
-                                                            // 'command',
-                                                            // 'blockquote',
-                                                            // 'Submenu',
-                                                            'align',
                                                             'font',
-                                                            'fontColor',
                                                             'fontSize',
                                                             'formatBlock',
+                                                            'fontColor',
+                                                            'align',
+                                                            'blockquote',
                                                             'hiliteColor',
                                                             'horizontalRule',
                                                             'lineHeight',
                                                             'list',
                                                             'paragraphStyle',
                                                             'table',
-                                                            'template',
-                                                            'textStyle',
-                                                            // 'Dialog',
                                                             'link',
-                                                            'video',
-                                                            'audio',
-                                                            // 'math',
-                                                            // 'imageGallery'
+                                                            'image',
+                                                            // 'video',
+                                                            // 'audio',
                                                         ]]
                                                     }}
                                                 />

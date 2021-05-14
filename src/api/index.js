@@ -372,7 +372,17 @@ const get_news_detail = async(id) => {
     return await _get(api(`news/${id}`));
 }
 
+const create_file = async(params) => {
+    return await _post(api(`file/create`), params)
+}
+
+const slice_upload = async(params) => {
+    return await _post(api(`file/slice_upload`), params);
+}
+
 export {
+    create_file,
+    slice_upload,
     get_news_detail,
     get_news,
     rootUrl,
