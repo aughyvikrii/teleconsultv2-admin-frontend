@@ -32,8 +32,7 @@ const MenuItems = ({ darkMode, toggleCollapsed, topMenu }) => {
   const logout = () => {
     localStorage.clear();
     Cookies.remove('token');
-    history.push('/');
-    dispatch(loginModal(true))
+    window.location = '/auth';
   }
 
   const onClick = item => {
@@ -235,6 +234,18 @@ const MenuItems = ({ darkMode, toggleCollapsed, topMenu }) => {
         <NavLink onClick={logout} to="#">
           Keluar
         </NavLink>
+      </Menu.Item>
+
+      <Menu.Item key="blankSpace1">
+        <NavLink to="#"><br /></NavLink>
+      </Menu.Item>
+
+      <Menu.Item key="blankSpace2">
+        <NavLink to="#"><br /></NavLink>
+      </Menu.Item>
+
+      <Menu.Item key="blankSpace3">
+        <NavLink to="#"><br /></NavLink>
       </Menu.Item>
 
     </Menu>

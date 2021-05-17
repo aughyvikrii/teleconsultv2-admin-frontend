@@ -13,7 +13,7 @@ import 'suneditor/dist/css/suneditor.min.css'; // Import Sun Editor's CSS File
 import { PageHeader } from '../../components/page-headers/page-headers';
 import { Cards } from '../../components/cards/frame/cards-frame';
 import { Button } from '../../components/buttons/buttons';
-import { AlertError } from '../../components/alerts/alerts';
+import { AlertError, AlertWarning } from '../../components/alerts/alerts';
 
 import {
     loadingStart,
@@ -24,16 +24,16 @@ import {
 } from '../../redux/loadingmodal/actionCreator';
 
 // API
-import { create_branch } from '../../api';
+import { create_news, get_news_detail, update_news } from '../../api';
 
 import sliceUpload from '../../utility/upload';
 
 const createOrUpdate = () => {
     const {
-        news_id = null
+        id = null
     } = useParams();
 
-    const type = parseInt(news_id) ? 'update' : 'create';
+    const type = parseInt(id) ? 'update' : 'create';
 
     const history = useHistory();
     const dispatch = useDispatch();
@@ -41,7 +41,7 @@ const createOrUpdate = () => {
     
     const [form] = Form.useForm();
 
-    // Start: Cropper
+    const [data, setData] = useState({});
     const [longCropper, setLongCropper] = useState(null);
     const [longImage, setLongImage] = useState(null);
     const [longImageRaw, setLongImageRaw] = useState(null);
@@ -90,10 +90,15 @@ const createOrUpdate = () => {
             }).toDataURL());
         }
     }
-// End: Cropper
+
+    useEffect(() => {
+        form.setFieldsValue({
+            longImage: longImage,
+            shortImage: shortImage
+        });
+    }, [longImage, shortImage]);
 
     const handleImageUploadBefore = async (files, info, uploadHandler) => {
-        console.log('START UPLOAD IMAGE...');
         let uploadedFile = new sliceUpload({
             file: files[0]
         });
@@ -102,11 +107,19 @@ const createOrUpdate = () => {
     }
 
     const onSubmit = async (fields) => {
+        console.log(`fields`, fields)
         setAlert(null);
         dispatch(loadingStart());
         dispatch(loadingContent('Proses menambah cabang...'));
+        let res;
 
-        const {result, error, message} = await create_branch(fields);
+        if(type === 'create') {
+            res = await create_news(fields);
+        } else {
+            res = await update_news(id, fields);
+        }
+
+        const {result, error, message} = res;
 
         if(error) {
             setAlert(<AlertError message={message}/>);
@@ -120,10 +133,39 @@ const createOrUpdate = () => {
 
             setTimeout(() => {
                 dispatch(loadingClose());
-                history.push(`/admin/branch/detail/${result.data.bid}`)
+                history.push(`/admin/news/${result.data.nid}`)
             }, 3000);
         }
     }
+
+    const getData = async() => {
+        const {
+            result, error, message
+        } = await get_news_detail(id);
+
+        if(error) {
+            setAlert(<AlertError message={message}/>);
+        } else {
+            setAlert(null);
+            setData(result.data);
+        }
+    }
+
+    useEffect(() => {
+        setLongImage(data?.thumbnail_long);
+        setShortImage(data?.thumbnail);
+        form.setFieldsValue({
+            title: data?.title,
+            news: data?.information
+        });
+    }, [data]);
+
+    useEffect(() => {
+        if(type === 'update') {
+            setAlert(<AlertWarning message={`sedang mengambil data...`}/>);
+            getData();
+        }
+    }, []);
 
     return(
         <>
@@ -185,8 +227,8 @@ const createOrUpdate = () => {
                                                     </button>
                                                 </div>
                                             </Form.Item>
-                                            <Form.Item label="crop image" name="longImage" style={{display:'none'}} >
-                                                <Input placeholder="..."/>
+                                            <Form.Item label="crop image" name="longImage" style={{display: 'none'}}>
+                                                <Input placeholder="..." type="hidden" />
                                             </Form.Item>
                                         </Col>
 
@@ -222,8 +264,8 @@ const createOrUpdate = () => {
                                                     </button>
                                                 </div>
                                             </Form.Item>
-                                            <Form.Item label="crop image" name="shortImage" style={{display:'none'}} >
-                                                <Input placeholder="..."/>
+                                            <Form.Item label="crop image" name="shortImage" style={{display: 'none'}}>
+                                                <Input placeholder="..." type="hidden"/>
                                             </Form.Item>
                                         </Col>
 
@@ -241,6 +283,7 @@ const createOrUpdate = () => {
                                                     enableToolbar={true}
                                                     showToolbar={true}
                                                     height="500px"
+                                                    setContents={data?.information}
                                                     setOptions={{
                                                         buttonList: [[
                                                             'font',

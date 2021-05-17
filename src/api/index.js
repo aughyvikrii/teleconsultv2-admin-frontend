@@ -380,6 +380,18 @@ const slice_upload = async(params) => {
     return await _post(api(`file/slice_upload`), params);
 }
 
+const create_news = async(fields) => {
+    return await _post(api(`news/create`), fields);
+}
+
+const update_news = async(id, fields) => {
+    return await _put(api(`news/update/${id}`), fields);
+}
+
+const delete_news = async(id) => {
+    return await _delete(api(`news/delete/${id}`));
+}
+
 export {
     create_file,
     slice_upload,
@@ -390,6 +402,8 @@ export {
     createParams,
     get_invoice_detail,
     zoom_verification,
+    update_news,
+    delete_news,
     api,
     _get,
     _post,
@@ -443,7 +457,8 @@ export {
     get_detail_appointment,
     get_patient,
     get_report_finance,
-    get_report_appointment
+    get_report_appointment,
+    create_news
 }
 
 export default api;

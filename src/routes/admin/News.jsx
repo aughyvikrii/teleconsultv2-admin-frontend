@@ -9,7 +9,7 @@ const Report = () => {
   return (
     <Switch>
         <Route exact path={'/admin/news'} component={List} />
-        <Route exact path={'/admin/news/:news_id'} component={Detail} />
+        <Route exact path={'/admin/news/:id'} component={Detail} />
     </Switch>
   );
 };

@@ -10,7 +10,7 @@ import { Cards } from '../../components/cards/frame/cards-frame';
 import { AlertError } from '../../components/alerts/alerts';
 
 import {
-    get_news
+    get_news, delete_news
 } from '../../api';
 
 const List = (props) => {

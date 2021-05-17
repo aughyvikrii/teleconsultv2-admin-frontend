@@ -43,4 +43,8 @@ export const AlertSuccess = ({message, ...props}) => {
   return <Alert type='success' message={message} {...props} />
 }
 
+export const AlertWarning = ({message, ...props}) => {
+  return <Alert type='warning' message={message} {...props} />
+}
+
 export default Alert;
